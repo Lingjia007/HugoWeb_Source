@@ -146,9 +146,9 @@ params:
 
     giscus:
       repo: "Lingjia007/Lingjia007.github.io" # 替换为你自己的GitHub仓库路径
-      repoId: "R_kgDOOF76VQ" # 你的仓库ID
+      repoId: "R_kgDOOH5NOA" # 你的仓库ID
       category: "Announcements" # 讨论类别
-      categoryId: "DIC_kwDOOF76Vc4Cn2FU" # 讨论类别ID
+      categoryId: "DIC_kwDOOH5NOM4Cn-zx" # 讨论类别ID
       mapping: "pathname" # 可以是"url", "title", 或 "pathname"
       reactionsEnabled: "1" # 启用反应按钮
       emitMetadata: "0" # 是否发送元数据
@@ -156,6 +156,7 @@ params:
       theme: "light" # 主题颜色
       lang: "zh-CN" # 语言
       loading: "lazy" # 加载方式
+      crossorigin: "anonymous" # 跨域设置
 
     gitalk:
       owner:
