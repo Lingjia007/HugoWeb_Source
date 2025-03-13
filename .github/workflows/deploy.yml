@@ -27,6 +27,18 @@ jobs:
           mkdir -p public  # 确保public文件夹存在
           cp -r public/* ./  # 复制生成的静态文件到仓库根目录
 
+      - name: Copy static to en and zh-hk
+        run: |
+          mkdir -p en zh-hk  # 确保目标文件夹存在
+          cp -r static/* en/
+          cp -r static/* zh-hk/
+
+      - name: Copy assets to en and zh-hk
+        run: |
+          mkdir -p en zh-hk  # 确保目标文件夹存在
+          cp -r assets/* en/
+          cp -r assets/* zh-hk/
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
