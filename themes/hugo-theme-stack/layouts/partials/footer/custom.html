@@ -1,0 +1,559 @@
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"
+/>
+<div id="aplayer"></div>
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<script>
+  const staticDir = {{ .Site.Home.Permalink }};
+  const ap = new APlayer({
+    container: document.getElementById("aplayer"),
+    audio: [
+      {
+        name: "Keil Generic Key",
+        artist: "EDGE",
+        url: staticDir + "music/Keil Generic Key-EDGE/song.mp3",
+        cover: staticDir + "music/Keil Generic Key-EDGE/cover.png",
+        lrc: staticDir + "music/Keil Generic Key-EDGE/lyric.lrc",
+      },
+      {
+        name: "查无此字",
+        artist: "林奕匡",
+        url: staticDir + "music/查无此字-林奕匡/song.mp3",
+        cover: staticDir + "music/查无此字-林奕匡/cover.jpg",
+        lrc: staticDir + "music/查无此字-林奕匡/lyric.lrc",
+      },
+      {
+        name: "爱别等",
+        artist: "洪卓立",
+        url: staticDir + "music/爱别等-洪卓立/song.mp3",
+        cover: staticDir + "music/爱别等-洪卓立/cover.jpg",
+        lrc: staticDir + "music/爱别等-洪卓立/lyric.lrc",
+      },
+      {
+        name: "乖乖报到",
+        artist: "MC 张天赋",
+        url: staticDir + "music/乖乖报到-MC 张天赋/song.mp3",
+        cover: staticDir + "music/乖乖报到-MC 张天赋/cover.jpg",
+        lrc: staticDir + "music/乖乖报到-MC 张天赋/lyric.lrc",
+      }
+    ],
+    lrcType: 3,
+    fixed: true
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
+<script>
+  var pjax = new Pjax({
+    selectors: [".main-container", ".js-Pjax"],
+  });
+</script>
+
+<script>
+  pjax._handleResponse = pjax.handleResponse;
+  pjax.handleResponse = function (responseText, request, href, options) {
+    if (request.responseText.match("<html")) {
+      if (responseText) {
+        // 将新页面的html字符串解析成DOM对象
+        let newDom = new DOMParser().parseFromString(responseText, "text/html");
+        // 获取新页面中body的className，并设置回当前页面
+        let bodyClass = newDom.body.className;
+        document.body.setAttribute("class", bodyClass);
+      }
+      // 放行，交给pjax自己处理
+      pjax._handleResponse(responseText, request, href, options);
+    } else {
+      // handle non-HTML response here
+    }
+  };
+</script>
+
+<script>
+  document.addEventListener("pjax:complete", () => {
+    // Stack脚本初始化
+    window.Stack.init();
+  });
+</script>
+
+<script>
+  async function renderKaTeX() {
+    // 判断当前页面是否有KateX
+    let katex = document.querySelector(".math-katex");
+    if (!katex) {
+      return;
+    }
+    // 等待函数加载成功后，再执行渲染方法
+    while (typeof renderMathInElement !== "function") {
+      await delay(500);
+    }
+    // KaTeX渲染方法
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  }
+
+  /**
+   * 同步延迟
+   */
+  function delay(time) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, time);
+    });
+  }
+
+  document.addEventListener("pjax:complete", () => {
+    renderKaTeX();
+  });
+</script>
+
+<script src="{{ .Site.Home.Permalink }}js/topbar.min.js"></script>
+
+<script>
+  // 修改进度条颜色
+  topbar.config({
+    barColors: {
+      0: "rgba(255,  255, 255, 1)", // 进度0%白色
+      "1.0": "rgba(0, 149, 234,  1)", // 进度100%蓝色
+    },
+  });
+
+  document.addEventListener("pjax:send", () => {
+    // 显示顶部进度条
+    topbar.show();
+  });
+
+  document.addEventListener("pjax:complete", () => {
+    // 隐藏顶部进度条
+    topbar.hide();
+  });
+</script>
+
+<script>
+  const cdnPath =
+    "https://cdn.jsdelivr.net/gh/Lingjia007/live2d-widget-v3@main";
+  const config = {
+    // 资源路径
+    path: {
+      homePath: "/",
+      modelPath: "{{ .Site.Home.Permalink }}live2d-moc3/",
+      cssPath: "{{ .Site.Home.Permalink }}js/waifu.css",
+      tipsJsonPath: "{{ .Site.Home.Permalink }}js/my-waifu-tips.json",
+      tipsJsPath: cdnPath + "/waifu-tips.js",
+      live2dCorePath: "{{ .Site.Home.Permalink }}js/live2dcubismcore.js",
+      live2dSdkPath: "{{ .Site.Home.Permalink }}js/live2d-sdk.js",
+    },
+    // 工具栏
+    tools: [
+      "hitokoto",
+      "asteroids",
+      "express",
+      "switch-model",
+      "switch-texture",
+      "photo",
+      "info",
+      "quit",
+    ],
+    // 模型拖拽
+    drag: {
+      enable: true,
+      direction: ["x", 0],
+    },
+    // 模型切换(order: 顺序切换，random: 随机切换)
+    switchType: "order",
+  };
+
+  // 加载资源并初始化
+  if (screen.width >= 10) {
+    Promise.all([
+      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(config.path.live2dCorePath, "js"),
+      loadExternalResource(config.path.live2dSdkPath, "js"),
+      loadExternalResource(config.path.tipsJsPath, "js"),
+    ]).then(() => {
+      initWidget({
+        homePath: config.path.homePath,
+        waifuPath: config.path.tipsJsonPath,
+        cdnPath: config.path.modelPath,
+        tools: config.tools,
+        dragEnable: config.drag.enable,
+        dragDirection: config.drag.direction,
+        switchType: config.switchType,
+      });
+    });
+    function waitForElement(selector, callback) {
+      new MutationObserver(function (mutations) {
+        if (document.querySelector(selector)) {
+          callback();
+          this.disconnect();
+        }
+      }).observe(document.documentElement, { childList: true, subtree: true });
+    }
+  }
+
+  // 异步加载资源
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      let tag;
+      if (type === "css") {
+        tag = document.createElement("link");
+        tag.rel = "stylesheet";
+        tag.href = url;
+      } else if (type === "js") {
+        tag = document.createElement("script");
+        tag.src = url;
+      }
+      if (tag) {
+        tag.onload = () => resolve(url);
+        tag.onerror = () => reject(url);
+        document.head.appendChild(tag);
+      }
+    });
+  }
+</script>
+
+<!-- <script>
+  const cdnPath =
+    "https://cdn.jsdelivr.net/gh/letere-gzj/live2d-widget-v3@main";
+  const config = {
+    // 资源路径
+    path: {
+      homePath: "/",
+      modelPath: "{{ .Site.Home.Permalink }}live2d-moc3/",
+      cssPath: "{{ .Site.Home.Permalink }}js/waifu.css",
+      tipsJsonPath: "{{ .Site.Home.Permalink }}js/my-waifu-tips.json",
+      tipsJsPath: cdnPath + "/waifu-tips.js",
+      live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
+      live2dSdkPath: cdnPath + "/live2d-sdk.js",
+    },
+    // 工具栏
+    tools: [
+      "hitokoto",
+      "asteroids",
+      "express",
+      "switch-model",
+      "switch-texture",
+      "photo",
+      "info",
+      "quit",
+    ],
+    // 模型拖拽
+    drag: {
+      enable: true,
+      direction: ["x", 0],
+    },
+    // 模型切换(order: 顺序切换，random: 随机切换)
+    switchType: "order",
+  };
+
+  // 加载资源并初始化
+  if (screen.width >= 768) {
+    Promise.all([
+      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(config.path.live2dCorePath, "js"),
+      loadExternalResource(config.path.live2dSdkPath, "js"),
+      loadExternalResource(config.path.tipsJsPath, "js"),
+    ]).then(() => {
+      initWidget({
+        homePath: config.path.homePath,
+        waifuPath: config.path.tipsJsonPath,
+        cdnPath: config.path.modelPath,
+        tools: config.tools,
+        dragEnable: config.drag.enable,
+        dragDirection: config.drag.direction,
+        switchType: config.switchType,
+      });
+    });
+  }
+
+  // 异步加载资源
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      let tag;
+      if (type === "css") {
+        tag = document.createElement("link");
+        tag.rel = "stylesheet";
+        tag.href = url;
+      } else if (type === "js") {
+        tag = document.createElement("script");
+        tag.src = url;
+      }
+      if (tag) {
+        tag.onload = () => resolve(url);
+        tag.onerror = () => reject(url);
+        document.head.appendChild(tag);
+      }
+    });
+  }
+</script> -->
+<style>
+  .highlight {
+    /* 你可以根据需要调整这个高度 */
+    max-height: 400px;
+    overflow: hidden;
+  }
+
+  .code-show {
+    max-height: none !important;
+  }
+
+  .code-more-box {
+    width: 100%;
+    padding-top: 78px;
+    background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(rgba(255, 255, 255, 0)),
+      to(#fff)
+    );
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .code-more-btn {
+    display: block;
+    margin: auto;
+    width: 44px;
+    height: 22px;
+    background: #f0f0f5;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding-top: 6px;
+    cursor: pointer;
+  }
+
+  .code-more-img {
+    cursor: pointer !important;
+    display: block;
+    margin: auto;
+    width: 22px;
+    height: 16px;
+  }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach((codeBlock) => {
+      // 校验是否overflow
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      // 元素初始化
+      // codeMoreBox
+      let codeMoreBox = document.createElement("div");
+      codeMoreBox.classList.add("code-more-box");
+      // codeMoreBtn
+      let codeMoreBtn = document.createElement("span");
+      codeMoreBtn.classList.add("code-more-btn");
+      codeMoreBtn.addEventListener("click", () => {
+        codeBlock.classList.add("code-show");
+        codeMoreBox.style.display = "none";
+        // 触发resize事件，重新计算目录位置
+        window.dispatchEvent(new Event("resize"));
+      });
+      // img
+      let img = document.createElement("img");
+      img.classList.add("code-more-img");
+      img.src = "{{ .Site.Home.Permalink }}icons/codeMore.png";
+      // 元素添加
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox);
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    // 除了Stack脚本初始化外，添加你需要重新初始化的脚本
+    initCodeMoreBox();
+  });
+  initCodeMoreBox();
+</script>
+
+<div id="particles-js"></div>
+
+<script src="{{ .Site.Home.Permalink }}background/particles.min.js"></script>
+<script>
+  particlesJS.load(
+    "particles-js",
+    "{{ .Site.Home.Permalink }}background/particlesjs-config.json",
+    function () {
+      console.log("particles.js loaded - callback");
+    }
+  );
+</script>
+
+<style>
+  #particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+  }
+</style>
+
+<style>
+  #TableOfContents > ul,
+  ol {
+    ul,
+    ol {
+      display: none;
+    }
+    .open {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  function initTocHide() {
+    // 判断是否存在文章目录
+    let toc = document.querySelector(".widget--toc");
+    if (!toc) {
+      return;
+    }
+    // 监听滚动
+    window.addEventListener("scroll", function () {
+      //清除class值
+      let openUl = document.querySelectorAll(".open");
+      if (openUl.length > 0) {
+        openUl.forEach((ul) => {
+          ul.classList.remove("open");
+        });
+      }
+      // 获取active-class
+      let currentLi = document.querySelector(".active-class");
+      if (!currentLi) {
+        return;
+      }
+      // 展示子ul
+      if (currentLi.children.length > 1) {
+        currentLi.children[1].classList.add("open");
+      }
+      // 展示父ul
+      let ul = currentLi.parentElement;
+      do {
+        ul.classList.add("open");
+        ul = ul.parentElement.parentElement;
+      } while (ul !== undefined && (ul.localName === "ul" || ul.localName === "ol"));
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    // 除了Stack脚本初始化外，添加你需要重新初始化的脚本
+    initTocHide();
+  });
+  initTocHide();
+</script>
+
+<style>
+  @font-face {
+    font-family: "AlibabaPuHuiTi-3-65-Medium";
+    src: url({{(resources.Get "font/AlibabaPuHuiTi-3-65-Medium.ttf").Permalink}})
+      format("truetype");
+  }
+
+  :root {
+    --base-font-family: "AlibabaPuHuiTi-3-65-Medium";
+    --code-font-family: "AlibabaPuHuiTi-3-65-Medium";
+  }
+</style>
+
+<style>
+  #backTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    z-index: 99;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-image: url("{{ .Site.Home.Permalink }}icons/backTop.svg");
+  }
+</style>
+
+<script>
+  /**
+   * 滚动回顶部初始化
+   */
+  function initScrollTop() {
+    let rightSideBar = document.querySelector(".right-sidebar");
+    if (!rightSideBar) {
+      return;
+    }
+    // 添加返回顶部按钮到右侧边栏
+    let btn = document.createElement("div");
+    btn.id = "backTopBtn";
+    btn.onclick = backToTop;
+    rightSideBar.appendChild(btn);
+    // 滚动监听
+    window.onscroll = function () {
+      // 当网页向下滑动 20px 出现"返回顶部" 按钮
+      if (
+        document.body.scrollTop > 20 ||
+        document.documentElement.scrollTop > 20
+      ) {
+        btn.style.display = "block";
+      } else {
+        btn.style.display = "none";
+      }
+    };
+  }
+
+  /**
+   * 返回顶部
+   */
+  function backToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.addEventListener("pjax:complete", () => {
+    // 除了Stack脚本初始化外，添加你需要重新初始化的脚本
+    initScrollTop();
+  });
+  initScrollTop();
+</script>
+
+<div class="js-Pjax">
+  {{ if and .Site.Params.comments.enabled (eq .Type "post") }}
+  <!-- 假设文章类型是 post -->
+  <script>
+    (function () {
+      const script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.setAttribute("data-repo", "Lingjia007/Lingjia007.github.io");
+      script.setAttribute("data-repo-id", "R_kgDOOF76VQ");
+      script.setAttribute("data-category", "Announcements");
+      script.setAttribute("data-category-id", "DIC_kwDOOF76Vc4Cn2FU");
+      script.setAttribute("data-mapping", "pathname");
+      script.setAttribute("data-reactions-enabled", "1");
+      script.setAttribute("data-emit-metadata", "0");
+      script.setAttribute("data-input-position", "top");
+      script.setAttribute("data-theme", "light");
+      script.setAttribute("data-lang", "zh-CN");
+      script.setAttribute("data-loading", "lazy");
+      script.setAttribute("crossorigin", "anonymous");
+      script.async = true;
+
+      const container =
+        document.querySelector("main.full-width") ||
+        document.querySelector("main");
+      if (container) {
+        container.appendChild(script);
+      }
+    })();
+  </script>
+  {{ end }}
+</div>
