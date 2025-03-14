@@ -568,35 +568,7 @@
   initScrollTop();
 </script>
 
-<div class="js-Pjax2">
-  <!-- 访问统计容器 -->
-  <script>
-    (function() {
-      // 动态加载 vercount 脚本
-      const verScript = document.createElement('script');
-      verScript.defer = true;
-      verScript.src = 'https://cn.vercount.one/js';
-      document.body.appendChild(verScript);
 
-      // 显示/隐藏逻辑
-      function showHideView() {
-        const viewCounts = document.querySelectorAll("#viewCount");
-        if (viewCounts) {
-          const isArticle = !!document.querySelector(".article-page");
-          viewCounts.forEach(ele => {
-            ele.style.display = isArticle ? '' : 'none';
-          });
-        }
-      }
-      // 初始化执行
-      showHideView();
-      // PJAX 完成后重新执行
-      document.addEventListener('pjax:complete', function() {
-        showHideView();
-      });
-    })();
-  </script>
-</div>
 
 <div class="js-Pjax">
   {{ if and .Site.Params.comments.enabled (eq .Type "post") }}
