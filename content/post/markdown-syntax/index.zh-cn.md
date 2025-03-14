@@ -2,7 +2,7 @@
 author = "Hugo Authors"
 title = "Markdown语法示例"
 date = "2025-03-11"
-description = "示例文章展示了HTML元素的基本Markdown语法和格式."
+description = "示例文章展示了HTML元素的基本Markdown语法和格式。"
 tags = [
     "markdown",
     "css",
