@@ -2,25 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Categories on lingsir007</title>
-        <link>http://localhost:11166/zh-hk/categories/</link>
+        <link>http://localhost:2110/zh-hk/categories/</link>
         <description>Recent content in Categories on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-hk</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Mon, 11 Mar 2019 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:11166/zh-hk/categories/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>Syntax</title>
-        <link>http://localhost:11166/zh-hk/categories/syntax/</link>
-        <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate>
+        <lastBuildDate>Thu, 13 Mar 2025 17:59:28 +0800</lastBuildDate><atom:link href="http://localhost:2110/zh-hk/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>主題</title>
+        <link>http://localhost:2110/zh-hk/categories/%E4%B8%BB%E9%A1%8C/</link>
+        <pubDate>Tue, 11 Mar 2025 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:11166/zh-hk/categories/syntax/</guid>
+        <guid>http://localhost:2110/zh-hk/categories/%E4%B8%BB%E9%A1%8C/</guid>
         <description></description>
         </item>
         <item>
-        <title>Themes</title>
-        <link>http://localhost:11166/zh-hk/categories/themes/</link>
-        <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate>
+        <title>語法</title>
+        <link>http://localhost:2110/zh-hk/categories/%E8%AA%9E%E6%B3%95/</link>
+        <pubDate>Tue, 11 Mar 2025 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:11166/zh-hk/categories/themes/</guid>
+        <guid>http://localhost:2110/zh-hk/categories/%E8%AA%9E%E6%B3%95/</guid>
         <description></description>
         </item>
         

@@ -1,96 +1,102 @@
 +++
 author = "Hugo Authors"
-title = "Markdown Syntax Guide"
-date = "2019-03-11"
-description = "Sample article showcasing basic Markdown syntax and formatting for HTML elements."
+title = "Markdown語法示例"
+date = "2025-03-11"
+description = "示範文章展示了HTML元素的基本Markdown語法和格式。"
 tags = [
     "markdown",
     "css",
     "html",
-    "themes",
+    "主題",
 ]
 categories = [
-    "themes",
-    "syntax",
+    "主題",
+    "語法",
 ]
 series = ["Themes Guide"]
 aliases = ["migrate-from-jekyl"]
 image = "pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg"
 +++
 
-This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.
+本文提供了一個可以在 Hugo 內容檔案中使用的基本 Markdown 語法示例，還展示了基本 HTML 元素是否在 Hugo 主題中用 CSS 裝飾。
+
 <!--more-->
 
-## Headings
+## 標題
 
-The following HTML `<h1>`—`<h6>` elements represent six levels of section headings. `<h1>` is the highest section level while `<h6>` is the lowest.
+下面的 HTML `<h1>`—`<h6>` 元素表示六個級別的節標題 `<h1>` 是最高的節級別，而 `<h6>` 是最低的節級別。
 
 # H1
+
 ## H2
+
 ### H3
+
 #### H4
+
 ##### H5
+
 ###### H6
 
-## Paragraph
+## 段落
 
-Xerum, quo qui aut unt expliquam qui dolut labo. Aque venitatiusda cum, voluptionse latur sitiae dolessi aut parist aut dollo enim qui voluptate ma dolestendit peritin re plis aut quas inctum laceat est volestemque commosa as cus endigna tectur, offic to cor sequas etum rerum idem sintibus eiur? Quianimin porecus evelectur, cum que nis nust voloribus ratem aut omnimi, sitatur? Quiatem. Nam, omnis sum am facea corem alique molestrunt et eos evelece arcillit ut aut eos eos nus, sin conecerem erum fuga. Ri oditatquam, ad quibus unda veliamenimin cusam et facea ipsamus es exerum sitate dolores editium rerore eost, temped molorro ratiae volorro te reribus dolorer sperchicium faceata tiustia prat.
+一個傷害我的靈魂。當水來的時候，它是冷的還是冷的，或者是冷的或冷的，因為你想要受苦的娃娃因為或多或少的牛奶而丟失了，你想用身體上沉重的負擔來安慰自己。你認為下一件事是你的嗎？當下一代想要血液或一切時，他們會發生什麼？安靜。因為我在別人眼前都是這樣做的，他們將被迫這樣做，以致於他們無法做到，如果我打敗他們，他們就會逃跑。我討厭我掀起波瀾，讓你遭受版本的痛苦，但我希望你遭受希望的痛苦。
 
-Itatur? Quiatae cullecum rem ent aut odis in re eossequodi nonsequ idebis ne sapicia is sinveli squiatum, core et que aut hariosam ex eat.
+義大利？廚房裡有很多東西或對他們的仇恨，所以我不知道他們喜歡吃什麼，或者他們喜歡吃些什麼。
 
-## Blockquotes
+## 塊引用
 
-The blockquote element represents content that is quoted from another source, optionally with a citation which must be within a `footer` or `cite` element, and optionally with in-line changes such as annotations and abbreviations.
+塊引用元素表示從另一個來源引用的內容，可以選擇引用必須在「footer」或「cite」元素內，也可以選擇內聯更改，如註釋和縮寫。
 
-#### Blockquote without attribution
+#### 無歸屬塊引用
 
-> Tiam, ad mint andaepu dandae nostion secatur sequo quae.
-> **Note** that you can use *Markdown syntax* within a blockquote.
+> Tiam，ad mint，epu 和 noise 依次排列。
+> **注意**您可以在塊引用中使用\_Markdown 語法。
 
-#### Blockquote with attribution
+#### 歸屬塊引用
 
-> Don't communicate by sharing memory, share memory by communicating.<br>
-> — <cite>Rob Pike[^1]</cite>
+> 不要通過分享記憶來交流，要通過交流來分享記憶。<br>
+> — <cite>羅伯·皮克[^1]</cite>
 
 [^1]: The above quote is excerpted from Rob Pike's [talk](https://www.youtube.com/watch?v=PAAkCSZUG1c) during Gopherfest, November 18, 2015.
 
-## Tables
+## 表格
 
-Tables aren't part of the core Markdown spec, but Hugo supports supports them out-of-the-box.
+表格不是核心 Markdown 規範的一部分，但 Hugo 支持開箱即用。
 
-   Name | Age
---------|------
-    Bob | 27
-  Alice | 23
+| 姓名  | 年齡 |
+| ----- | ---- |
+| Bob   | 27   |
+| Alice | 23   |
 
-#### Inline Markdown within tables
+#### 表中的內聯 Markdown
 
 | Italics   | Bold     | Code   |
-| --------  | -------- | ------ |
-| *italics* | **bold** | `code` |
+| --------- | -------- | ------ |
+| _italics_ | **bold** | `code` |
 
-| A                                                        | B                                                                                                             | C                                                                                                                                    | D                                                 | E                                                          | F                                                                    |
-|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|------------------------------------------------------------|----------------------------------------------------------------------|
-| Lorem ipsum dolor sit amet, consectetur adipiscing elit. | Phasellus ultricies, sapien non euismod aliquam, dui ligula tincidunt odio, at accumsan nulla sapien eget ex. | Proin eleifend dictum ipsum, non euismod ipsum pulvinar et. Vivamus sollicitudin, quam in pulvinar aliquam, metus elit pretium purus | Proin sit amet velit nec enim imperdiet vehicula. | Ut bibendum vestibulum quam, eu egestas turpis gravida nec | Sed scelerisque nec turpis vel viverra. Vivamus vitae pretium sapien |
+| A                                    | B                                                    | C                                                                                                                              | D                              | E                                | F                                |
+| ------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ | -------------------------------- | -------------------------------- |
+| 當他痛苦的時候，他被認為是有幫助的。 | 愚者比愚者更聰明，愚者比愚昧者更令人憎恨，無人知曉。 | 當他當選時，他對自己說：「我不會去塵土，我也不會去塵土。」我們生活在一種擔憂的狀態中，但在一種塵土的狀態下，害怕買到乾淨的價格 | 他想去那裡，因為他不指揮汽車。 | 喝一件你需要穿的衣服，而不是穿。 | 但你錯了，你錯了。生活值得學習。 |
 
-## Code Blocks
+## 程式碼塊
 
-#### Code block with backticks
+#### 帶有反引號的程式碼塊
 
 ```html
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Example HTML5 Document</title>
-</head>
-<body>
-  <p>Test</p>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Example HTML5 Document</title>
+  </head>
+  <body>
+    <p>Test</p>
+  </body>
 </html>
 ```
 
-#### Code block indented with four spaces
+#### 四個空格縮進的程式碼塊
 
     <!doctype html>
     <html lang="en">
@@ -103,8 +109,10 @@ Tables aren't part of the core Markdown spec, but Hugo supports supports them ou
     </body>
     </html>
 
-#### Code block with Hugo's internal highlight shortcode
+#### 帶有 Hugo 內部高亮短代碼的程式碼塊
+
 {{< highlight html >}}
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -117,7 +125,7 @@ Tables aren't part of the core Markdown spec, but Hugo supports supports them ou
 </html>
 {{< /highlight >}}
 
-#### Diff code block
+#### 差異程式碼塊
 
 ```diff
 [dependencies.bevy]
@@ -127,31 +135,33 @@ rev = "11f52b8c72fc3a568e8bb4a4cd1f3eb025ac2e13"
 + features = ["jpeg", "dynamic"]
 ```
 
-## List Types
+## 清單類型
 
-#### Ordered List
+#### 有序清單
 
-1. First item
-2. Second item
-3. Third item
+1. 第一項
+2. 第二項
+3. 第三項
 
-#### Unordered List
+#### 無序清單
 
-* List item
-* Another item
-* And another item
+- 清單項目
+- 另一個項目
+- 再另一個項目
 
-#### Nested list
+#### 嵌套清單
 
-* Fruit
-  * Apple
-  * Orange
-  * Banana
-* Dairy
-  * Milk
-  * Cheese
+- 水果
 
-## Other Elements — abbr, sub, sup, kbd, mark
+  - 蘋果
+  - 橙子
+  - 香蕉
+
+- 乳製品
+  - 牛奶
+  - 起司
+
+## 其他元素 —— 縮寫、下標、上標、鍵盤輸入、標記
 
 <abbr title="Graphics Interchange Format">GIF</abbr> is a bitmap image format.
 
@@ -163,6 +173,7 @@ Press <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>Delete</kbd> to end the session.
 
 Most <mark>salamanders</mark> are nocturnal, and hunt for insects, worms, and other small creatures.
 
-## Hyperlinked image
+## 帶超鏈接的圖片
 
+請切換黑色主題
 [![Google](https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png)](https://google.com)
