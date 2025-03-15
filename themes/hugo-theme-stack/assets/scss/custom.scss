@@ -1,5 +1,6 @@
 @import "aplayer-light.scss";
 @import "aplayer-dark.scss";
+
 #dark-mode-toggle {
     margin-bottom: 60px;
 }
@@ -8,7 +9,7 @@
     .article-list--compact {
         display: grid;
         // 目前是两列，如需三列，则后面再加一个1fr，以此类推
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
         background: none;
         box-shadow: none;
         gap: 1rem;
@@ -40,6 +41,7 @@
     margin-top: -10px;
     margin-bottom: 10px;
 }
+
 // 【Stack主题鼠标样式写法】
 // default光标图片
 body,
