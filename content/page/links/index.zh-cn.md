@@ -11,7 +11,7 @@ links:
     image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
   - title: DeepSeek
     description: DeepSeek辅助代码实现
-    website: https://www.deepseek.ai
+    website: https://www.deepseek.com
     image: deepseek.png
   
 menu:

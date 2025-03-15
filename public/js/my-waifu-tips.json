@@ -160,6 +160,13 @@
       ]
     },
     {
+      "selector": "#i18n-switch",
+      "text": [
+        "点击切换语言哦。",
+        "支持简体中文，繁体中文和英文哦！"
+      ]
+    },
+    {
       "selector": "#dark-mode-toggle",
       "text": [
         "点击切换主题颜色哦。",

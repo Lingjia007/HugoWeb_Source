@@ -2,21 +2,21 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <sitemap>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-cn/sitemap.xml</loc>
+    <loc>http://localhost:4371/Hugo_Web/zh-cn/sitemap.xml</loc>
+    
+      <lastmod>2025-03-15T18:29:05+08:00</lastmod>
+    
+  </sitemap>
+  
+  <sitemap>
+    <loc>http://localhost:4371/Hugo_Web/zh-hk/sitemap.xml</loc>
     
       <lastmod>2025-03-15T16:54:42+08:00</lastmod>
     
   </sitemap>
   
   <sitemap>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/sitemap.xml</loc>
-    
-      <lastmod>2025-03-15T16:54:42+08:00</lastmod>
-    
-  </sitemap>
-  
-  <sitemap>
-    <loc>https://lingjia007.github.io/Hugo_Web/en/sitemap.xml</loc>
+    <loc>http://localhost:4371/Hugo_Web/en/sitemap.xml</loc>
     
       <lastmod>2025-03-15T16:54:42+08:00</lastmod>
     
