@@ -8,8 +8,7 @@
 @media (min-width: 1024px) {
     .article-list--compact {
         display: grid;
-        // 目前是两列，如需三列，则后面再加一个1fr，以此类推
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
         background: none;
         box-shadow: none;
         gap: 1rem;
@@ -21,6 +20,22 @@
             margin-bottom: 8px;
             margin-right: 8px;
             border-radius: 16px;
+            /* 新增悬停效果相关代码 */
+            transform-origin: center;
+            /* 设置变换原点为中心 */
+            transition: transform 0.2s ease-in-out;
+            /* 添加过渡动画 */
+            position: relative;
+            /* 为z-index生效 */
+            z-index: 1;
+            /* 防止放大时被其他元素遮挡 */
+
+            &:hover {
+                transform: scale(1.03);
+                /* 放大比例 */
+                z-index: 2;
+                /* 悬停时置于上层 */
+            }
         }
     }
 }
@@ -69,4 +84,158 @@ input:hover,
 .article-content p {
     cursor: url(../mouse/text.png),
         auto;
+}
+
+@mixin hover-elevate-effect {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: transform;
+    transition:
+        transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+        filter 0.3s linear,
+        box-shadow 0.3s ease;
+
+    &:hover {
+        transform: scale(1.06) translateZ(4px) translateY(-2px);
+        filter: drop-shadow(1px 2px 6px rgba(0, 0, 0, 0.1)) brightness(1.02);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    }
+}
+
+.article-category {
+    a {
+        @include hover-elevate-effect;
+        transition-delay: 0.02s; // 统一延迟
+        padding: 0.5em 1em;
+        border-radius: 0.38em;
+    }
+}
+
+.tagCloud-tags {
+    a {
+        @include hover-elevate-effect;
+        transition-delay: 0.02s; // 与分类导航一致
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+        // 如果需要保留递增延迟但保持速度一致，可以保留循环但确保持续时间不被覆盖
+        @for $i from 1 through 8 {
+            &:nth-child(#{$i}) {
+                transition-delay: ($i * 0.015) + s;
+                z-index: $i;
+            }
+        }
+    }
+}
+
+/*━━ 导航菜单悬停动画 ━━*/
+#main-menu {
+
+    // 菜单项基础样式
+    li:not(.menu-bottom-section)>a {
+        position: relative;
+        transition:
+            transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+            color 0.3s ease;
+
+        // 图标与文字容器
+        >svg,
+        >span {
+            transition:
+                transform 0.3s ease,
+                opacity 0.2s linear;
+        }
+
+        // 图标动画
+        >svg {
+            transform: translateY(0);
+        }
+
+        // 文字动画
+        >span {
+            display: inline-block;
+            transform: translateY(0);
+        }
+
+        // 悬停状态
+        &:hover {
+            color: var(--accent-color) !important;
+
+            // 图标上浮并放大
+            >svg {
+                transform: translateY(-3px) rotateZ(2deg) scale(1.05);
+                filter: drop-shadow(0 2px 4px rgba(var(--accent-color-rgb), 0.3));
+            }
+
+            // 文字上移并放大
+            >span {
+                transform: translateY(-3px) scale(1.05);
+                text-shadow: 0 2px 4px rgba(var(--accent-color-rgb), 0.3);
+            }
+        }
+    }
+
+    // 当前选中项优化
+    .current>a {
+        &::after {
+            background: var(--accent-color) !important;
+            opacity: 0.8;
+        }
+    }
+}
+
+/* 原始通用效果（所有页面生效） */
+.article-image img {
+    transition: transform 0.4s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+    transform-origin: center;
+    will-change: transform;
+}
+
+a[data-pjax-state]:hover img {
+    transform: scale(1.036);
+    filter: brightness(1.005);
+}
+
+/* 特定页面禁用效果（仅 article-page 页面生效） */
+body.article-page .article-image img {
+    transition: none !important;
+    /* 强制禁用动画 */
+    transform: none !important;
+    /* 清除默认缩放 */
+    will-change: auto !important;
+    /* 移除性能优化 */
+    filter: none !important;
+    /* 清除亮度滤镜 */
+}
+
+body.article-page .article-image:hover img,
+body.article-page a[data-pjax-state]:hover img {
+    transform: none !important;
+    /* 强制悬停时无缩放 */
+    filter: none !important;
+    /* 强制悬停时无亮度变化 */
+}
+
+.archives-year a {
+    display: inline-block;
+    /* 必须设置为块级才能应用transform */
+    transition: transform 0.2s ease;
+    transform-origin: center;
+    /* 根据排版选择变换原点 */
+
+    &:hover {
+        transform: scale(1.036);
+
+        /* 可选文字颜色变化 */
+        .year,
+        .count {
+            color: var(--primary-color);
+        }
+    }
+
+    .year,
+    .count {
+        transition: color 0.2s ease;
+        /* 文字颜色过渡 */
+    }
 }
