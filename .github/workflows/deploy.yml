@@ -50,7 +50,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           PERSONAL_TOKEN: ${{ secrets.TOKEN }} # 你的个人访问令牌
-          EXTERNAL_REPOSITORY: Lingjia007/Lingjia007.github.io # 你的GitHub Pages仓库
+          EXTERNAL_REPOSITORY: Lingjia007/Hugo_Web # 你的GitHub Pages仓库
           PUBLISH_BRANCH: master # 或者是你的GitHub Pages分支
           PUBLISH_DIR: ./
           commit_message: ${{ github.event.head_commit.message }}

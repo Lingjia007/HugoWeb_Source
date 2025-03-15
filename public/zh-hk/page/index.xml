@@ -2,25 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Pages on lingsir007</title>
-        <link>http://localhost:10896/zh-hk/page/</link>
+        <link>http://localhost:13719/zh-hk/page/</link>
         <description>Recent content in Pages on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-hk</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Thu, 13 Mar 2025 17:59:28 +0800</lastBuildDate><atom:link href="http://localhost:10896/zh-hk/page/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 13 Mar 2025 17:59:28 +0800</lastBuildDate><atom:link href="http://localhost:13719/zh-hk/page/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>歸檔</title>
-        <link>http://localhost:10896/zh-hk/archives/</link>
+        <link>http://localhost:13719/zh-hk/archives/</link>
         <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:10896/zh-hk/archives/</guid>
+        <guid>http://localhost:13719/zh-hk/archives/</guid>
         <description></description>
         </item>
         <item>
         <title>友情鏈接</title>
-        <link>http://localhost:10896/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</link>
+        <link>http://localhost:13719/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:10896/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</guid>
+        <guid>http://localhost:13719/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</guid>
         <description>&lt;p&gt;To use this feature, add &lt;code&gt;links&lt;/code&gt; section to frontmatter.&lt;/p&gt;
 &lt;p&gt;This page&amp;rsquo;s frontmatter:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -52,18 +52,18 @@
         </item>
         <item>
         <title>搜尋</title>
-        <link>http://localhost:10896/zh-hk/search/</link>
+        <link>http://localhost:13719/zh-hk/search/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:10896/zh-hk/search/</guid>
+        <guid>http://localhost:13719/zh-hk/search/</guid>
         <description></description>
         </item>
         <item>
         <title>關於</title>
-        <link>http://localhost:10896/zh-hk/%E9%97%9C%E6%96%BC/</link>
+        <link>http://localhost:13719/zh-hk/%E9%97%9C%E6%96%BC/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:10896/zh-hk/%E9%97%9C%E6%96%BC/</guid>
+        <guid>http://localhost:13719/zh-hk/%E9%97%9C%E6%96%BC/</guid>
         <description>&lt;p&gt;This is a test page for i18n support.&lt;/p&gt;
 </description>
         </item>
