@@ -89,7 +89,7 @@
 <script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
 <script>
   var pjax = new Pjax({
-    selectors: [".main-container", ".js-Pjax"],
+    selectors: [".main-container", ".js-Pjax1", ".js-Pjax2"],
   });
 </script>
 
@@ -568,9 +568,37 @@
   initScrollTop();
 </script>
 
+<div class="js-Pjax2">
+  <!-- 访问统计容器 -->
+  <script>
+    (function() {
+      // 动态加载 vercount 脚本
+      const verScript = document.createElement('script');
+      verScript.defer = true;
+      verScript.src = 'https://cn.vercount.one/js';
+      document.body.appendChild(verScript);
 
+      // 显示/隐藏逻辑
+      function showHideView() {
+        const viewCounts = document.querySelectorAll("#viewCount");
+        if (viewCounts) {
+          const isArticle = !!document.querySelector(".article-page");
+          viewCounts.forEach(ele => {
+            ele.style.display = isArticle ? '' : 'none';
+          });
+        }
+      }
+      // 初始化执行
+      showHideView();
+      // PJAX 完成后重新执行
+      document.addEventListener('pjax:complete', function() {
+        showHideView();
+      });
+    })();
+  </script>
+</div>
 
-<div class="js-Pjax">
+<div class="js-Pjax1">
   {{ if and .Site.Params.comments.enabled (eq .Type "post") }}
   <!-- 假设文章类型是 post -->
   <script>
@@ -591,12 +619,21 @@
       script.setAttribute("crossorigin", "anonymous");
       script.async = true;
 
-      const container =
-        document.querySelector("main.full-width") ||
-        document.querySelector("main");
-      if (container) {
+      // 查找目标容器
+    const container = document.querySelector("main.full-width") || document.querySelector("main");
+
+    if (container) {
+      // 获取容器内的所有子元素
+      const children = Array.from(container.children);
+
+      // 如果容器内有至少一个元素，则在第二个位置插入脚本
+      if (children.length >= 1) {
+        container.insertBefore(script, children[1]);
+      } else {
+        // 否则直接追加到最后
         container.appendChild(script);
       }
+    }
     })();
   </script>
   {{ end }}
