@@ -94,7 +94,7 @@ params:
       adminLabel:
 
     utterances:
-      repo: "Lingjia007/Lingjia007.github.io"
+      repo: "Lingjia007/Hugo_Web"
       issueTerm: pathname
       label:
 
@@ -145,11 +145,11 @@ params:
       siteName: "" # You must insert a unique identifier here matching the one you registered (See https://cactus.chat/docs/getting-started/quick-start/#register-your-site)
 
     giscus:
-      repo: "Lingjia007/Lingjia007.github.io" # 替换为你自己的GitHub仓库路径
+      repo: "Lingjia007/Hugo_Web" # 替换为你自己的GitHub仓库路径
       repoId: "R_kgDOOH5NOA" # 你的仓库ID
       category: "Announcements" # 讨论类别
       categoryId: "DIC_kwDOOH5NOM4Cn-zx" # 讨论类别ID
-      mapping: "pathname" # 可以是"url", "title", 或 "pathname"
+      mapping: "title" # 可以是"url", "title", 或 "pathname"
       reactionsEnabled: "1" # 启用反应按钮
       emitMetadata: "0" # 是否发送元数据
       inputPosition: "top" # 输入框位置
