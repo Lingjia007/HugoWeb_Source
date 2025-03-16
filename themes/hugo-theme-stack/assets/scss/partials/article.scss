@@ -79,6 +79,7 @@
     line-height: 1.5;
     margin: 0;
     font-size: 1.75rem;
+
     @include respond(xl) {
         font-size: 2rem;
     }
@@ -110,7 +111,7 @@
         color: var(--card-text-color-tertiary);
     }
 
-    & > div {
+    &>div {
         display: inline-flex;
         align-items: center;
         gap: 15px;
@@ -122,7 +123,7 @@
 }
 
 .article-translations {
-    & > div {
+    &>div {
         flex-wrap: wrap;
     }
 }
@@ -161,7 +162,7 @@
     }
 
     article {
-        & > a {
+        &>a {
             display: flex;
             align-items: center;
             padding: var(--small-card-padding);
@@ -274,5 +275,14 @@
                 font-size: 2.2rem;
             }
         }
+    }
+}
+
+.article-subtitle {
+    margin-top: -5px;
+    font-size: 1.5rem;
+
+    @include respond(md) {
+        font-size: 1.6rem;
     }
 }

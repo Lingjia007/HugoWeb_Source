@@ -71,3 +71,15 @@ footer:
 
     designedBy:
         other: Theme {{ .Theme }} designed by {{ .DesignedBy }}
+
+# 英文
+articleCount: "{{ .Count }}"
+
+runningTimetext: "This website has been running stably"
+
+day: "d "
+hour: "h "
+minute: "m "
+
+postTotle: "A total of "
+postTotalText: " articles"

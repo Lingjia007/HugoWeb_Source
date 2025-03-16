@@ -7,7 +7,10 @@
         {{ end }}
         {{ now.Format "2006" }} {{ default .Site.Title .Site.Copyright }}
     </section>
-    
+    <!-- Add blog running time -->
+    <section class="running-time">
+        {{ T "runningTimetext" }}&nbsp;<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;{{ T "postTotle" }}<span id="articleCount"><{{ T "articleCount" (dict "Count" (len (where .Site.RegularPages "Section" "post"))) }}></span>{{ T "postTotalText" }}
+    </section>
     <section class="powerby">
         {{ with .Site.Params.footer.customText }}
             {{ . | safeHTML }} <br/>

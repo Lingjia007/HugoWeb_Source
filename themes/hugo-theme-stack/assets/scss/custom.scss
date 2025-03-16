@@ -78,7 +78,7 @@ button:hover,
 // text光标图片
 input:hover,
 .site-description,
-.article-subtitle,
+.article-subtitle span,
 .article-content span,
 .article-content li,
 .article-content p {
@@ -101,30 +101,23 @@ input:hover,
         filter: drop-shadow(1px 2px 6px rgba(0, 0, 0, 0.1)) brightness(1.02);
         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
     }
+
+    // 新增点击动画
+    &:active {
+        transform: scale(0.96) translateZ(2px) translateY(1px); // 📌 按压缩小效果
+        filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.08)) brightness(0.98); // 📌 降低亮度
+        transition:
+            transform 0.2s cubic-bezier(0.87, 0, 0.13, 1), // 📌 更快的按压动画
+            filter 0.15s linear;
+    }
 }
 
 .article-category {
     a {
         @include hover-elevate-effect;
         transition-delay: 0.02s; // 统一延迟
-        padding: 0.5em 1em;
+        padding: 0.5em 1.1em;
         border-radius: 0.38em;
-    }
-}
-
-.tagCloud-tags {
-    a {
-        @include hover-elevate-effect;
-        transition-delay: 0.02s; // 与分类导航一致
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
-        // 如果需要保留递增延迟但保持速度一致，可以保留循环但确保持续时间不被覆盖
-        @for $i from 1 through 8 {
-            &:nth-child(#{$i}) {
-                transition-delay: ($i * 0.015) + s;
-                z-index: $i;
-            }
-        }
     }
 }
 
@@ -172,6 +165,10 @@ input:hover,
                 transform: translateY(-3px) scale(1.05);
                 text-shadow: 0 2px 4px rgba(var(--accent-color-rgb), 0.3);
             }
+        }
+
+        &:active {
+            transform: translateY(6px); // 比点击状态多3px
         }
     }
 
@@ -237,5 +234,67 @@ body.article-page a[data-pjax-state]:hover img {
     .count {
         transition: color 0.2s ease;
         /* 文字颜色过渡 */
+    }
+}
+
+.running-time {
+    color: var(--card-text-color-secondary);
+    font-weight: normal;
+}
+
+#runningdays,
+#articleCount {
+    font-weight: bold;
+    color: var(--emphasize-text-color);
+}
+
+.site-avatar {
+    position: relative;
+    display: inline-block;
+    width: 300px;
+    height: 300px;
+
+    a {
+        display: block;
+        overflow: hidden;
+        border-radius: 50%;
+        width: 100%;
+        height: 100%;
+        /* 保持原有圆形裁剪 */
+    }
+
+    .site-logo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        /* 同步参数 */
+        transform-origin: center;
+        /* 中心缩放 */
+        will-change: transform;
+    }
+
+    /* 表情符号定位保持外部 */
+    .emoji {
+        position: absolute;
+        bottom: -10px;
+        right: -10px;
+        z-index: 2;
+        font-size: 2em;
+        pointer-events: none;
+    }
+
+    /* 同步悬停效果 */
+    &:hover .site-logo {
+        transform: scale(1.036);
+        /* 精确匹配缩放值 */
+        filter: brightness(1.005);
+        /* 同步亮度微调 */
+    }
+
+    /* 可选：如果需要保持点击反馈 */
+    &:active .site-logo {
+        transform: scale(0.98);
+        transition-duration: 0.2s;
     }
 }

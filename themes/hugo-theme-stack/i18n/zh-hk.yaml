@@ -71,3 +71,15 @@ footer:
 
   designedBy:
     other: 主題 {{ .Theme }} 由 {{ .DesignedBy }} 設計
+
+# 中文
+articleCount: "{{ .Count }}"
+
+runningTimetext: "本網站已穩定運行"
+
+day: "天"
+hour: "小時"
+minute: "分鐘"
+
+postTotle: "總計"
+postTotalText: "篇文章"

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-hk" dir="ltr">
-    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=10078&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=13617&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="">
 <title>歸檔</title>
 
-<link rel='canonical' href='http://localhost:10078/Hugo_Web/zh-hk/archives/'>
+<link rel='canonical' href='http://localhost:13617/Hugo_Web/zh-hk/archives/'>
 
-<link rel="stylesheet" href="/Hugo_Web/scss/style.min.57ee9d13c39f55fcfdc82ff17c4b9f7c849ba2da9b6ddb7e84a585ff962a316f.css"><meta property='og:title' content="歸檔">
+<link rel="stylesheet" href="/Hugo_Web/scss/style.min.a036541ba12647857f01dfe6a83f97094d8a8a8058f9c70a3798154d65bad033.css"><meta property='og:title' content="歸檔">
 <meta property='og:description' content="">
-<meta property='og:url' content='http://localhost:10078/Hugo_Web/zh-hk/archives/'>
+<meta property='og:url' content='http://localhost:13617/Hugo_Web/zh-hk/archives/'>
 <meta property='og:site_name' content='lingsir007'>
 <meta property='og:type' content='article'><meta property='article:section' content='Page' /><meta property='article:published_time' content='2019-05-28T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-03-13T17:59:28&#43;08:00'/>
 <meta name="twitter:title" content="歸檔">
@@ -231,11 +231,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="http://localhost:10078/Hugo_Web/" >简体中文</option>
+                                    <option value="http://localhost:13617/Hugo_Web/" >简体中文</option>
                                 
-                                    <option value="http://localhost:10078/Hugo_Web/zh-hk/" selected>繁體中文</option>
+                                    <option value="http://localhost:13617/Hugo_Web/zh-hk/" selected>繁體中文</option>
                                 
-                                    <option value="http://localhost:10078/Hugo_Web/en/" >English</option>
+                                    <option value="http://localhost:13617/Hugo_Web/en/" >English</option>
                                 
                             </select>
                         </li>
@@ -312,6 +312,11 @@
     <a href="/Hugo_Web/zh-hk/p/markdown%E8%AA%9E%E6%B3%95%E7%A4%BA%E4%BE%8B/">
         <div class="article-details">
             <h2 class="article-title">Markdown語法示例</h2>
+            
+                <h3 class="article-subtitle" style="user-select: none;">
+                    示範文章展示了HTML元素的基本Markdown語法和格式。
+                </h3>
+            
             <footer class="article-time">
                 <time datetime='2025-03-11T00:00:00Z'>Mar 11, 2025</time>
             </footer>
@@ -336,6 +341,9 @@
         2025 lingsir007
     </section>
     
+    <section class="running-time">
+        本博客已穩定運行&nbsp;<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;總計<span id="articleCount">&lt;1></span>篇文章
+    </section>
     <section class="powerby">
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 構建 <br />
         主題 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 設計
@@ -366,7 +374,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "http://localhost:10078/Hugo_Web/zh-hk/";
+  const staticDir = "http://localhost:13617/Hugo_Web/zh-hk/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -446,6 +454,26 @@
   });
 </script>
 
+<script>
+  
+  function calculateRunningDays(startDateStr, elementId) {
+      let s1 = new Date(startDateStr.replace(/-/g, "/"));
+      let s2 = new Date();
+      let timeDifference = s2.getTime() - s1.getTime();
+
+      let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+      let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+      let result ="<" + days + "天" + hours + "小時" + minutes + "分鐘" + ">";
+      document.getElementById(elementId).innerHTML = result;
+  }
+  document.addEventListener("pjax:complete", () => {
+    calculateRunningDays('2025-3-14', 'runningdays');
+  });
+  calculateRunningDays('2025-3-14', 'runningdays');
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
 <script>
   var pjax = new Pjax({
@@ -476,6 +504,7 @@
   document.addEventListener("pjax:complete", () => {
     
     window.Stack.init();
+    
   });
 </script>
 
@@ -515,7 +544,7 @@
   });
 </script>
 
-<script src="http://localhost:10078/Hugo_Web/zh-hk/js/topbar.min.js"></script>
+<script src="http://localhost:13617/Hugo_Web/zh-hk/js/topbar.min.js"></script>
 
 <script>
   
@@ -544,12 +573,12 @@
     
     path: {
       homePath: "/",
-      modelPath: "http:\/\/localhost:10078\/Hugo_Web\/zh-hk\/live2d-moc3/",
-      cssPath: "http:\/\/localhost:10078\/Hugo_Web\/zh-hk\/js/waifu.css",
-      tipsJsonPath: "http:\/\/localhost:10078\/Hugo_Web\/zh-hk\/js/my-waifu-tips.json",
+      modelPath: "http:\/\/localhost:13617\/Hugo_Web\/zh-hk\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:13617\/Hugo_Web\/zh-hk\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:13617\/Hugo_Web\/zh-hk\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "http:\/\/localhost:10078\/Hugo_Web\/zh-hk\/js/live2dcubismcore.js",
-      live2dSdkPath: "http:\/\/localhost:10078\/Hugo_Web\/zh-hk\/js/live2d-sdk.js",
+      live2dCorePath: "http:\/\/localhost:13617\/Hugo_Web\/zh-hk\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:13617\/Hugo_Web\/zh-hk\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -697,7 +726,7 @@
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "http:\/\/localhost:10078\/Hugo_Web\/zh-hk\/icons/codeMore.png";
+      img.src = "http:\/\/localhost:13617\/Hugo_Web\/zh-hk\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -713,11 +742,11 @@
 
 <div id="particles-js"></div>
 
-<script src="http://localhost:10078/Hugo_Web/zh-hk/background/particles.min.js"></script>
+<script src="http://localhost:13617/Hugo_Web/zh-hk/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "http:\/\/localhost:10078\/Hugo_Web\/zh-hk\/background/particlesjs-config.json",
+    "http:\/\/localhost:13617\/Hugo_Web\/zh-hk\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     }
@@ -790,7 +819,7 @@
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(http://localhost:10078/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(http://localhost:13617/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -809,7 +838,7 @@
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("http://localhost:10078/Hugo_Web/zh-hk/icons/backTop.svg");
+    background-image: url("http://localhost:13617/Hugo_Web/zh-hk/icons/backTop.svg");
   }
 </style>
 
@@ -885,7 +914,6 @@
 <div class="js-Pjax1">
   
 </div>
-
 
 
     </body>

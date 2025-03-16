@@ -133,6 +133,13 @@
       ]
     },
     {
+      "selector": "a[href='/Hugo_Web/archives/#2026']",
+      "text": [
+        "看看2026年的文章吧。",
+        "这些是2026年的文章哦！"
+      ]
+    },
+    {
       "selector": "a[href='/Hugo_Web/search/']",
       "text": [
         "找不到想看的内容？搜索看看吧！",

@@ -12,7 +12,6 @@
     }
 }
 
-/* Tag cloud widget */
 .tagCloud {
     .tagCloud-tags {
         display: flex;
@@ -26,10 +25,19 @@
             padding: 8px 20px;
             color: var(--card-text-color-main);
             font-size: 1.4rem;
-            transition: box-shadow 0.3s ease;
+            transition: all 0.3s ease;
+            /* 🎉 合并过渡属性 */
+            transform: scale(1);
+            /* 🎉 添加初始缩放值 */
 
             &:hover {
                 box-shadow: var(--shadow-l2);
+                transform: scale(1.1);
+                /* 🎉 悬停时放大10% */
+                position: relative;
+                /* 🎉 防止挤压相邻元素 */
+                z-index: 1;
+                /* 🎉 确保放大后覆盖其他元素 */
             }
         }
     }
