@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages and Netlify
+name: Deploy
 
 on:
   push:
@@ -6,23 +6,33 @@ on:
       - main
 
 jobs:
-  # 作业1：部署到 GitHub Pages（原逻辑）
-  deploy-to-gh-pages:
+  deploy-gh-pages:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
 
-      - name: Set up Hugo
+      - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: "latest"
 
-      - name: Build Hugo site
-        run: hugo -F --cleanDestinationDir
+      - name: Build for GitHub Pages
+        run: |
+          hugo -F --cleanDestinationDir
+          mkdir -p public
+          cp -r public/* ./
+
+      - name: Prepare directories
+        run: |
+          mkdir -p en zh-hk
+          cp -r static/* en/
+          cp -r static/* zh-hk/
+          cp -r assets/* en/
+          cp -r assets/* zh-hk/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -30,44 +40,67 @@ jobs:
           PERSONAL_TOKEN: ${{ secrets.TOKEN }}
           EXTERNAL_REPOSITORY: Lingjia007/Hugo_Web
           PUBLISH_BRANCH: master
-          PUBLISH_DIR: ./public
-          commit_message: ${{ github.event.head_commit.message }}
+          PUBLISH_DIR: ./
+          commit_message: "GitHub Pages: ${{ github.event.head_commit.message }}"
 
-  # 作业2：构建并推送到 Netlify 分支
-  deploy-to-netlify:
+  deploy-netlify:
+    needs: deploy-gh-pages
     runs-on: ubuntu-latest
-    permissions:
-      contents: write  # 需要写权限推送分支
     steps:
-      - name: Checkout main branch
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
-          ref: main
+          submodules: true
+          fetch-depth: 0
 
-      - name: Switch to netlify branch
-        run: git checkout -B netlify  # 强制创建/切换分支
-
-      - name: Modify hugo.yaml for Netlify
+      - name: Configure Git
         run: |
-          # 替换第一行的部署 URL
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.TOKEN }}@github.com/${{ github.repository }}
+
+      - name: Create/Checkout netlify branch
+        run: |
+          git fetch origin netlify || true
+          git checkout -b netlify origin/netlify || git checkout -b netlify
+          git merge main --no-edit --allow-unrelated-histories || true
+
+      - name: Modify baseURL
+        run: |
           sed -i '1s#https://lingjia007.github.io/Hugo_Web/#https://lingsir007.netlify.app/#' hugo.yaml
 
-      - name: Set up Hugo
-        uses: peaceiris/actions-hugo@v2
-        with:
-          hugo-version: "latest"
-
-      - name: Build Hugo site for Netlify
+      - name: Commit config changes
         run: |
-          hugo -F --cleanDestinationDir  # 生成静态文件到 public 目录
-          rm -rf ./en ./zh-hk  # 清理旧文件（如果存在）
-          cp -r public/* ./     # 将静态文件移动到根目录
+          git add hugo.yaml
+          git commit -m "Update baseURL for Netlify" || echo "No changes to commit"
+          git push origin netlify --force
 
-      - name: Push to Netlify branch
+      - name: Re-checkout netlify branch
+        uses: actions/checkout@v4
+        with:
+          ref: netlify
+          submodules: true
+          fetch-depth: 0
+
+      - name: Build for Netlify
+        run: |
+          hugo -F --cleanDestinationDir
+          mkdir -p public
+          cp -r public/* ./
+
+      - name: Prepare Netlify directories
+        run: |
+          mkdir -p en zh-hk
+          cp -r static/* en/
+          cp -r static/* zh-hk/
+          cp -r assets/* en/
+          cp -r assets/* zh-hk/
+
+      - name: Deploy to Netlify Branch
         uses: peaceiris/actions-gh-pages@v3
         with:
           PERSONAL_TOKEN: ${{ secrets.TOKEN }}
           EXTERNAL_REPOSITORY: Lingjia007/Hugo_Web
-          PUBLISH_BRANCH: netlify  # 推送到目标仓库的 netlify 分支
-          PUBLISH_DIR: ./          # 推送根目录的构建结果
-          commit_message: "Deploy to Netlify: ${{ github.sha }}"
+          PUBLISH_BRANCH: netlify
+          PUBLISH_DIR: ./
+          commit_message: "Netlify: ${{ github.event.head_commit.message }}"
