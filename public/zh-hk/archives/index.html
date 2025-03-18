@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-hk" dir="ltr">
-    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=8557&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=2466&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="">
 <title>歸檔</title>
 
-<link rel='canonical' href='http://localhost:8557/Hugo_Web/zh-hk/archives/'>
+<link rel='canonical' href='http://localhost:2466/Hugo_Web/zh-hk/archives/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.3c6c168275914e621b5bbb91865928cd75495ab3bfb21043a8a78a663124aaab.css"><meta property='og:title' content="歸檔">
 <meta property='og:description' content="">
-<meta property='og:url' content='http://localhost:8557/Hugo_Web/zh-hk/archives/'>
+<meta property='og:url' content='http://localhost:2466/Hugo_Web/zh-hk/archives/'>
 <meta property='og:site_name' content='lingsir007'>
 <meta property='og:type' content='article'><meta property='article:section' content='Page' /><meta property='article:published_time' content='2019-05-28T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-03-18T17:43:37&#43;08:00'/>
 <meta name="twitter:title" content="歸檔">
@@ -231,11 +231,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="http://localhost:8557/Hugo_Web/" >简体中文</option>
+                                    <option value="http://localhost:2466/Hugo_Web/" >简体中文</option>
                                 
-                                    <option value="http://localhost:8557/Hugo_Web/zh-hk/" selected>繁體中文</option>
+                                    <option value="http://localhost:2466/Hugo_Web/zh-hk/" selected>繁體中文</option>
                                 
-                                    <option value="http://localhost:8557/Hugo_Web/en/" >English</option>
+                                    <option value="http://localhost:2466/Hugo_Web/en/" >English</option>
                                 
                             </select>
                         </li>
@@ -342,7 +342,7 @@
     </section>
     
     <section class="running-time">
-        本網站已穩定運行&nbsp;<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;總計<span id="articleCount">&lt;1></span>篇文章
+        本網站已穩定運行&nbsp;<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;總計<span id="articleCount">&lt; 1 ></span>篇文章
     </section>
     <section class="powerby">
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 構建 <br />
@@ -383,7 +383,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "http://localhost:8557/Hugo_Web/zh-hk/";
+  const staticDir = "http://localhost:2466/Hugo_Web/zh-hk/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -473,21 +473,27 @@
 <script>
   
   function calculateRunningDays(startDateStr, elementId) {
-      let s1 = new Date(startDateStr.replace(/-/g, "/"));
-      let s2 = new Date();
-      let timeDifference = s2.getTime() - s1.getTime();
+    let s1 = new Date(startDateStr.replace(/-/g, "/"));
+    let s2 = new Date();
+    let timeDifference = s2.getTime() - s1.getTime();
 
-      let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-      let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+    let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
 
-      let result ="<" + days + "天" + hours + "小時" + minutes + "分鐘" + ">";
-      document.getElementById(elementId).innerHTML = result;
-  }
-  document.addEventListener("pjax:complete", () => {
+    
+    let dayText = "天"; 
+    let hourText = "小時";
+    let minuteText = "分鐘";
+
+    let result = `<span><${days} ${dayText} ${hours} ${hourText} ${minutes} ${minuteText}></span>`;
+    document.getElementById(elementId).innerHTML = result;
+    }
+
+    document.addEventListener("pjax:complete", () => {
+        calculateRunningDays('2025-3-14', 'runningdays');
+    });
     calculateRunningDays('2025-3-14', 'runningdays');
-  });
-  calculateRunningDays('2025-3-14', 'runningdays');
 </script>
 
 <script>
@@ -513,6 +519,7 @@
   document.addEventListener("pjax:complete", () => {
     
     window.Stack.init();
+    calculateRunningDays('2025-3-14', 'runningdays');
     
   });
 </script>
@@ -553,7 +560,7 @@
   });
 </script>
 
-<script src="http://localhost:8557/Hugo_Web/zh-hk/js/topbar.min.js"></script>
+<script src="http://localhost:2466/Hugo_Web/zh-hk/js/topbar.min.js"></script>
 
 <script>
   
@@ -582,12 +589,12 @@
     
     path: {
       homePath: "/",
-      modelPath: "http:\/\/localhost:8557\/Hugo_Web\/zh-hk\/live2d-moc3/",
-      cssPath: "http:\/\/localhost:8557\/Hugo_Web\/zh-hk\/js/waifu.css",
-      tipsJsonPath: "http:\/\/localhost:8557\/Hugo_Web\/zh-hk\/js/my-waifu-tips.json",
+      modelPath: "http:\/\/localhost:2466\/Hugo_Web\/zh-hk\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:2466\/Hugo_Web\/zh-hk\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:2466\/Hugo_Web\/zh-hk\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "http:\/\/localhost:8557\/Hugo_Web\/zh-hk\/js/live2dcubismcore.js",
-      live2dSdkPath: "http:\/\/localhost:8557\/Hugo_Web\/zh-hk\/js/live2d-sdk.js",
+      live2dCorePath: "http:\/\/localhost:2466\/Hugo_Web\/zh-hk\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:2466\/Hugo_Web\/zh-hk\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -734,7 +741,7 @@
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "http:\/\/localhost:8557\/Hugo_Web\/zh-hk\/icons/codeMore.png";
+      img.src = "http:\/\/localhost:2466\/Hugo_Web\/zh-hk\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -750,11 +757,11 @@
 
 <div id="particles-js"></div>
 
-<script src="http://localhost:8557/Hugo_Web/zh-hk/background/particles.min.js"></script>
+<script src="http://localhost:2466/Hugo_Web/zh-hk/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "http:\/\/localhost:8557\/Hugo_Web\/zh-hk\/background/particlesjs-config.json",
+    "http:\/\/localhost:2466\/Hugo_Web\/zh-hk\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     }
@@ -827,7 +834,7 @@
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(http://localhost:8557/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(http://localhost:2466/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -846,7 +853,7 @@
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("http://localhost:8557/Hugo_Web/zh-hk/icons/backTop.svg");
+    background-image: url("http://localhost:2466/Hugo_Web/zh-hk/icons/backTop.svg");
   }
 </style>
 
@@ -941,8 +948,8 @@
         
         const placeholder = document.createElement('div');
         placeholder.className = 'giscus-placeholder';
-        placeholder.style.minHeight = '160px'; 
-        placeholder.style.backgroundColor = 'transparent'; 
+        placeholder.style.minHeight = '160px';
+        placeholder.style.backgroundColor = 'transparent';
         
         
         const siteFooter = document.querySelector('.site-footer');
@@ -966,11 +973,9 @@
           placeholder.appendChild(newScript);
         }
 
-        
         reloadComments();
-
         
-        setTimeout(reloadComments, 600);
+        setTimeout(reloadComments, 700);
       })();
     </script>
   </div>

@@ -105,21 +105,27 @@
 <script>
   // 定义计算并显示运行时间的函数
   function calculateRunningDays(startDateStr, elementId) {
-      let s1 = new Date(startDateStr.replace(/-/g, "/"));
-      let s2 = new Date();
-      let timeDifference = s2.getTime() - s1.getTime();
+    let s1 = new Date(startDateStr.replace(/-/g, "/"));
+    let s2 = new Date();
+    let timeDifference = s2.getTime() - s1.getTime();
 
-      let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-      let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+    let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
 
-      let result ="<" + days + {{ T "day" }} + hours + {{ T "hour" }} + minutes + {{ T "minute" }} + ">";
-      document.getElementById(elementId).innerHTML = result;
-  }
-  document.addEventListener("pjax:complete", () => {
+    // 使用正确的字符串拼接方式，并替换模板语法为实际值
+    let dayText = {{ T "day" }}; // 替换为实际的国际化文本
+    let hourText = {{ T "hour" }};
+    let minuteText = {{ T "minute" }};
+
+    let result = `<span><${days} ${dayText} ${hours} ${hourText} ${minutes} ${minuteText}></span>`;
+    document.getElementById(elementId).innerHTML = result;
+    }
+
+    document.addEventListener("pjax:complete", () => {
+        calculateRunningDays('2025-3-14', 'runningdays');
+    });
     calculateRunningDays('2025-3-14', 'runningdays');
-  });
-  calculateRunningDays('2025-3-14', 'runningdays');
 </script>
 
 <script>
