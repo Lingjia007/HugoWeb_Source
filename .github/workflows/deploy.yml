@@ -27,11 +27,11 @@ jobs:
       # 以下复制步骤若确有必要，保留；否则建议移除
       - name: Copy static and assets (Optional)
         run: |
-          mkdir -p en zh-hk
-          cp -r static/* en/
-          cp -r static/* zh-hk/
-          cp -r assets/* en/
-          cp -r assets/* zh-hk/
+          mkdir -p public/en public/zh-hk
+          cp -r static/* public/en/
+          cp -r static/* public/zh-hk/
+          cp -r assets/* public/en/
+          cp -r assets/* public/zh-hk/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -72,11 +72,11 @@ jobs:
       # 合并复制步骤，若非必要则移除
       - name: Copy static and assets (Optional)
         run: |
-          mkdir -p en zh-hk
-          cp -r static/* en/
-          cp -r static/* zh-hk/
-          cp -r assets/* en/
-          cp -r assets/* zh-hk/
+          mkdir -p public/en public/zh-hk
+          cp -r static/* public/en/
+          cp -r static/* public/zh-hk/
+          cp -r assets/* public/en/
+          cp -r assets/* public/zh-hk/
 
       - name: Push to Netlify branch
         uses: peaceiris/actions-gh-pages@v3
