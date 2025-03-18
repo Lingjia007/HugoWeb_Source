@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy to GitHub Pages and Netlify
 
 on:
   push:
@@ -6,27 +6,26 @@ on:
       - main
 
 jobs:
-  deploy-gh-pages:
+  # 作业1：部署到 GitHub Pages
+  deploy-to-gh-pages:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
 
-      - name: Setup Hugo
+      - name: Set up Hugo
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: "latest"
 
-      - name: Build for GitHub Pages
-        run: |
-          hugo -F --cleanDestinationDir
-          mkdir -p public
-          cp -r public/* ./
+      - name: Build Hugo site
+        run: hugo -F --cleanDestinationDir
 
-      - name: Prepare directories
+      # 以下复制步骤若确有必要，保留；否则建议移除
+      - name: Copy static and assets (Optional)
         run: |
           mkdir -p en zh-hk
           cp -r static/* en/
@@ -40,55 +39,38 @@ jobs:
           PERSONAL_TOKEN: ${{ secrets.TOKEN }}
           EXTERNAL_REPOSITORY: Lingjia007/Hugo_Web
           PUBLISH_BRANCH: master
-          PUBLISH_DIR: ./
-          commit_message: "GitHub Pages: ${{ github.event.head_commit.message }}"
+          PUBLISH_DIR: ./public
+          commit_message: ${{ github.event.head_commit.message }}
 
-  deploy-netlify:
-    needs: deploy-gh-pages
+  # 作业2：部署到 Netlify
+  deploy-to-netlify:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Checkout main
+      - name: Checkout main branch
         uses: actions/checkout@v4
         with:
-          submodules: true
-          fetch-depth: 0
+          ref: main
 
-      - name: Configure Git
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.TOKEN }}@github.com/${{ github.repository }}
+      - name: Switch to netlify branch
+        run: git checkout -B netlify
 
-      - name: Create/Checkout netlify branch
-        run: |
-          git fetch origin netlify || true
-          git checkout -b netlify origin/netlify || git checkout -b netlify
-          git merge main --no-edit --allow-unrelated-histories || true
-
-      - name: Modify baseURL
+      # 确保 hugo.yaml 路径正确
+      - name: Modify hugo.yaml for Netlify
         run: |
           sed -i '1s#https://lingjia007.github.io/Hugo_Web/#https://lingsir007.netlify.app/#' hugo.yaml
 
-      - name: Commit config changes
-        run: |
-          git add hugo.yaml
-          git commit -m "Update baseURL for Netlify" || echo "No changes to commit"
-          git push origin netlify --force
-
-      - name: Re-checkout netlify branch
-        uses: actions/checkout@v4
+      - name: Set up Hugo
+        uses: peaceiris/actions-hugo@v2
         with:
-          ref: netlify
-          submodules: true
-          fetch-depth: 0
+          hugo-version: "latest"
 
-      - name: Build for Netlify
-        run: |
-          hugo -F --cleanDestinationDir
-          mkdir -p public
-          cp -r public/* ./
+      - name: Build Hugo site for Netlify
+        run: hugo -F --cleanDestinationDir
 
-      - name: Prepare Netlify directories
+      # 合并复制步骤，若非必要则移除
+      - name: Copy static and assets (Optional)
         run: |
           mkdir -p en zh-hk
           cp -r static/* en/
@@ -96,11 +78,11 @@ jobs:
           cp -r assets/* en/
           cp -r assets/* zh-hk/
 
-      - name: Deploy to Netlify Branch
+      - name: Push to Netlify branch
         uses: peaceiris/actions-gh-pages@v3
         with:
           PERSONAL_TOKEN: ${{ secrets.TOKEN }}
           EXTERNAL_REPOSITORY: Lingjia007/Hugo_Web
           PUBLISH_BRANCH: netlify
-          PUBLISH_DIR: ./
-          commit_message: "Netlify: ${{ github.event.head_commit.message }}"
+          PUBLISH_DIR: ./public  # 确保推送构建后的 public 目录
+          commit_message: "Deploy to Netlify: ${{ github.sha }}"
