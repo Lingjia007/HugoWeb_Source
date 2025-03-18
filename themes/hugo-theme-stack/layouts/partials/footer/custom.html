@@ -564,9 +564,9 @@
           category: '{{- .category -}}',
           categoryId: '{{- .categoryID -}}',
           mapping: '{{- default "title" .mapping -}}',
-          strict: {{- default 0 .strict -}},
-          reactionsEnabled: {{- default 1 .reactionsEnabled -}},
-          emitMetadata: {{- default 0 .emitMetadata -}},
+          strict: '0',
+          reactionsEnabled: '1',
+          emitMetadata: '0',
           inputPosition: '{{- default "top" .inputPosition -}}',
           theme: '{{- default "light" .lightTheme -}}',
           lang: '{{- default "en" .lang -}}',
@@ -600,8 +600,8 @@
         script.async = true;
         document.querySelector('.site-footer').before(script);
 
-        // 400毫秒后自动触发重载
-        setTimeout(reloadComments, 400);
+        // 600毫秒后自动触发重载
+        setTimeout(reloadComments, 600);
       })(document);
     </script>
   </div>
