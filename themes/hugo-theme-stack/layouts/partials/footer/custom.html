@@ -576,10 +576,23 @@
         let comment = document.querySelector(".comment");
         if (!comment) return;
 
-        // 将重载逻辑封装为函数
+        // 创建占位容器
+        const placeholder = document.createElement('div');
+        placeholder.className = 'giscus-placeholder';
+        placeholder.style.minHeight = '160px';
+        placeholder.style.backgroundColor = 'transparent';
+        
+        // 插入到footer之前
+        const siteFooter = document.querySelector('.site-footer');
+        if (siteFooter) {
+          siteFooter.parentNode.insertBefore(placeholder, siteFooter);
+        }
+
         function reloadComments() {
-          const giscusContainer = document.querySelector('.giscus');
-          if (giscusContainer) giscusContainer.remove();
+          // 清空现有内容
+          placeholder.innerHTML = '';
+          
+          // 创建新脚本
           const newScript = document.createElement('script');
           newScript.src = 'https://giscus.app/client.js';
           for (let key in window.giscusConfig) {
@@ -587,22 +600,14 @@
           }
           newScript.setAttribute('crossorigin', 'anonymous');
           newScript.async = true;
-          document.querySelector('.site-footer').before(newScript);
+          
+          placeholder.appendChild(newScript);
         }
 
-        // 初始加载
-        let script = document.createElement('script');
-        script.src = 'https://giscus.app/client.js';
-        for (let key in window.giscusConfig) {
-          script.setAttribute(`data-${key}`, window.giscusConfig[key]);
-        }
-        script.setAttribute('crossorigin', 'anonymous');
-        script.async = true;
-        document.querySelector('.site-footer').before(script);
-
-        // 600毫秒后自动触发重载
-        setTimeout(reloadComments, 600);
-      })(document);
+        reloadComments();
+        
+        setTimeout(reloadComments, 700);
+      })();
     </script>
   </div>
 {{- end -}}
