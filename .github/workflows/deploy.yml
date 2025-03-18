@@ -1,17 +1,17 @@
-name: deploy
+name: Deploy and Sync Netlify
 
 on:
   push:
     branches:
-      - main # 或者是你的源代码分支
+      - main
 
 jobs:
+  # 原有部署到 GitHub Pages 的作业
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
@@ -30,27 +30,56 @@ jobs:
 
       - name: Build and Deploy
         run: |
-          hugo -F --cleanDestinationDir  # 生成静态文件
-          mkdir -p public  # 确保public文件夹存在
-          cp -r public/* ./  # 复制生成的静态文件到仓库根目录
+          hugo -F --cleanDestinationDir
+          mkdir -p public
+          cp -r public/* ./
 
       - name: Copy static to en and zh-hk
         run: |
-          mkdir -p en zh-hk  # 确保目标文件夹存在
+          mkdir -p en zh-hk
           cp -r static/* en/
           cp -r static/* zh-hk/
 
       - name: Copy assets to en and zh-hk
         run: |
-          mkdir -p en zh-hk  # 确保目标文件夹存在
+          mkdir -p en zh-hk
           cp -r assets/* en/
           cp -r assets/* zh-hk/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          PERSONAL_TOKEN: ${{ secrets.TOKEN }} # 你的个人访问令牌
-          EXTERNAL_REPOSITORY: Lingjia007/Hugo_Web # 你的GitHub Pages仓库
-          PUBLISH_BRANCH: master # 或者是你的GitHub Pages分支
+          PERSONAL_TOKEN: ${{ secrets.TOKEN }}
+          EXTERNAL_REPOSITORY: Lingjia007/Hugo_Web
+          PUBLISH_BRANCH: master
           PUBLISH_DIR: ./
           commit_message: ${{ github.event.head_commit.message }}
+
+  # 新增同步到 netlify 分支的作业
+  sync-netlify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 需要写权限推送分支
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main  # 确保检出的是原始 main 分支
+
+      - name: Switch to netlify branch
+        run: git checkout -B netlify  # 强制创建/切换分支
+
+      - name: Modify hugo.yaml
+        run: |
+          # 使用 sed 替换第一行的 URL
+          sed -i '1s#https://lingjia007.github.io/Hugo_Web/#https://lingsir007.netlify.app/#' hugo.yaml
+
+      - name: Commit changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add hugo.yaml
+          git diff --cached --quiet || git commit -m "Update Netlify URL in hugo.yaml"
+
+      - name: Push to netlify branch
+        run: git push origin netlify --force  # 强制推送覆盖
