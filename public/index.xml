@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>lingsir007</title>
-        <link>http://localhost:5113/Hugo_Web/</link>
+        <link>http://localhost:1863/Hugo_Web/</link>
         <description>Recent content on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
-        <copyright>lingsir007</copyright><atom:link href="http://localhost:5113/Hugo_Web/index.xml" rel="self" type="application/rss+xml" /><item>
+        <copyright>lingsir007</copyright><atom:link href="http://localhost:1863/Hugo_Web/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>Markdown语法示例</title>
-        <link>http://localhost:5113/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/</link>
+        <link>http://localhost:1863/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/</link>
         <pubDate>Tue, 11 Mar 2025 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:5113/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/</guid>
-        <description>&lt;img src="http://localhost:5113/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown语法示例" /&gt;&lt;p&gt;本文提供了一个可以在 Hugo 内容文件中使用的基本 Markdown 语法示例，还展示了基本 HTML 元素是否在 Hugo 主题中用 CSS 装饰。&lt;/p&gt;
+        <guid>http://localhost:1863/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/</guid>
+        <description>&lt;img src="http://localhost:1863/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown语法示例" /&gt;&lt;p&gt;本文提供了一个可以在 Hugo 内容文件中使用的基本 Markdown 语法示例，还展示了基本 HTML 元素是否在 Hugo 主题中用 CSS 装饰。&lt;/p&gt;
 &lt;h2 id=&#34;标题&#34;&gt;标题
 &lt;/h2&gt;&lt;p&gt;下面的 HTML &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt;—&lt;code&gt;&amp;lt;h6&amp;gt;&lt;/code&gt; 元素表示六个级别的节标题 &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt; 是最高的节级别，而 &lt;code&gt;&amp;lt;h6&amp;gt;&lt;/code&gt; 是最低的节级别。&lt;/p&gt;
 &lt;h1 id=&#34;h1&#34;&gt;H1
@@ -409,19 +409,19 @@ $$&lt;p&gt;其中：&lt;/p&gt;
         </item>
         <item>
         <title>归档</title>
-        <link>http://localhost:5113/Hugo_Web/archives/</link>
+        <link>http://localhost:1863/Hugo_Web/archives/</link>
         <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:5113/Hugo_Web/archives/</guid>
+        <guid>http://localhost:1863/Hugo_Web/archives/</guid>
         <description></description>
         </item>
         <item>
         <title>Emoji Support</title>
-        <link>http://localhost:5113/Hugo_Web/p/emoji-support/</link>
+        <link>http://localhost:1863/Hugo_Web/p/emoji-support/</link>
         <pubDate>Tue, 05 Mar 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:5113/Hugo_Web/p/emoji-support/</guid>
-        <description>&lt;img src="http://localhost:5113/Hugo_Web/p/emoji-support/the-creative-exchange-d2zvqp3fpro-unsplash.jpg" alt="Featured image of post Emoji Support" /&gt;&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;
+        <guid>http://localhost:1863/Hugo_Web/p/emoji-support/</guid>
+        <description>&lt;img src="http://localhost:1863/Hugo_Web/p/emoji-support/the-creative-exchange-d2zvqp3fpro-unsplash.jpg" alt="Featured image of post Emoji Support" /&gt;&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;
 &lt;p&gt;The &lt;a class=&#34;link&#34; href=&#34;https://gohugo.io/functions/emojify/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;&lt;code&gt;emojify&lt;/code&gt;&lt;/a&gt; function can be called directly in templates or &lt;a class=&#34;link&#34; href=&#34;https://gohugo.io/templates/shortcode-templates/#inline-shortcodes&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Inline Shortcodes&lt;/a&gt;.&lt;/p&gt;
@@ -448,27 +448,27 @@ $$&lt;p&gt;其中：&lt;/p&gt;
         </item>
         <item>
         <title>关于</title>
-        <link>http://localhost:5113/Hugo_Web/%E5%85%B3%E4%BA%8E/</link>
+        <link>http://localhost:1863/Hugo_Web/%E5%85%B3%E4%BA%8E/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:5113/Hugo_Web/%E5%85%B3%E4%BA%8E/</guid>
+        <guid>http://localhost:1863/Hugo_Web/%E5%85%B3%E4%BA%8E/</guid>
         <description>&lt;p&gt;This is a test page for i18n support.&lt;/p&gt;
 </description>
         </item>
         <item>
         <title>搜索</title>
-        <link>http://localhost:5113/Hugo_Web/search/</link>
+        <link>http://localhost:1863/Hugo_Web/search/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:5113/Hugo_Web/search/</guid>
+        <guid>http://localhost:1863/Hugo_Web/search/</guid>
         <description></description>
         </item>
         <item>
         <title>友情链接</title>
-        <link>http://localhost:5113/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</link>
+        <link>http://localhost:1863/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:5113/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</guid>
+        <guid>http://localhost:1863/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</guid>
         <description></description>
         </item>
         

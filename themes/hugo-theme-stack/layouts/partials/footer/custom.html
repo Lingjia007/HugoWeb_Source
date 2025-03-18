@@ -6,7 +6,7 @@
 <script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
 <script>
   var pjax = new Pjax({
-    selectors: [".main-container", ".js-Pjax1", ".js-Pjax2"],
+    selectors: ["title", ".main-container", ".js-Pjax1", ".js-Pjax2"],
   });
 </script>
 
@@ -291,80 +291,6 @@
   }
 </script>
 
-<!-- <script>
-  const cdnPath =
-    "https://cdn.jsdelivr.net/gh/letere-gzj/live2d-widget-v3@main";
-  const config = {
-    // 资源路径
-    path: {
-      homePath: "/",
-      modelPath: "{{ .Site.Home.Permalink }}live2d-moc3/",
-      cssPath: "{{ .Site.Home.Permalink }}js/waifu.css",
-      tipsJsonPath: "{{ .Site.Home.Permalink }}js/my-waifu-tips.json",
-      tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
-      live2dSdkPath: cdnPath + "/live2d-sdk.js",
-    },
-    // 工具栏
-    tools: [
-      "hitokoto",
-      "asteroids",
-      "express",
-      "switch-model",
-      "switch-texture",
-      "photo",
-      "info",
-      "quit",
-    ],
-    // 模型拖拽
-    drag: {
-      enable: true,
-      direction: ["x", 0],
-    },
-    // 模型切换(order: 顺序切换，random: 随机切换)
-    switchType: "order",
-  };
-
-  // 加载资源并初始化
-  if (screen.width >= 768) {
-    Promise.all([
-      loadExternalResource(config.path.cssPath, "css"),
-      loadExternalResource(config.path.live2dCorePath, "js"),
-      loadExternalResource(config.path.live2dSdkPath, "js"),
-      loadExternalResource(config.path.tipsJsPath, "js"),
-    ]).then(() => {
-      initWidget({
-        homePath: config.path.homePath,
-        waifuPath: config.path.tipsJsonPath,
-        cdnPath: config.path.modelPath,
-        tools: config.tools,
-        dragEnable: config.drag.enable,
-        dragDirection: config.drag.direction,
-        switchType: config.switchType,
-      });
-    });
-  }
-
-  // 异步加载资源
-  function loadExternalResource(url, type) {
-    return new Promise((resolve, reject) => {
-      let tag;
-      if (type === "css") {
-        tag = document.createElement("link");
-        tag.rel = "stylesheet";
-        tag.href = url;
-      } else if (type === "js") {
-        tag = document.createElement("script");
-        tag.src = url;
-      }
-      if (tag) {
-        tag.onload = () => resolve(url);
-        tag.onerror = () => reject(url);
-        document.head.appendChild(tag);
-      }
-    });
-  }
-</script> -->
 <style>
   .highlight {
     /* 你可以根据需要调整这个高度 */
@@ -629,34 +555,54 @@
 </div>
 
 {{- with .Site.Params.comments.giscus -}}
-<div class="js-Pjax1">
-<script>
-    (function () {
-        // 判断当前是否有文章评论标识
+  <div class="js-Pjax1">
+    <script>
+      (function () {
+        window.giscusConfig = {
+          repo: '{{- .repo -}}',
+          repoId: '{{- .repoID -}}',
+          category: '{{- .category -}}',
+          categoryId: '{{- .categoryID -}}',
+          mapping: '{{- default "title" .mapping -}}',
+          strict: {{- default 0 .strict -}},
+          reactionsEnabled: {{- default 1 .reactionsEnabled -}},
+          emitMetadata: {{- default 0 .emitMetadata -}},
+          inputPosition: '{{- default "top" .inputPosition -}}',
+          theme: '{{- default "light" .lightTheme -}}',
+          lang: '{{- default "en" .lang -}}',
+          loading: '{{- .loading -}}'
+        };
+
         let comment = document.querySelector(".comment");
-        if (!comment) {
-            return
+        if (!comment) return;
+
+        // 将重载逻辑封装为函数
+        function reloadComments() {
+          const giscusContainer = document.querySelector('.giscus');
+          if (giscusContainer) giscusContainer.remove();
+          const newScript = document.createElement('script');
+          newScript.src = 'https://giscus.app/client.js';
+          for (let key in window.giscusConfig) {
+            newScript.setAttribute(`data-${key}`, window.giscusConfig[key]);
+          }
+          newScript.setAttribute('crossorigin', 'anonymous');
+          newScript.async = true;
+          document.querySelector('.site-footer').before(newScript);
         }
+
+        // 初始加载
         let script = document.createElement('script');
-        // 将对应评论的脚本内容填进去
         script.src = 'https://giscus.app/client.js';
-        script.setAttribute('data-repo', '{{- .repo -}}');
-        script.setAttribute('data-repo-id', '{{- .repoID -}}');
-        script.setAttribute('data-category', '{{- .category -}}');
-        script.setAttribute('data-category-id', '{{- .categoryID -}}');
-        script.setAttribute('data-mapping', 'pathname');
-        script.setAttribute('data-strict', '{{- default 0 .strict -}}');
-        script.setAttribute('data-reactions-enabled', '{{- default 1 .reactionsEnabled -}}');
-        script.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
-        script.setAttribute('data-input-position', '{{- default "top" .inputPosition -}}');
-        script.setAttribute('data-theme', '"{{- default `light` .lightTheme -}}"');
-        script.setAttribute('data-lang', '{{- default "en" .lang -}}');
-        script.setAttribute('data-loading', '{{- .loading -}}');
+        for (let key in window.giscusConfig) {
+          script.setAttribute(`data-${key}`, window.giscusConfig[key]);
+        }
         script.setAttribute('crossorigin', 'anonymous');
         script.async = true;
-        // 寻找合适的元素，添加脚本进去(在页脚前将评论脚本插入)
-        document.querySelector('.site-footer').before(script)
-    })(document);
-</script>
-<div>
+        document.querySelector('.site-footer').before(script);
+
+        // 400毫秒后自动触发重载
+        setTimeout(reloadComments, 400);
+      })(document);
+    </script>
+  </div>
 {{- end -}}

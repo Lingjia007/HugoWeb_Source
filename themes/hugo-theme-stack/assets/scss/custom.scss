@@ -298,3 +298,18 @@ body.article-page a[data-pjax-state]:hover img {
         transition-duration: 0.2s;
     }
 }
+
+.reload-comments-btn {
+    background-color: transparent;
+    /* 使背景透明 */
+    border: none;
+    /* 移除边框 */
+    padding: 10px 20px;
+    /* 根据需要调整内边距 */
+    font-size: 16px;
+    /* 根据需要调整字体大小 */
+    cursor: pointer;
+    /* 改变鼠标悬停时的图标为手型 */
+    color: #007BFF;
+    /* 文字颜色，可以根据设计更改 */
+}
