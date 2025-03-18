@@ -1,0 +1,75 @@
+.widget {
+    display: flex;
+    flex-direction: column;
+
+    .widget-icon {
+        svg {
+            width: 32px;
+            height: 32px;
+            stroke-width: 1.6;
+            color: var(--body-text-color);
+        }
+    }
+}
+
+.tagCloud {
+    .tagCloud-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+
+        a {
+            background: var(--card-background);
+            box-shadow: var(--shadow-l1);
+            border-radius: var(--tag-border-radius);
+            padding: 8px 20px;
+            color: var(--card-text-color-main);
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+            /* 🎉 合并过渡属性 */
+            transform: scale(1);
+            /* 🎉 添加初始缩放值 */
+
+            &:hover {
+                box-shadow: var(--shadow-l2);
+                transform: scale(1.1);
+                /* 🎉 悬停时放大10% */
+                position: relative;
+                /* 🎉 防止挤压相邻元素 */
+                z-index: 1;
+                /* 🎉 确保放大后覆盖其他元素 */
+            }
+        }
+    }
+}
+
+/* Archives widget */
+.widget.archives {
+    .widget-archive--list {
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        background-color: var(--card-background);
+    }
+
+    .archives-year {
+        &:not(:last-of-type) {
+            border-bottom: 1.5px solid var(--card-separator-color);
+        }
+
+        a {
+            font-size: 1.4rem;
+            padding: 18px 25px;
+            display: flex;
+
+            span.year {
+                flex: 1;
+                color: var(--card-text-color-main);
+                font-weight: bold;
+            }
+
+            span.count {
+                color: var(--card-text-color-tertiary);
+            }
+        }
+    }
+}
