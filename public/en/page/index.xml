@@ -2,45 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Pages on lingsir007</title>
-<<<<<<< HEAD
         <link>http://localhost:1313/Hugo_Web/en/page/</link>
-=======
-        <link>http://localhost:2466/Hugo_Web/en/page/</link>
->>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
         <description>Recent content in Pages on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>lingsir007</copyright>
-<<<<<<< HEAD
-        <lastBuildDate>Tue, 18 Mar 2025 17:43:37 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/en/page/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Wed, 19 Mar 2025 13:41:49 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/en/page/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>Archives</title>
         <link>http://localhost:1313/Hugo_Web/en/archives/</link>
         <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/en/archives/</guid>
-=======
-        <lastBuildDate>Tue, 18 Mar 2025 17:43:37 +0800</lastBuildDate><atom:link href="http://localhost:2466/Hugo_Web/en/page/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>Archives</title>
-        <link>http://localhost:2466/Hugo_Web/en/archives/</link>
-        <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
-        
-        <guid>http://localhost:2466/Hugo_Web/en/archives/</guid>
->>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
         <description></description>
         </item>
         <item>
         <title>About</title>
-<<<<<<< HEAD
         <link>http://localhost:1313/Hugo_Web/en/about/</link>
         <pubDate>Thu, 28 Feb 2019 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/en/about/</guid>
-=======
-        <link>http://localhost:2466/Hugo_Web/en/about/</link>
-        <pubDate>Thu, 28 Feb 2019 00:00:00 +0000</pubDate>
-        
-        <guid>http://localhost:2466/Hugo_Web/en/about/</guid>
->>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
         <description>&lt;p&gt;Written in Go, Hugo is an open source static site generator available under the &lt;a class=&#34;link&#34; href=&#34;https://github.com/gohugoio/hugo/blob/master/LICENSE&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Apache License 2.0.&lt;/a&gt; Hugo supports TOML, YAML and JSON data file types, Markdown and HTML content files and uses shortcodes to add rich content. Other notable features are taxonomies, multilingual mode, image processing, custom output formats, HTML/CSS/JS minification and support for Sass SCSS workflows.&lt;/p&gt;
 &lt;p&gt;Hugo makes use of a variety of open source projects including:&lt;/p&gt;
@@ -65,17 +45,10 @@
         </item>
         <item>
         <title>Links</title>
-<<<<<<< HEAD
         <link>http://localhost:1313/Hugo_Web/en/links/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/en/links/</guid>
-=======
-        <link>http://localhost:2466/Hugo_Web/en/links/</link>
-        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-        
-        <guid>http://localhost:2466/Hugo_Web/en/links/</guid>
->>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
         <description>&lt;p&gt;To use this feature, add &lt;code&gt;links&lt;/code&gt; section to frontmatter.&lt;/p&gt;
 &lt;p&gt;This page&amp;rsquo;s frontmatter:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -107,17 +80,10 @@
         </item>
         <item>
         <title>Search</title>
-<<<<<<< HEAD
         <link>http://localhost:1313/Hugo_Web/en/search/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/en/search/</guid>
-=======
-        <link>http://localhost:2466/Hugo_Web/en/search/</link>
-        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-        
-        <guid>http://localhost:2466/Hugo_Web/en/search/</guid>
->>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
         <description></description>
         </item>
         

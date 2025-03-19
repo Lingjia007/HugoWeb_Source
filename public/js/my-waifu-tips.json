@@ -153,7 +153,7 @@
       ]
     },
     {
-      "selector": "a[href='//Hugo_Web/update-list/']",
+      "selector": "a[href='/Hugo_Web/update-list/']",
       "text": [
         "想知道这博客是怎么搭的吗？",
         "看看主人偷偷更了啥！"
