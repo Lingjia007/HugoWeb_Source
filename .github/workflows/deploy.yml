@@ -60,6 +60,11 @@ jobs:
           # 确认 hugo.yaml 文件路径正确
           sed -i '1s#https://lingjia007.github.io/Hugo_Web/#https://lingsir007.netlify.app/#' hugo.yaml
 
+      - name: Modify Waifu Tips Path
+        run: |
+          # 修改 waifu 提示文件路径
+          sed -i 's#Hugo_Web/##g' static/js/my-waifu-tips.json
+
       - name: Set up Hugo
         uses: peaceiris/actions-hugo@v2
         with:
@@ -67,11 +72,6 @@ jobs:
 
       - name: Build Hugo site
         run: hugo -F --cleanDestinationDir
-
-      # 新增：修改 waifu 提示文件路径
-      - name: Modify Waifu Tips Path
-        run: |
-          sed -i 's#/Hugo_Web/##g' public/js/my-waifu-tips.json
 
       # 仅在需要特殊处理时保留此步骤
       - name: Copy static and assets (Conditional)
