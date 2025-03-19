@@ -2,147 +2,265 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+<<<<<<< HEAD
     <loc>http://localhost:1313/Hugo_Web/en/archives/</loc>
+=======
+    <loc>http://localhost:2466/Hugo_Web/en/archives/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/archives/"
+=======
+                href="http://localhost:2466/Hugo_Web/archives/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/archives/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/archives/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/archives/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/page/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/archives/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/page/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/page/"
+=======
+                href="http://localhost:2466/Hugo_Web/page/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/page/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/page/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/page/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/categories/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/page/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/categories/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/categories/"
+=======
+                href="http://localhost:2466/Hugo_Web/categories/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/categories/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/categories/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/categories/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/tags/css/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/categories/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/tags/css/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/tags/css/"
+=======
+                href="http://localhost:2466/Hugo_Web/tags/css/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/tags/css/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/tags/css/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/tags/css/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/tags/html/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/tags/css/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/tags/html/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/tags/html/"
+=======
+                href="http://localhost:2466/Hugo_Web/tags/html/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/tags/html/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/tags/html/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/tags/html/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/tags/markdown/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/tags/html/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/tags/markdown/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/tags/markdown/"
+=======
+                href="http://localhost:2466/Hugo_Web/tags/markdown/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/tags/markdown/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/tags/markdown/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/tags/markdown/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/p/markdown-syntax-guide/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/tags/markdown/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/p/markdown-syntax-guide/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/"
+=======
+                href="http://localhost:2466/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/p/markdown%E8%AA%9E%E6%B3%95%E7%A4%BA%E4%BE%8B/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/p/markdown%E8%AA%9E%E6%B3%95%E7%A4%BA%E4%BE%8B/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/p/markdown-syntax-guide/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/post/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/p/markdown-syntax-guide/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/post/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/post/"
+=======
+                href="http://localhost:2466/Hugo_Web/post/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/post/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/post/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/post/"
                 />
   </url><url>
@@ -150,20 +268,38 @@
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/tags/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/post/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/categories/syntax/</loc>
+    <lastmod>2025-03-18T17:43:37+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/tags/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/tags/"
+=======
+                href="http://localhost:2466/Hugo_Web/tags/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/tags/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/tags/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/tags/"
                 />
   </url><url>
@@ -174,75 +310,144 @@
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/about/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/tags/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/categories/themes/</loc>
+    <lastmod>2025-03-18T17:43:37+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/tags/themes/</loc>
+    <lastmod>2025-03-18T17:43:37+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/about/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/%E5%85%B3%E4%BA%8E/"
+=======
+                href="http://localhost:2466/Hugo_Web/%E5%85%B3%E4%BA%8E/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/about/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/about/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/"
+=======
+                href="http://localhost:2466/Hugo_Web/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/links/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/links/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/"
+=======
+                href="http://localhost:2466/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/links/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/search/</loc>
+=======
+                href="http://localhost:2466/Hugo_Web/en/links/"
+                />
+  </url><url>
+    <loc>http://localhost:2466/Hugo_Web/en/search/</loc>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
     <lastmod>2025-03-18T17:43:37+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/search/"
+=======
+                href="http://localhost:2466/Hugo_Web/search/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/zh-hk/search/"
+=======
+                href="http://localhost:2466/Hugo_Web/zh-hk/search/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
+<<<<<<< HEAD
                 href="http://localhost:1313/Hugo_Web/en/search/"
+=======
+                href="http://localhost:2466/Hugo_Web/en/search/"
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
                 />
   </url>
 </urlset>

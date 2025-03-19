@@ -2,25 +2,45 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Pages on lingsir007</title>
+<<<<<<< HEAD
         <link>http://localhost:1313/Hugo_Web/zh-hk/page/</link>
+=======
+        <link>http://localhost:2466/Hugo_Web/zh-hk/page/</link>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
         <description>Recent content in Pages on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-hk</language>
         <copyright>lingsir007</copyright>
+<<<<<<< HEAD
         <lastBuildDate>Tue, 18 Mar 2025 17:43:37 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/zh-hk/page/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>歸檔</title>
         <link>http://localhost:1313/Hugo_Web/zh-hk/archives/</link>
         <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/zh-hk/archives/</guid>
+=======
+        <lastBuildDate>Tue, 18 Mar 2025 17:43:37 +0800</lastBuildDate><atom:link href="http://localhost:2466/Hugo_Web/zh-hk/page/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>歸檔</title>
+        <link>http://localhost:2466/Hugo_Web/zh-hk/archives/</link>
+        <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:2466/Hugo_Web/zh-hk/archives/</guid>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
         <description></description>
         </item>
         <item>
         <title>友情鏈接</title>
+<<<<<<< HEAD
         <link>http://localhost:1313/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</guid>
+=======
+        <link>http://localhost:2466/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</link>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:2466/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</guid>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
         <description>&lt;p&gt;To use this feature, add &lt;code&gt;links&lt;/code&gt; section to frontmatter.&lt;/p&gt;
 &lt;p&gt;This page&amp;rsquo;s frontmatter:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -52,18 +72,32 @@
         </item>
         <item>
         <title>搜尋</title>
+<<<<<<< HEAD
         <link>http://localhost:1313/Hugo_Web/zh-hk/search/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/zh-hk/search/</guid>
+=======
+        <link>http://localhost:2466/Hugo_Web/zh-hk/search/</link>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:2466/Hugo_Web/zh-hk/search/</guid>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
         <description></description>
         </item>
         <item>
         <title>關於</title>
+<<<<<<< HEAD
         <link>http://localhost:1313/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/</guid>
+=======
+        <link>http://localhost:2466/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/</link>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:2466/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/</guid>
+>>>>>>> b3a765ae77dcd6b0bf10cf045fd7a845d0f85090
         <description>&lt;p&gt;This is a test page for i18n support.&lt;/p&gt;
 </description>
         </item>
