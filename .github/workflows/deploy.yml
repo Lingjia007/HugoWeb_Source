@@ -1,0 +1,101 @@
+name: Deploy to GitHub Pages and Netlify
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-to-gh-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Set up Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: "latest"
+
+      - name: Build Hugo site
+        run: hugo -F --cleanDestinationDir
+
+      # 仅在需要特殊处理时保留此步骤
+      - name: Copy static and assets (Conditional)
+        if: true  # 默认禁用，需要时设为 true
+        run: |
+          mkdir -p public/en public/zh-hk
+          cp -r static/* public/en/
+          cp -r static/* public/zh-hk/
+          cp -r assets/* public/en/
+          cp -r assets/* public/zh-hk/
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          PERSONAL_TOKEN: ${{ secrets.TOKEN }}
+          EXTERNAL_REPOSITORY: Lingjia007/Hugo_Web
+          PUBLISH_BRANCH: master
+          PUBLISH_DIR: ./public
+          commit_message: ${{ github.event.head_commit.message }}
+
+  deploy-to-netlify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Switch to netlify branch
+        run: git checkout -B netlify
+
+      - name: Modify baseURL for Netlify
+        run: |
+          # 确认 hugo.yaml 文件路径正确
+          sed -i '1s#https://lingjia007.github.io/Hugo_Web/#https://lingsir007.netlify.app/#' hugo.yaml
+
+      - name: Modify Waifu Tips Path
+        run: |
+          # 修改 waifu 提示文件路径
+          sed -i 's#Hugo_Web/##g' static/js/my-waifu-tips.json
+
+      - name: Commit config changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add hugo.yaml static/js/my-waifu-tips.json
+          git commit -m "Update Netlify config"
+          git push origin netlify --force  # 强制推送
+
+      - name: Set up Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: "latest"
+
+      - name: Build Hugo site
+        run: hugo -F --cleanDestinationDir
+
+      # 仅在需要特殊处理时保留此步骤
+      - name: Copy static and assets (Conditional)
+        if: true  # 默认禁用，需要时设为 true
+        run: |
+          mkdir -p public/en public/zh-hk
+          cp -r static/* public/en/
+          cp -r static/* public/zh-hk/
+          cp -r assets/* public/en/
+          cp -r assets/* public/zh-hk/
+
+      - name: Deploy to Netlify Branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          PERSONAL_TOKEN: ${{ secrets.TOKEN }}
+          EXTERNAL_REPOSITORY: Lingjia007/Hugo_Web
+          PUBLISH_BRANCH: netlify
+          PUBLISH_DIR: ./public
+          commit_message: "Deploy to Netlify: ${{ github.sha }}"

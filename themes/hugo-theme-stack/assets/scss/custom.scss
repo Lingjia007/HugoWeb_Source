@@ -1,0 +1,315 @@
+@import "aplayer-light.scss";
+@import "aplayer-dark.scss";
+
+#dark-mode-toggle {
+    margin-bottom: 60px;
+}
+
+@media (min-width: 1024px) {
+    .article-list--compact {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: none;
+        box-shadow: none;
+        gap: 1rem;
+
+        article {
+            background: var(--card-background);
+            border: none;
+            box-shadow: var(--shadow-l2);
+            margin-bottom: 8px;
+            margin-right: 8px;
+            border-radius: 16px;
+            /* 新增悬停效果相关代码 */
+            transform-origin: center;
+            /* 设置变换原点为中心 */
+            transition: transform 0.2s ease-in-out;
+            /* 添加过渡动画 */
+            position: relative;
+            /* 为z-index生效 */
+            z-index: 1;
+            /* 防止放大时被其他元素遮挡 */
+
+            &:hover {
+                transform: scale(1.03);
+                /* 放大比例 */
+                z-index: 2;
+                /* 悬停时置于上层 */
+            }
+        }
+    }
+}
+
+.highlight {
+    border-radius: var(--card-border-radius);
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-shadow: var(--shadow-l1) !important;
+}
+
+.highlight:before {
+    content: "";
+    display: block;
+    background: url(../icons/macOS-code-header.svg) no-repeat 0;
+    background-size: contain;
+    height: 18px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+// 【Stack主题鼠标样式写法】
+// default光标图片
+body,
+html,
+.article-content img {
+    cursor: url(../mouse/pointer.png),
+        auto !important;
+}
+
+// pointer光标图片
+a:hover,
+button:hover,
+.copyCodeButton:hover,
+#dark-mode-toggle {
+    cursor: url(../mouse/link.png),
+        auto;
+}
+
+// text光标图片
+input:hover,
+.site-description,
+.article-subtitle span,
+.article-content span,
+.article-content li,
+.article-content p {
+    cursor: url(../mouse/text.png),
+        auto;
+}
+
+@mixin hover-elevate-effect {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: transform;
+    transition:
+        transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+        filter 0.3s linear,
+        box-shadow 0.3s ease;
+
+    &:hover {
+        transform: scale(1.06) translateZ(4px) translateY(-2px);
+        filter: drop-shadow(1px 2px 6px rgba(0, 0, 0, 0.1)) brightness(1.02);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    // 新增点击动画
+    &:active {
+        transform: scale(0.96) translateZ(2px) translateY(1px); // 📌 按压缩小效果
+        filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.08)) brightness(0.98); // 📌 降低亮度
+        transition:
+            transform 0.2s cubic-bezier(0.87, 0, 0.13, 1), // 📌 更快的按压动画
+            filter 0.15s linear;
+    }
+}
+
+.article-category {
+    a {
+        @include hover-elevate-effect;
+        transition-delay: 0.02s; // 统一延迟
+        padding: 0.5em 1.1em;
+        border-radius: 0.38em;
+    }
+}
+
+/*━━ 导航菜单悬停动画 ━━*/
+#main-menu {
+
+    // 菜单项基础样式
+    li:not(.menu-bottom-section)>a {
+        position: relative;
+        transition:
+            transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+            color 0.3s ease;
+
+        // 图标与文字容器
+        >svg,
+        >span {
+            transition:
+                transform 0.3s ease,
+                opacity 0.2s linear;
+        }
+
+        // 图标动画
+        >svg {
+            transform: translateY(0);
+        }
+
+        // 文字动画
+        >span {
+            display: inline-block;
+            transform: translateY(0);
+        }
+
+        // 悬停状态
+        &:hover {
+            color: var(--accent-color) !important;
+
+            // 图标上浮并放大
+            >svg {
+                transform: translateY(-3px) rotateZ(2deg) scale(1.05);
+                filter: drop-shadow(0 2px 4px rgba(var(--accent-color-rgb), 0.3));
+            }
+
+            // 文字上移并放大
+            >span {
+                transform: translateY(-3px) scale(1.05);
+                text-shadow: 0 2px 4px rgba(var(--accent-color-rgb), 0.3);
+            }
+        }
+
+        &:active {
+            transform: translateY(6px); // 比点击状态多3px
+        }
+    }
+
+    // 当前选中项优化
+    .current>a {
+        &::after {
+            background: var(--accent-color) !important;
+            opacity: 0.8;
+        }
+    }
+}
+
+/* 原始通用效果（所有页面生效） */
+.article-image img {
+    transition: transform 0.4s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+    transform-origin: center;
+    will-change: transform;
+}
+
+a[data-pjax-state]:hover img {
+    transform: scale(1.036);
+    filter: brightness(1.005);
+}
+
+/* 特定页面禁用效果（仅 article-page 页面生效） */
+body.article-page .article-image img {
+    transition: none !important;
+    /* 强制禁用动画 */
+    transform: none !important;
+    /* 清除默认缩放 */
+    will-change: auto !important;
+    /* 移除性能优化 */
+    filter: none !important;
+    /* 清除亮度滤镜 */
+}
+
+body.article-page .article-image:hover img,
+body.article-page a[data-pjax-state]:hover img {
+    transform: none !important;
+    /* 强制悬停时无缩放 */
+    filter: none !important;
+    /* 强制悬停时无亮度变化 */
+}
+
+.archives-year a {
+    display: inline-block;
+    /* 必须设置为块级才能应用transform */
+    transition: transform 0.2s ease;
+    transform-origin: center;
+    /* 根据排版选择变换原点 */
+
+    &:hover {
+        transform: scale(1.036);
+
+        /* 可选文字颜色变化 */
+        .year,
+        .count {
+            color: var(--primary-color);
+        }
+    }
+
+    .year,
+    .count {
+        transition: color 0.2s ease;
+        /* 文字颜色过渡 */
+    }
+}
+
+.running-time {
+    color: var(--card-text-color-secondary);
+    font-weight: normal;
+}
+
+#runningdays,
+#articleCount {
+    font-weight: bold;
+    color: #6E8296;
+}
+
+.site-avatar {
+    position: relative;
+    display: inline-block;
+    width: 300px;
+    height: 300px;
+
+    a {
+        display: block;
+        overflow: hidden;
+        border-radius: 50%;
+        width: 100%;
+        height: 100%;
+        /* 保持原有圆形裁剪 */
+    }
+
+    .site-logo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        /* 同步参数 */
+        transform-origin: center;
+        /* 中心缩放 */
+        will-change: transform;
+    }
+
+    /* 表情符号定位保持外部 */
+    .emoji {
+        position: absolute;
+        bottom: -10px;
+        right: -10px;
+        z-index: 2;
+        font-size: 2em;
+        pointer-events: none;
+    }
+
+    /* 同步悬停效果 */
+    &:hover .site-logo {
+        transform: scale(1.036);
+        /* 精确匹配缩放值 */
+        filter: brightness(1.005);
+        /* 同步亮度微调 */
+    }
+
+    /* 可选：如果需要保持点击反馈 */
+    &:active .site-logo {
+        transform: scale(0.98);
+        transition-duration: 0.2s;
+    }
+}
+
+.reload-comments-btn {
+    background-color: transparent;
+    /* 使背景透明 */
+    border: none;
+    /* 移除边框 */
+    padding: 10px 20px;
+    /* 根据需要调整内边距 */
+    font-size: 16px;
+    /* 根据需要调整字体大小 */
+    cursor: pointer;
+    /* 改变鼠标悬停时的图标为手型 */
+    color: #007BFF;
+    /* 文字颜色，可以根据设计更改 */
+}

@@ -1,0 +1,619 @@
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
+<script>
+  var pjax = new Pjax({
+    selectors: ["title", ".main-container", ".js-Pjax1", ".js-Pjax2"],
+  });
+</script>
+
+
+<div id="aplayer"></div>
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<script>
+  const staticDir = {{ .Site.Home.Permalink }};
+  const ap = new APlayer({
+    container: document.getElementById("aplayer"),
+    audio: [
+      {
+        name: "Keil Generic Key",
+        artist: "EDGE",
+        url: staticDir + "music/Keil Generic Key-EDGE/song.mp3",
+        cover: staticDir + "music/Keil Generic Key-EDGE/cover.png",
+        lrc: staticDir + "music/Keil Generic Key-EDGE/lyric.lrc",
+      },
+      {
+        name: "查无此字",
+        artist: "林奕匡",
+        url: staticDir + "music/查无此字-林奕匡/song.mp3",
+        cover: staticDir + "music/查无此字-林奕匡/cover.jpg",
+        lrc: staticDir + "music/查无此字-林奕匡/lyric.lrc",
+      },
+      {
+        name: "爱别等",
+        artist: "洪卓立",
+        url: staticDir + "music/爱别等-洪卓立/song.mp3",
+        cover: staticDir + "music/爱别等-洪卓立/cover.jpg",
+        lrc: staticDir + "music/爱别等-洪卓立/lyric.lrc",
+      },
+      {
+        name: "乖乖报到",
+        artist: "MC 张天赋",
+        url: staticDir + "music/乖乖报到-MC 张天赋/song.mp3",
+        cover: staticDir + "music/乖乖报到-MC 张天赋/cover.jpg",
+        lrc: staticDir + "music/乖乖报到-MC 张天赋/lyric.lrc",
+      },
+      {
+        name: "指纹",
+        artist: "胡歌",
+        url: staticDir + "music/指纹-胡歌/song.mp3",
+        cover: staticDir + "music/指纹-胡歌/cover.jpg",
+        lrc: staticDir + "music/指纹-胡歌/lyric.lrc",
+      },
+      {
+        name: "还记得",
+        artist: "周柏豪",
+        url: staticDir + "music/还记得-周柏豪/song.mp3",
+        cover: staticDir + "music/还记得-周柏豪/cover.jpg",
+        lrc: staticDir + "music/还记得-周柏豪/lyric.lrc",
+      },
+      {
+        name: "摄氏零度",
+        artist: "张敬轩",
+        url: staticDir + "music/摄氏零度-张敬轩/song.mp3",
+        cover: staticDir + "music/摄氏零度-张敬轩/cover.jpg",
+        lrc: staticDir + "music/摄氏零度-张敬轩/lyric.lrc",
+      },
+      {
+        name: "下一位前度",
+        artist: "林家谦",
+        url: staticDir + "music/下一位前度-林家谦/song.mp3",
+        cover: staticDir + "music/下一位前度-林家谦/cover.jpg",
+        lrc: staticDir + "music/下一位前度-林家谦/lyric.lrc",
+      },
+      {
+        name: "初初",
+        artist: "古巨基",
+        url: staticDir + "music/初初-古巨基/song.mp3",
+        cover: staticDir + "music/初初-古巨基/cover.jpg",
+        lrc: staticDir + "music/初初-古巨基/lyric.lrc",
+      },
+      {
+        name: "这个故事教训我们",
+        artist: "李克勤",
+        url: staticDir + "music/这个故事教训我们-李克勤/song.mp3",
+        cover: staticDir + "music/这个故事教训我们-李克勤/cover.jpg",
+        lrc: staticDir + "music/这个故事教训我们-李克勤/lyric.lrc",
+      },
+      {
+        name: "最后祝福",
+        artist: "黄宗泽",
+        url: staticDir + "music/最后祝福-黄宗泽/song.mp3",
+        cover: staticDir + "music/最后祝福-黄宗泽/cover.jpg",
+        lrc: staticDir + "music/最后祝福-黄宗泽/lyric.lrc",
+      }
+    ],
+    lrcType: 3,
+    fixed: true
+  });
+</script>
+
+<script>
+  // 定义计算并显示运行时间的函数
+  function calculateRunningDays(startDateStr, elementId) {
+    let s1 = new Date(startDateStr.replace(/-/g, "/"));
+    let s2 = new Date();
+    let timeDifference = s2.getTime() - s1.getTime();
+
+    let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+    // 使用正确的字符串拼接方式，并替换模板语法为实际值
+    let dayText = {{ T "day" }}; // 替换为实际的国际化文本
+    let hourText = {{ T "hour" }};
+    let minuteText = {{ T "minute" }};
+
+    let result = `<span><${days} ${dayText} ${hours} ${hourText} ${minutes} ${minuteText}></span>`;
+    document.getElementById(elementId).innerHTML = result;
+    }
+
+    document.addEventListener("pjax:complete", () => {
+        calculateRunningDays('2025-3-14', 'runningdays');
+    });
+    calculateRunningDays('2025-3-14', 'runningdays');
+</script>
+
+<script>
+  pjax._handleResponse = pjax.handleResponse;
+  pjax.handleResponse = function (responseText, request, href, options) {
+    if (request.responseText.match("<html")) {
+      if (responseText) {
+        // 将新页面的html字符串解析成DOM对象
+        let newDom = new DOMParser().parseFromString(responseText, "text/html");
+        // 获取新页面中body的className，并设置回当前页面
+        let bodyClass = newDom.body.className;
+        document.body.setAttribute("class", bodyClass);
+      }
+      // 放行，交给pjax自己处理
+      pjax._handleResponse(responseText, request, href, options);
+    } else {
+      // handle non-HTML response here
+    }
+  };
+</script>
+
+<script>
+  document.addEventListener("pjax:complete", () => {
+    // Stack脚本初始化
+    window.Stack.init();
+    
+  });
+</script>
+
+<script>
+  async function renderKaTeX() {
+    // 判断当前页面是否有KateX
+    let katex = document.querySelector(".math-katex");
+    if (!katex) {
+      return;
+    }
+    // 等待函数加载成功后，再执行渲染方法
+    while (typeof renderMathInElement !== "function") {
+      await delay(500);
+    }
+    // KaTeX渲染方法
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  }
+
+  /**
+   * 同步延迟
+   */
+  function delay(time) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, time);
+    });
+  }
+
+  document.addEventListener("pjax:complete", () => {
+    renderKaTeX();
+  });
+</script>
+
+<script src="{{ .Site.Home.Permalink }}js/topbar.min.js"></script>
+
+<script>
+  // 修改进度条颜色
+  topbar.config({
+    barColors: {
+      0: "rgba(255,  255, 255, 1)", // 进度0%白色
+      "1.0": "rgba(0, 149, 234,  1)", // 进度100%蓝色
+    },
+  });
+
+  document.addEventListener("pjax:send", () => {
+    // 显示顶部进度条
+    topbar.show();
+  });
+
+  document.addEventListener("pjax:complete", () => {
+    // 隐藏顶部进度条
+    topbar.hide();
+  });
+</script>
+
+<script>
+  const cdnPath =
+    "https://cdn.jsdelivr.net/gh/Lingjia007/live2d-widget-v3@main";
+  const config = {
+    // 资源路径
+    path: {
+      homePath: "/",
+      modelPath: "{{ .Site.Home.Permalink }}live2d-moc3/",
+      cssPath: "{{ .Site.Home.Permalink }}js/waifu.css",
+      tipsJsonPath: "{{ .Site.Home.Permalink }}js/my-waifu-tips.json",
+      tipsJsPath: cdnPath + "/waifu-tips.js",
+      live2dCorePath: "{{ .Site.Home.Permalink }}js/live2dcubismcore.js",
+      live2dSdkPath: "{{ .Site.Home.Permalink }}js/live2d-sdk.js",
+    },
+    // 工具栏
+    tools: [
+      "hitokoto",
+      "asteroids",
+      "express",
+      "switch-model",
+      "switch-texture",
+      "photo",
+      "info",
+      "quit",
+    ],
+    // 模型拖拽
+    drag: {
+      enable: true,
+      direction: ["x", 0],
+    },
+    // 模型切换(order: 顺序切换，random: 随机切换)
+    switchType: "order",
+  };
+
+  // 加载资源并初始化
+  if (screen.width >= 10) {
+    Promise.all([
+      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(config.path.live2dCorePath, "js"),
+      loadExternalResource(config.path.live2dSdkPath, "js"),
+      loadExternalResource(config.path.tipsJsPath, "js"),
+    ]).then(() => {
+      initWidget({
+        homePath: config.path.homePath,
+        waifuPath: config.path.tipsJsonPath,
+        cdnPath: config.path.modelPath,
+        tools: config.tools,
+        dragEnable: config.drag.enable,
+        dragDirection: config.drag.direction,
+        switchType: config.switchType,
+      });
+    });
+    function waitForElement(selector, callback) {
+      new MutationObserver(function (mutations) {
+        if (document.querySelector(selector)) {
+          callback();
+          this.disconnect();
+        }
+      }).observe(document.documentElement, { childList: true, subtree: true });
+    }
+  }
+
+  // 异步加载资源
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      let tag;
+      if (type === "css") {
+        tag = document.createElement("link");
+        tag.rel = "stylesheet";
+        tag.href = url;
+      } else if (type === "js") {
+        tag = document.createElement("script");
+        tag.src = url;
+      }
+      if (tag) {
+        tag.onload = () => resolve(url);
+        tag.onerror = () => reject(url);
+        document.head.appendChild(tag);
+      }
+    });
+  }
+</script>
+
+<style>
+  .highlight {
+    /* 你可以根据需要调整这个高度 */
+    max-height: 400px;
+    overflow: hidden;
+  }
+
+  .code-show {
+    max-height: none !important;
+  }
+
+  .code-more-box {
+    width: 100%;
+    padding-top: 78px;
+    background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(rgba(255, 255, 255, 0)),
+      to(#fff)
+    );
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .code-more-btn {
+    display: block;
+    margin: auto;
+    width: 44px;
+    height: 22px;
+    background: #f0f0f5;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding-top: 6px;
+    cursor: pointer;
+  }
+
+  .code-more-img {
+    cursor: pointer !important;
+    display: block;
+    margin: auto;
+    width: 22px;
+    height: 16px;
+  }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach((codeBlock) => {
+      // 校验是否overflow
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      // 元素初始化
+      // codeMoreBox
+      let codeMoreBox = document.createElement("div");
+      codeMoreBox.classList.add("code-more-box");
+      // codeMoreBtn
+      let codeMoreBtn = document.createElement("span");
+      codeMoreBtn.classList.add("code-more-btn");
+      codeMoreBtn.addEventListener("click", () => {
+        codeBlock.classList.add("code-show");
+        codeMoreBox.style.display = "none";
+        // 触发resize事件，重新计算目录位置
+        window.dispatchEvent(new Event("resize"));
+      });
+      // img
+      let img = document.createElement("img");
+      img.classList.add("code-more-img");
+      img.src = "{{ .Site.Home.Permalink }}icons/codeMore.png";
+      // 元素添加
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox);
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    // 除了Stack脚本初始化外，添加你需要重新初始化的脚本
+    initCodeMoreBox();
+  });
+  initCodeMoreBox();
+</script>
+
+<div id="particles-js"></div>
+
+<script src="{{ .Site.Home.Permalink }}background/particles.min.js"></script>
+<script>
+  particlesJS.load(
+    "particles-js",
+    "{{ .Site.Home.Permalink }}background/particlesjs-config.json",
+    function () {
+      console.log("particles.js loaded - callback");
+    }
+  );
+</script>
+
+<style>
+  #particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+  }
+</style>
+
+<style>
+  #TableOfContents > ul,
+  ol {
+    ul,
+    ol {
+      display: none;
+    }
+    .open {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  function initTocHide() {
+    // 判断是否存在文章目录
+    let toc = document.querySelector(".widget--toc");
+    if (!toc) {
+      return;
+    }
+    // 监听滚动
+    window.addEventListener("scroll", function () {
+      //清除class值
+      let openUl = document.querySelectorAll(".open");
+      if (openUl.length > 0) {
+        openUl.forEach((ul) => {
+          ul.classList.remove("open");
+        });
+      }
+      // 获取active-class
+      let currentLi = document.querySelector(".active-class");
+      if (!currentLi) {
+        return;
+      }
+      // 展示子ul
+      if (currentLi.children.length > 1) {
+        currentLi.children[1].classList.add("open");
+      }
+      // 展示父ul
+      let ul = currentLi.parentElement;
+      do {
+        ul.classList.add("open");
+        ul = ul.parentElement.parentElement;
+      } while (ul !== undefined && (ul.localName === "ul" || ul.localName === "ol"));
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    // 除了Stack脚本初始化外，添加你需要重新初始化的脚本
+    initTocHide();
+  });
+  initTocHide();
+</script>
+
+<style>
+  @font-face {
+    font-family: "AlibabaPuHuiTi-3-65-Medium";
+    src: url({{(resources.Get "font/AlibabaPuHuiTi-3-65-Medium.ttf").Permalink}})
+      format("truetype");
+  }
+
+  :root {
+    --base-font-family: "AlibabaPuHuiTi-3-65-Medium";
+    --code-font-family: "AlibabaPuHuiTi-3-65-Medium";
+  }
+</style>
+
+<style>
+  #backTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    z-index: 99;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-image: url("{{ .Site.Home.Permalink }}icons/backTop.svg");
+  }
+</style>
+
+<script>
+  /**
+   * 滚动回顶部初始化
+   */
+  function initScrollTop() {
+    let rightSideBar = document.querySelector(".right-sidebar");
+    if (!rightSideBar) {
+      return;
+    }
+    // 添加返回顶部按钮到右侧边栏
+    let btn = document.createElement("div");
+    btn.id = "backTopBtn";
+    btn.onclick = backToTop;
+    rightSideBar.appendChild(btn);
+    // 滚动监听
+    window.onscroll = function () {
+      // 当网页向下滑动 20px 出现"返回顶部" 按钮
+      if (
+        document.body.scrollTop > 20 ||
+        document.documentElement.scrollTop > 20
+      ) {
+        btn.style.display = "block";
+      } else {
+        btn.style.display = "none";
+      }
+    };
+  }
+
+  /**
+   * 返回顶部
+   */
+  function backToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.addEventListener("pjax:complete", () => {
+    // 除了Stack脚本初始化外，添加你需要重新初始化的脚本
+    initScrollTop();
+  });
+  initScrollTop();
+</script>
+
+<div class="js-Pjax2">
+  <!-- 访问统计容器 -->
+  <script>
+    (function() {
+      // 动态加载 vercount 脚本
+      const verScript = document.createElement('script');
+      verScript.defer = true;
+      verScript.src = 'https://cn.vercount.one/js';
+      document.body.appendChild(verScript);
+
+      // 显示/隐藏逻辑
+      function showHideView() {
+        const viewCounts = document.querySelectorAll("#viewCount");
+        if (viewCounts) {
+          const isArticle = !!document.querySelector(".article-page");
+          viewCounts.forEach(ele => {
+            ele.style.display = isArticle ? '' : 'none';
+          });
+        }
+      }
+      // 初始化执行
+      showHideView();
+      // PJAX 完成后重新执行
+      document.addEventListener('pjax:complete', function() {
+        showHideView();
+      });
+    })();
+  </script>
+</div>
+
+{{- with .Site.Params.comments.giscus -}}
+  <div class="js-Pjax1">
+    <script>
+      (function () {
+        window.giscusConfig = {
+          repo: '{{- .repo -}}',
+          repoId: '{{- .repoID -}}',
+          category: '{{- .category -}}',
+          categoryId: '{{- .categoryID -}}',
+          mapping: '{{- default "title" .mapping -}}',
+          strict: '0',
+          reactionsEnabled: '1',
+          emitMetadata: '0',
+          inputPosition: '{{- default "top" .inputPosition -}}',
+          theme: '{{- default "light" .lightTheme -}}',
+          lang: '{{- default "en" .lang -}}',
+          loading: '{{- .loading -}}'
+        };
+
+        let comment = document.querySelector(".comment");
+        if (!comment) return;
+
+        // 创建占位容器
+        const placeholder = document.createElement('div');
+        placeholder.className = 'giscus-placeholder';
+        placeholder.style.minHeight = '160px';
+        placeholder.style.backgroundColor = 'transparent';
+        
+        // 插入到footer之前
+        const siteFooter = document.querySelector('.site-footer');
+        if (siteFooter) {
+          siteFooter.parentNode.insertBefore(placeholder, siteFooter);
+        }
+
+        function reloadComments() {
+          // 清空现有内容
+          placeholder.innerHTML = '';
+          
+          // 创建新脚本
+          const newScript = document.createElement('script');
+          newScript.src = 'https://giscus.app/client.js';
+          for (let key in window.giscusConfig) {
+            newScript.setAttribute(`data-${key}`, window.giscusConfig[key]);
+          }
+          newScript.setAttribute('crossorigin', 'anonymous');
+          newScript.async = true;
+          
+          placeholder.appendChild(newScript);
+        }
+
+        reloadComments();
+        
+        setTimeout(reloadComments, 700);
+      })();
+    </script>
+  </div>
+{{- end -}}

@@ -1,0 +1,89 @@
+toggleMenu:
+  other: 切換選單
+
+darkMode:
+  other: 深色模式
+
+list:
+  page:
+    one: "第 {{ .Count }} 頁"
+    other: "第 {{ .Count }} 頁"
+
+  section:
+    other: Section
+
+  subsection:
+    one: Subsection
+    other: Subsections
+
+article:
+  back:
+    other: 返回
+
+  tableOfContents:
+    other: 目錄
+
+  relatedContent:
+    other: 相關內容
+
+  lastUpdatedOn:
+    other: 上次改過於
+
+  readingTime:
+    one: "需要 {{ .Count }} 分鐘閱讀"
+    other: "需要 {{ .Count }} 分鐘閱讀"
+
+notFound:
+  title:
+    other: 404 錯誤
+
+  subtitle:
+    other: 頁面不存在
+
+widget:
+  archives:
+    title:
+      other: 標籤雲
+
+    more:
+      other: 更多
+
+  tagCloud:
+    title:
+      other: 標籤
+  categoriesCloud:
+    title:
+      other: 類別
+
+search:
+  title:
+    other: 搜尋
+
+  placeholder:
+    other: 輸入關鍵字...
+
+  resultTitle:
+    other: "#PAGES_COUNT pages (#TIME_SECONDS seconds)"
+
+footer:
+  builtWith:
+    other: 使用 {{ .Generator }} 構建
+
+  designedBy:
+    other: 主題 {{ .Theme }} 由 {{ .DesignedBy }} 設計
+
+# 中文
+articleCount: "{{ .Count }}"
+
+runningTimetext: "本網站已穩定運行"
+
+day: "天"
+hour: "小時"
+minute: "分鐘"
+
+postTotle: "總計"
+postTotalText: "篇文章"
+
+words: " 字"
+
+views: "次"
