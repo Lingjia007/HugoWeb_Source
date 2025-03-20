@@ -2,34 +2,42 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Categories on lingsir007</title>
-        <link>http://localhost:11455/Hugo_Web/categories/</link>
+        <link>http://localhost:13819/Hugo_Web/categories/</link>
         <description>Recent content in Categories on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Wed, 19 Mar 2025 13:41:49 +0800</lastBuildDate><atom:link href="http://localhost:11455/Hugo_Web/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 20 Mar 2025 17:59:50 +0800</lastBuildDate><atom:link href="http://localhost:13819/Hugo_Web/categories/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>语法</title>
-        <link>http://localhost:11455/Hugo_Web/categories/%E8%AF%AD%E6%B3%95/</link>
+        <link>http://localhost:13819/Hugo_Web/categories/%E8%AF%AD%E6%B3%95/</link>
         <pubDate>Tue, 11 Mar 2025 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:11455/Hugo_Web/categories/%E8%AF%AD%E6%B3%95/</guid>
+        <guid>http://localhost:13819/Hugo_Web/categories/%E8%AF%AD%E6%B3%95/</guid>
         <description></description>
         </item>
         <item>
         <title>主题</title>
-        <link>http://localhost:11455/Hugo_Web/categories/%E4%B8%BB%E9%A2%98/</link>
+        <link>http://localhost:13819/Hugo_Web/categories/%E4%B8%BB%E9%A2%98/</link>
         <pubDate>Tue, 11 Mar 2025 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:11455/Hugo_Web/categories/%E4%B8%BB%E9%A2%98/</guid>
+        <guid>http://localhost:13819/Hugo_Web/categories/%E4%B8%BB%E9%A2%98/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Emoji</title>
+        <link>http://localhost:13819/Hugo_Web/categories/emoji/</link>
+        <pubDate>Tue, 05 Mar 2019 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:13819/Hugo_Web/categories/emoji/</guid>
         <description></description>
         </item>
         <item>
         <title>Test</title>
-        <link>http://localhost:11455/Hugo_Web/categories/test/</link>
+        <link>http://localhost:13819/Hugo_Web/categories/test/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:11455/Hugo_Web/categories/test/</guid>
-        <description>&lt;img src="http://localhost:11455/Hugo_Web/categories/test/hutomo-abrianto-l2jk-uxb1BY-unsplash.jpg" alt="Featured image of post Test" /&gt;</description>
+        <guid>http://localhost:13819/Hugo_Web/categories/test/</guid>
+        <description>&lt;img src="http://localhost:13819/Hugo_Web/categories/test/hutomo-abrianto-l2jk-uxb1BY-unsplash.jpg" alt="Featured image of post Test" /&gt;</description>
         </item>
         
     </channel>
