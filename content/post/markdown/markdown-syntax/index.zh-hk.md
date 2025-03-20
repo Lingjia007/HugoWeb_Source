@@ -49,12 +49,12 @@ image = "pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg"
 塊引用元素表示從另一個來源引用的內容，可以選擇引用必須在「footer」或「cite」元素內，也可以選擇內聯更改，如註釋和縮寫。
 
 #### 無歸屬塊引用
-
+> [!NOTE]
 > Tiam，ad mint，epu 和 noise 依次排列。
 > **注意**您可以在塊引用中使用\_Markdown 語法。
 
 #### 歸屬塊引用
-
+> [!TIP]
 > 不要通過分享記憶來交流，要通過交流來分享記憶。<br>
 > — <cite>羅伯·皮克[^1]</cite>
 

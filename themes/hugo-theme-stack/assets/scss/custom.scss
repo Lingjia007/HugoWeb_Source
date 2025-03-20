@@ -324,3 +324,47 @@ body.article-page a[data-pjax-state]:hover img {
     transform: rotate(360deg);
     /* 悬停时顺时针旋转360度 */
 }
+
+[data-scheme="light"] {
+    .alert-note {
+        --card-separator-color: #65bbee;
+        --blockquote-background-color: #e7f2fa;
+    }
+
+    .alert-tip {
+        --card-separator-color: #55aa55;
+        --blockquote-background-color: #eeffee;
+    }
+
+    .alert-warn {
+        --card-separator-color: #ffbb78;
+        --blockquote-background-color: #ffeecc;
+    }
+
+    .alert-error {
+        --card-separator-color: #cc3334;
+        --blockquote-background-color: #ffeeef;
+    }
+}
+
+[data-scheme="dark"] {
+    .alert-note {
+        --card-separator-color: #006699;
+        --blockquote-background-color: #002234;
+    }
+
+    .alert-tip {
+        --card-separator-color: #336733;
+        --blockquote-background-color: #112310;
+    }
+
+    .alert-warn {
+        --card-separator-color: #aa5501;
+        --blockquote-background-color: #452300;
+    }
+
+    .alert-error {
+        --card-separator-color: #880000;
+        --blockquote-background-color: #450000;
+    }
+}
