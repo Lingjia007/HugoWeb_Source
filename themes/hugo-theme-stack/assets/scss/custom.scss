@@ -313,3 +313,14 @@ body.article-page a[data-pjax-state]:hover img {
     color: #007BFF;
     /* 文字颜色，可以根据设计更改 */
 }
+
+#backTopBtn {
+    cursor: pointer;
+    transition: transform 0.6s ease-in-out;
+    /* 添加过渡动画 */
+}
+
+#backTopBtn:hover {
+    transform: rotate(360deg);
+    /* 悬停时顺时针旋转360度 */
+}
