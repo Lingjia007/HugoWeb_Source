@@ -105,3 +105,11 @@ jobs:
           cp -r assets/* public/en/
           cp -r assets/* public/zh-hk/
 
+      - name: Deploy to Netlify Branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          PERSONAL_TOKEN: ${{ secrets.TOKEN }}
+          EXTERNAL_REPOSITORY: Lingjia007/Hugo_Web
+          PUBLISH_BRANCH: netlify
+          PUBLISH_DIR: ./public
+          commit_message: "Deploy to Netlify: ${{ github.sha }}"
