@@ -113,3 +113,4 @@ jobs:
           PUBLISH_BRANCH: netlify
           PUBLISH_DIR: ./public
           commit_message: "Deploy to Netlify: ${{ github.sha }}"
+          force_orphan: false
