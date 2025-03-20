@@ -78,15 +78,14 @@ jobs:
         run: |
           # 修改 waifu 提示文件路径
           sed -i 's#Hugo_Web/##g' static/js/my-waifu-tips.json
-          sed -i '277d' hugo.yaml   # 直接删除第 277 行
 
-      - name: Commit config changes
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add hugo.yaml static/js/my-waifu-tips.json
-          git commit -m "Update Netlify config"
-          git push origin netlify --force  # 强制推送
+      # - name: Commit config changes
+      #   run: |
+      #     git config --global user.name "GitHub Actions"
+      #     git config --global user.email "actions@github.com"
+      #     git add hugo.yaml static/js/my-waifu-tips.json
+      #     git commit -m "Update Netlify config"
+      #     git push origin netlify --force  # 强制推送
 
       - name: Set up Hugo
         uses: peaceiris/actions-hugo@v2
