@@ -78,7 +78,6 @@ jobs:
         run: |
           # 修改 waifu 提示文件路径
           sed -i 's#Hugo_Web/##g' static/js/my-waifu-tips.json
-          sed -i '277d' hugo.yaml   # 删除第 277 行 - :git
 
       - name: Commit config changes
         run: |
