@@ -59,12 +59,12 @@ jobs:
         with:
           ref: main
 
-      # - name: Git Configuration
-      #   run: |
-      #     git config --global core.quotePath false
-      #     git config --global core.autocrlf false
-      #     git config --global core.safecrlf true
-      #     git config --global core.ignorecase false
+      - name: Git Configuration
+        run: |
+          git config --global core.quotePath false
+          git config --global core.autocrlf false
+          git config --global core.safecrlf true
+          git config --global core.ignorecase false
 
       - name: Switch to netlify branch
         run: git checkout -B netlify
@@ -78,6 +78,21 @@ jobs:
         run: |
           # 修改 waifu 提示文件路径
           sed -i 's#Hugo_Web/##g' static/js/my-waifu-tips.json
+
+      - name: Update lastmod with current time
+        run: |
+          # 安装必要的工具（如 yq 处理 YAML）
+          sudo apt-get install -y jq
+
+          # 遍历所有 Markdown 文件
+          find content -name "*.md" -exec sh -c '
+            for file do
+              # 使用 yq 添加/更新 lastmod 字段为当前 UTC 时间
+              current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+              yq --front-matter=process ".lastmod = \"$current_time\"" "$file" > "${file}.tmp"
+              mv "${file}.tmp" "$file"
+            done
+          ' sh {} +
 
       - name: Commit config changes
         run: |
