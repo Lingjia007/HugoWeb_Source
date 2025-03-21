@@ -82,8 +82,10 @@ hour: "h "
 minute: "m "
 
 postTotle: "A total of "
+totle: "Total "
 postTotalText: " articles"
 
 words: " words"
+Words: " words"
 
 views : "views"

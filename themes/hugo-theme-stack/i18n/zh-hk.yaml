@@ -82,8 +82,10 @@ hour: "小時"
 minute: "分鐘"
 
 postTotle: "總計"
+totle: "共"
 postTotalText: "篇文章"
 
 words: " 字"
+Words: "字"
 
 views: "次"
