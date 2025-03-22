@@ -13,7 +13,7 @@
             {{ range (where .Site.Pages "Kind" "page" )}}
                 {{$scratch.Add "total" .WordCount}}
             {{ end }}
-        {{ T "runningTimetext" }}&nbsp;<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;{{ T "postTotle" }}<span id="articleCount">< {{ T "articleCount" (dict "Count" (len (where .Site.RegularPages "Section" "post"))) }} ></span>{{ T "postTotalText" }} <span style="font-weight: bold;">·</span> {{ T "totle"}}<span id="articlewordCount">< {{ div ($scratch.Get "total") 1000.0 | lang.FormatNumber 2 }} k ></span>{{ T "Words"}}
+        {{ T "runningTimetext" }}<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;{{ T "postTotle" }}<span id="articleCount">< {{ T "articleCount" (dict "Count" (len (where .Site.RegularPages "Section" "post"))) }} ></span>{{ T "postTotalText" }} <span style="font-weight: bold;">·</span> {{ T "totle"}}<span id="articlewordCount">< {{ div ($scratch.Get "total") 1000.0 | lang.FormatNumber 2 }} k ></span>{{ T "Words"}}
     </section>
     <section class="powerby">
         {{ with .Site.Params.footer.customText }}
