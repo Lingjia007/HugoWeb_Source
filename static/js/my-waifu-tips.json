@@ -306,14 +306,6 @@
       ]
     },
     {
-      "selector": ".links article a",
-      "text": [
-        "要去看看 <span>{text}</span> 么？",
-        "去 <span>{text}</span> 逛逛吧。",
-        "到 <span>{text}</span> 看看吧。"
-      ]
-    },
-    {
       "selector": ".article-list .article-title a",
       "text": [
         "点击来阅读全文哦。"
@@ -347,9 +339,7 @@
     {
       "selector": ".container a[href^='http'], .nav-link .nav-text",
       "text": [
-        "要去看看 <span>{text}</span> 么？",
-        "去 <span>{text}</span> 逛逛吧。",
-        "到 <span>{text}</span> 看看吧。"
+        "只有文章的内容才会切换到 <span>{text}</span> 哦！"
       ]
     },
     {
@@ -623,7 +613,7 @@
       "text": "<span>儿童节</span>了呢，快活的时光总是短暂，要是永远长不大该多好啊…"
     },
     {
-      "date": "08/14",
+      "date": "07/12",
       "text": "生日快乐\uD83C\uDF89\uD83C\uDF89\uD83C\uDF89今天是你的生日哦，我一直都记得的"
     },
     {

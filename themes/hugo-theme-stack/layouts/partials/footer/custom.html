@@ -564,20 +564,30 @@
   <div class="js-Pjax1">
     <script>
       (function () {
+        var pathName = window.location.pathname;
+        let langFromPath = 'zh-CN';
+        if (pathName.includes('/zh-hk')) {
+            langFromPath = 'zh-HK';
+        } else if (pathName.includes('/en')) {
+            langFromPath = 'en';
+        }
+        // 配置 giscusConfig
         window.giscusConfig = {
-          repo: '{{- .repo -}}',
-          repoId: '{{- .repoID -}}',
-          category: '{{- .category -}}',
-          categoryId: '{{- .categoryID -}}',
-          mapping: '{{- default "title" .mapping -}}',
-          strict: '0',
-          reactionsEnabled: '1',
-          emitMetadata: '0',
-          inputPosition: '{{- default "top" .inputPosition -}}',
-          theme: '{{- default "light" .lightTheme -}}',
-          lang: '{{- default "en" .lang -}}',
-          loading: '{{- .loading -}}'
+            repo: '{{- .repo -}}',
+            repoId: '{{- .repoID -}}',
+            category: '{{- .category -}}',
+            categoryId: '{{- .categoryID -}}',
+            mapping: '{{- default "title" .mapping -}}',
+            strict: '0',
+            reactionsEnabled: '1',
+            emitMetadata: '0',
+            inputPosition: '{{- default "top" .inputPosition -}}',
+            theme: '{{- default "light" .lightTheme -}}',
+            lang: langFromPath, // 动态设置语言
+            loading: '{{- .loading -}}'
         };
+
+        console.log('giscus_language set to:', window.giscusConfig.lang);
 
         let comment = document.querySelector(".comment");
         if (!comment) return;

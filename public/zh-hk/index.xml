@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>lingsir007</title>
-        <link>http://localhost:6670/Hugo_Web/zh-hk/</link>
+        <link>http://localhost:1708/Hugo_Web/zh-hk/</link>
         <description>Recent content on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-hk</language>
-        <copyright>lingsir007</copyright><atom:link href="http://localhost:6670/Hugo_Web/zh-hk/index.xml" rel="self" type="application/rss+xml" /><item>
+        <copyright>lingsir007</copyright><atom:link href="http://localhost:1708/Hugo_Web/zh-hk/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>Markdown語法示例</title>
-        <link>http://localhost:6670/Hugo_Web/zh-hk/p/markdown%E8%AA%9E%E6%B3%95%E7%A4%BA%E4%BE%8B/</link>
+        <link>http://localhost:1708/Hugo_Web/zh-hk/p/markdown%E8%AA%9E%E6%B3%95%E7%A4%BA%E4%BE%8B/</link>
         <pubDate>Tue, 11 Mar 2025 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6670/Hugo_Web/zh-hk/p/markdown%E8%AA%9E%E6%B3%95%E7%A4%BA%E4%BE%8B/</guid>
-        <description>&lt;img src="http://localhost:6670/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown語法示例" /&gt;&lt;p&gt;本文提供了一個可以在 Hugo 內容檔案中使用的基本 Markdown 語法示例，還展示了基本 HTML 元素是否在 Hugo 主題中用 CSS 裝飾。&lt;/p&gt;
+        <guid>http://localhost:1708/Hugo_Web/zh-hk/p/markdown%E8%AA%9E%E6%B3%95%E7%A4%BA%E4%BE%8B/</guid>
+        <description>&lt;img src="http://localhost:1708/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown語法示例" /&gt;&lt;p&gt;本文提供了一個可以在 Hugo 內容檔案中使用的基本 Markdown 語法示例，還展示了基本 HTML 元素是否在 Hugo 主題中用 CSS 裝飾。&lt;/p&gt;
 &lt;h2 id=&#34;標題&#34;&gt;標題
 &lt;/h2&gt;&lt;p&gt;下面的 HTML &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt;—&lt;code&gt;&amp;lt;h6&amp;gt;&lt;/code&gt; 元素表示六個級別的節標題 &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt; 是最高的節級別，而 &lt;code&gt;&amp;lt;h6&amp;gt;&lt;/code&gt; 是最低的節級別。&lt;/p&gt;
 &lt;h1 id=&#34;h1&#34;&gt;H1
@@ -237,18 +237,18 @@
         </item>
         <item>
         <title>歸檔</title>
-        <link>http://localhost:6670/Hugo_Web/zh-hk/archives/</link>
+        <link>http://localhost:1708/Hugo_Web/zh-hk/archives/</link>
         <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6670/Hugo_Web/zh-hk/archives/</guid>
+        <guid>http://localhost:1708/Hugo_Web/zh-hk/archives/</guid>
         <description></description>
         </item>
         <item>
         <title>友情鏈接</title>
-        <link>http://localhost:6670/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</link>
+        <link>http://localhost:1708/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6670/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</guid>
+        <guid>http://localhost:1708/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</guid>
         <description>&lt;p&gt;To use this feature, add &lt;code&gt;links&lt;/code&gt; section to frontmatter.&lt;/p&gt;
 &lt;p&gt;This page&amp;rsquo;s frontmatter:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -280,18 +280,18 @@
         </item>
         <item>
         <title>搜尋</title>
-        <link>http://localhost:6670/Hugo_Web/zh-hk/search/</link>
+        <link>http://localhost:1708/Hugo_Web/zh-hk/search/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6670/Hugo_Web/zh-hk/search/</guid>
+        <guid>http://localhost:1708/Hugo_Web/zh-hk/search/</guid>
         <description></description>
         </item>
         <item>
         <title>關於</title>
-        <link>http://localhost:6670/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/</link>
+        <link>http://localhost:1708/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6670/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/</guid>
+        <guid>http://localhost:1708/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/</guid>
         <description>&lt;p&gt;This is a test page for i18n support.&lt;/p&gt;
 </description>
         </item>
