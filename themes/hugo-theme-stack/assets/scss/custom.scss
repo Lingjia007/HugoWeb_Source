@@ -5,6 +5,21 @@
     margin-bottom: 60px;
 }
 
+.aplayer-music {
+    font-family: "AlibabaPuHuiTi-3-45-Light", "PingFang SC", sans-serif !important;
+}
+
+.aplayer-lrc-contents p {
+    font-size: 14px !important;
+    //color: #DF7988 !important;
+    font-family: "AlibabaPuHuiTi-3-65-Medium", "PingFang SC", sans-serif !important;
+}
+
+.aplayer .aplayer-lrc p.aplayer-lrc-current {
+    font-size: 17px !important;
+    //color: #DF7988 !important;
+}
+
 @media (min-width: 1024px) {
     .article-list--compact {
         display: grid;

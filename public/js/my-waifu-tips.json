@@ -339,7 +339,7 @@
     {
       "selector": ".container a[href^='http'], .nav-link .nav-text",
       "text": [
-        "只有文章的内容才会切换到 <span>{text}</span> 哦！"
+        "要去 <span>{text}</span> 看看吗？"
       ]
     },
     {
