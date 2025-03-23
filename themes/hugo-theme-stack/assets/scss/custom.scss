@@ -149,6 +149,15 @@ input:hover,
     }
 }
 
+.article-tags {
+    a {
+        @include hover-elevate-effect;
+        transition-delay: 0.02s; // 统一延迟
+        padding: 0.5em 1.1em;
+        border-radius: 0.38em;
+    }
+}
+
 /*━━ 导航菜单悬停动画 ━━*/
 #main-menu {
 
