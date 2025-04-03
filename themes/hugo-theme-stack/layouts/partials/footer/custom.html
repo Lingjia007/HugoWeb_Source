@@ -146,7 +146,42 @@
     }
   };
 </script>
+<script>
+  // 将时钟初始化代码移到一个函数中
+  function initClock() {
+    // 1:找到三个元素标签
+    var hr = document.getElementById("hr"); //时
+    var mn = document.getElementById("mn"); //分
+    var sc = document.getElementById("sc"); //秒
 
+    setInterval(function () {
+      var date = new Date();
+      var HH = date.getHours();
+      var MM = date.getMinutes();
+      var SS = date.getSeconds();
+
+      // 计算旋转角度
+      var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+      var minuteAngle = MM * 6 + (SS / 60) * 6;
+      var secondAngle = SS * 6;
+
+      // 应用旋转角度
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 1000);
+  }
+
+  // 在页面加载时初始化时钟
+  window.onload = function () {
+    initClock();
+  };
+
+  // 在 Pjax 加载完成后重新初始化时钟
+  document.addEventListener("pjax:complete", () => {
+    initClock();
+  });
+</script>
 <script>
   document.addEventListener("pjax:complete", () => {
     // Stack脚本初始化

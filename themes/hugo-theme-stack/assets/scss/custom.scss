@@ -383,6 +383,29 @@ body.article-page a[data-pjax-state]:hover img {
         --card-separator-color: #cc3334;
         --blockquote-background-color: #ffeeef;
     }
+
+    .clock-component {
+        .clock {
+            border: 4px solid #f5f5fa;
+            box-shadow:
+                0 -15px 20px rgba(255, 255, 255, 1),
+                /* 上部外阴影：增加模糊和透明度 */
+                inset 0 -15px 15px rgba(255, 255, 255, 0.025),
+                /* 上部内阴影（保持原样） */
+                0 15px 15px rgba(0, 0, 0, 0.15),
+                /* 下部外阴影（保持原样） */
+                inset 0 15px 20px rgba(0, 0, 0, 0.2);
+            /* 下部内阴影：增加模糊和深度 */
+        }
+
+        .mn::before {
+            background: #888888; // 将分针颜色改为灰色
+        }
+
+        .sc::before {
+            background: #888888; // 将秒针颜色改为灰色
+        }
+    }
 }
 
 [data-scheme="dark"] {
@@ -404,5 +427,110 @@ body.article-page a[data-pjax-state]:hover img {
     .alert-error {
         --card-separator-color: #880000;
         --blockquote-background-color: #450000;
+    }
+}
+
+/* 时钟组件的命名空间 */
+.clock-component {
+    width: 250px;
+    /* 确保时钟组件的宽度不超过容器宽度 */
+    margin: 0 auto;
+    /* 水平居中 */
+    position: relative;
+
+    /* 确保子元素的绝对定位相对于这个容器 */
+    .clock {
+        width: 250px;
+        height: 250px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: url(../img/clock.png) no-repeat center/cover !important;
+        /* 确保路径正确且优先级高 */
+        border: 4px solid #303030;
+        border-radius: 50%;
+        box-shadow:
+            0 -15px 15px rgba(255, 255, 255, 0.05),
+            inset 0 -15px 15px rgba(255, 255, 255, 0.05),
+            0 15px 15px rgba(0, 0, 0, 0.3),
+            inset 0 15px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .clock::before {
+        content: '';
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        background: #fff;
+        border-radius: 50%;
+        z-index: 10000;
+    }
+
+    .clock .hour,
+    .clock .min,
+    .clock .sec {
+        position: absolute;
+    }
+
+    .clock .hour,
+    .hr {
+        width: 160px;
+        height: 160px;
+    }
+
+    .clock .min,
+    .mn {
+        width: 190px;
+        height: 190px;
+    }
+
+    .clock .sec,
+    .sc {
+        width: 230px;
+        height: 230px;
+    }
+
+    .hr,
+    .mn,
+    .sc {
+        display: flex;
+        justify-content: center;
+        position: absolute;
+        border-radius: 50%;
+    }
+
+    .hr::before {
+        content: '';
+        position: absolute;
+        width: 8px;
+        height: 80px;
+        background: #ff105e;
+        z-index: 10;
+        border-radius: 6px 6px 0 0;
+    }
+
+    .mn::before {
+        content: '';
+        position: absolute;
+        width: 4px;
+        height: 90px;
+        background: #fff;
+        z-index: 11;
+        border-radius: 6px 6px 0 0;
+    }
+
+    .sc::before {
+        content: '';
+        position: absolute;
+        width: 2.7px;
+        height: 130px;
+        /* 调整秒针的高度 */
+        background: #fff;
+        z-index: 12;
+        border-radius: 6px 6px 0 0;
+        top: 20%;
+        /* 从中心开始 */
+        transform: translateY(-20%);
+        /* 调整位置 */
     }
 }
