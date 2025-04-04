@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
-    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=8152&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=4823&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="欢迎来到我的网站">
 <title>404 Page not found</title>
 
-<link rel='canonical' href='http://localhost:8152/Hugo_Web/404.html'>
+<link rel='canonical' href='http://localhost:4823/Hugo_Web/404.html'>
 
-<link rel="stylesheet" href="/Hugo_Web/scss/style.min.278c1b65bc119931315213ac6e3fc9387c8572387b53db27eef351be6176e17b.css"><meta property='og:title' content="404 Page not found">
+<link rel="stylesheet" href="/Hugo_Web/scss/style.min.ff38a4e9fb201b39cd0b455ee6bd44b48f28c745dd1aee48c7f1bbd5f2c513a2.css"><meta property='og:title' content="404 Page not found">
 <meta property='og:description' content="欢迎来到我的网站">
-<meta property='og:url' content='http://localhost:8152/Hugo_Web/404.html'>
+<meta property='og:url' content='http://localhost:4823/Hugo_Web/404.html'>
 <meta property='og:site_name' content='lingsir007'>
 <meta property='og:type' content='website'><meta property='og:updated_time' content=' 2025-03-20T23:07:19&#43;08:00 '/>
 <meta name="twitter:title" content="404 Page not found">
@@ -231,11 +231,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="http://localhost:8152/Hugo_Web/" selected>简体中文</option>
+                                    <option value="http://localhost:4823/Hugo_Web/" selected>简体中文</option>
                                 
-                                    <option value="http://localhost:8152/Hugo_Web/zh-hk/" >繁體中文</option>
+                                    <option value="http://localhost:4823/Hugo_Web/zh-hk/" >繁體中文</option>
                                 
-                                    <option value="http://localhost:8152/Hugo_Web/en/" >English</option>
+                                    <option value="http://localhost:4823/Hugo_Web/en/" >English</option>
                                 
                             </select>
                         </li>
@@ -272,7 +272,7 @@
     <div class="not-found-card">
         <h1 class="article-title">404 错误</h1>
         <h2 class="article-subtitle">页面不存在</h2>
-    </div><form action="/Hugo_Web/search/" class="search-form widget" data-json="http://localhost:8152/Hugo_Web/search/index.json">
+    </div><form action="/Hugo_Web/search/" class="search-form widget" data-json="http://localhost:4823/Hugo_Web/search/index.json">
             <p>
                 <label>搜索</label>
                 <input id="searchInput" name="keyword" required placeholder="输入关键词..." />
@@ -370,7 +370,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "http://localhost:8152/Hugo_Web/";
+  const staticDir = "http://localhost:4823/Hugo_Web/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -501,6 +501,7 @@
     }
   };
 </script>
+
 <script>
   
   function initClock() {
@@ -509,6 +510,40 @@
     var mn = document.getElementById("mn"); 
     var sc = document.getElementById("sc"); 
 
+    
+    var date = new Date();
+    var HH = date.getHours();
+    var MM = date.getMinutes();
+    var SS = date.getSeconds();
+
+    
+    var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+    var minuteAngle = MM * 6 + (SS / 60) * 6;
+    var secondAngle = SS * 6;
+
+    
+    hr.style.transition = 'none';
+    mn.style.transition = 'none';
+    sc.style.transition = 'none';
+
+    
+    hr.style.transform = "rotate(0deg)";
+    mn.style.transform = "rotate(0deg)";
+    sc.style.transform = "rotate(0deg)";
+
+    
+    setTimeout(() => {
+      hr.style.transition = '';
+      mn.style.transition = '';
+      sc.style.transition = '';
+
+      
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 200);
+
+    
     setInterval(function () {
       var date = new Date();
       var HH = date.getHours();
@@ -537,6 +572,7 @@
     initClock();
   });
 </script>
+
 <script>
   document.addEventListener("pjax:complete", () => {
     
@@ -581,7 +617,7 @@
   });
 </script>
 
-<script src="http://localhost:8152/Hugo_Web/js/topbar.min.js"></script>
+<script src="http://localhost:4823/Hugo_Web/js/topbar.min.js"></script>
 
 <script>
   
@@ -610,12 +646,12 @@
     
     path: {
       homePath: "/",
-      modelPath: "http:\/\/localhost:8152\/Hugo_Web\/live2d-moc3/",
-      cssPath: "http:\/\/localhost:8152\/Hugo_Web\/js/waifu.css",
-      tipsJsonPath: "http:\/\/localhost:8152\/Hugo_Web\/js/my-waifu-tips.json",
+      modelPath: "http:\/\/localhost:4823\/Hugo_Web\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:4823\/Hugo_Web\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:4823\/Hugo_Web\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "http:\/\/localhost:8152\/Hugo_Web\/js/live2dcubismcore.js",
-      live2dSdkPath: "http:\/\/localhost:8152\/Hugo_Web\/js/live2d-sdk.js",
+      live2dCorePath: "http:\/\/localhost:4823\/Hugo_Web\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:4823\/Hugo_Web\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -762,7 +798,7 @@
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "http:\/\/localhost:8152\/Hugo_Web\/icons/codeMore.png";
+      img.src = "http:\/\/localhost:4823\/Hugo_Web\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -778,11 +814,11 @@
 
 <div id="particles-js"></div>
 
-<script src="http://localhost:8152/Hugo_Web/background/particles.min.js"></script>
+<script src="http://localhost:4823/Hugo_Web/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "http:\/\/localhost:8152\/Hugo_Web\/background/particlesjs-config.json",
+    "http:\/\/localhost:4823\/Hugo_Web\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     }
@@ -855,7 +891,7 @@
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(http://localhost:8152/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(http://localhost:4823/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -874,7 +910,7 @@
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("http://localhost:8152/Hugo_Web/icons/backTop.svg");
+    background-image: url("http://localhost:4823/Hugo_Web/icons/backTop.svg");
   }
 </style>
 

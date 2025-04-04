@@ -146,6 +146,7 @@
     }
   };
 </script>
+
 <script>
   // 将时钟初始化代码移到一个函数中
   function initClock() {
@@ -154,6 +155,40 @@
     var mn = document.getElementById("mn"); //分
     var sc = document.getElementById("sc"); //秒
 
+    // 获取当前时间
+    var date = new Date();
+    var HH = date.getHours();
+    var MM = date.getMinutes();
+    var SS = date.getSeconds();
+
+    // 计算旋转角度
+    var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+    var minuteAngle = MM * 6 + (SS / 60) * 6;
+    var secondAngle = SS * 6;
+
+    // 移除过渡效果以设置初始位置
+    hr.style.transition = 'none';
+    mn.style.transition = 'none';
+    sc.style.transition = 'none';
+
+    // 设置初始位置到默认位置（如0度）
+    hr.style.transform = "rotate(0deg)";
+    mn.style.transform = "rotate(0deg)";
+    sc.style.transform = "rotate(0deg)";
+
+    // 重新应用过渡效果
+    setTimeout(() => {
+      hr.style.transition = '';
+      mn.style.transition = '';
+      sc.style.transition = '';
+
+      // 设置初始位置到当前时间的位置
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 200);
+
+    // 设置定时器每秒更新一次指针位置
     setInterval(function () {
       var date = new Date();
       var HH = date.getHours();
@@ -182,6 +217,7 @@
     initClock();
   });
 </script>
+
 <script>
   document.addEventListener("pjax:complete", () => {
     // Stack脚本初始化

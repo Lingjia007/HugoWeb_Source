@@ -497,6 +497,19 @@ body.article-page a[data-pjax-state]:hover img {
         justify-content: center;
         position: absolute;
         border-radius: 50%;
+
+    }
+
+    .hr {
+        transition-duration: 1.2s;
+    }
+
+    .mn {
+        transition-duration: 1.0s;
+    }
+
+    .sc {
+        transition-duration: 0.8s;
     }
 
     .hr::before {
@@ -507,6 +520,7 @@ body.article-page a[data-pjax-state]:hover img {
         background: #ff105e;
         z-index: 10;
         border-radius: 6px 6px 0 0;
+        transition: transform 1s ease-out; // 添加过渡动画
     }
 
     .mn::before {
@@ -517,6 +531,7 @@ body.article-page a[data-pjax-state]:hover img {
         background: #fff;
         z-index: 11;
         border-radius: 6px 6px 0 0;
+        transition: transform 1s ease-out; // 添加过渡动画
     }
 
     .sc::before {
@@ -524,13 +539,11 @@ body.article-page a[data-pjax-state]:hover img {
         position: absolute;
         width: 2.7px;
         height: 130px;
-        /* 调整秒针的高度 */
         background: #fff;
         z-index: 12;
         border-radius: 6px 6px 0 0;
         top: 20%;
-        /* 从中心开始 */
         transform: translateY(-20%);
-        /* 调整位置 */
+        transition: transform 1s ease-out; // 添加过渡动画
     }
 }
