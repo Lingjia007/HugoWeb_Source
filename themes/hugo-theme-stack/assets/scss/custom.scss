@@ -432,7 +432,7 @@ body.article-page a[data-pjax-state]:hover img {
 
 /* 时钟组件的命名空间 */
 .clock-component {
-    width: 250px;
+    width: 210px;
     /* 确保时钟组件的宽度不超过容器宽度 */
     margin: 0 auto;
     /* 水平居中 */
@@ -440,8 +440,8 @@ body.article-page a[data-pjax-state]:hover img {
 
     /* 确保子元素的绝对定位相对于这个容器 */
     .clock {
-        width: 250px;
-        height: 250px;
+        width: 210px;
+        height: 210px;
         display: flex;
         justify-content: center;
         align-items: center;
