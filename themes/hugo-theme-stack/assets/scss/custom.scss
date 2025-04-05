@@ -521,6 +521,7 @@ body.article-page a[data-pjax-state]:hover img {
         z-index: 10;
         border-radius: 6px 6px 0 0;
         transition: transform 1s ease-out; // 添加过渡动画
+        will-change: transform;
     }
 
     .mn::before {
@@ -532,6 +533,7 @@ body.article-page a[data-pjax-state]:hover img {
         z-index: 11;
         border-radius: 6px 6px 0 0;
         transition: transform 1s ease-out; // 添加过渡动画
+        will-change: transform;
     }
 
     .sc::before {
@@ -545,5 +547,6 @@ body.article-page a[data-pjax-state]:hover img {
         top: 20%;
         transform: translateY(-20%);
         transition: transform 1s ease-out; // 添加过渡动画
+        will-change: transform;
     }
 }
