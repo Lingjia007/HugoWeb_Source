@@ -9,8 +9,12 @@ links:
     description: 静态网站由GitHub Pages构建
     website: https://github.com
     image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  - title: GitHub Copilot
+    description: AI 编程助手，提供智能代码补全和生成功能
+    website: https://github.com/features/copilot
+    image: GithubCopilt.png
   - title: DeepSeek
-    description: DeepSeek辅助代码实现
+    description: 探索未至之境
     website: https://www.deepseek.com
     image: deepseek.png
   
