@@ -12,7 +12,7 @@ links:
   - title: GitHub Copilot
     description: AI 编程助手，提供智能代码补全和生成功能
     website: https://github.com/features/copilot
-    image: GithubCopilt.png
+    image: GithubCopilot.png
   - title: DeepSeek
     description: 探索未至之境
     website: https://www.deepseek.com

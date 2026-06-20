@@ -1,14 +1,35 @@
 ---
 title: 友情鏈接
 links:
+  - title: Hugo
+    description: 世界上最快的網站構建框架
+    website: https://gohugo.io
+    image: hugo-logo-wide.png
   - title: GitHub
-    description: GitHub is the world's largest software development platform.
+    description: 靜態網站由GitHub Pages構建
     website: https://github.com
-    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-  - title: TypeScript
-    description: TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.
-    website: https://www.typescriptlang.org
-    image: ts-logo-128.jpg
+    image: GitHub-Mark.png
+  - title: GitHub Copilot
+    description: AI 編程助手，提供智能代碼補全和生成功能
+    website: https://github.com/features/copilot
+    image: GithubCopilot.png
+  - title: DeepSeek
+    description: 探索未至之境
+    website: https://www.deepseek.com
+    image: deepseek.png
+  - title: RT-Thread
+    description: 小而美的物聯網操作系統
+    website: https://www.rt-thread.org
+    image: RT-Thread.png
+  - title: LVGL
+    description: 輕量級嵌入式圖形庫
+    website: https://lvgl.io
+    image: lvgl.png
+  - title: Claude Code
+    description: AI 編程助手，由 Anthropic 推出的智能編碼工具
+    website: https://claude.com/product/claude-code
+    image: Claude Code.png
+
 menu:
   main:
     weight: -50
@@ -17,21 +38,3 @@ menu:
 
 comments: false
 ---
-
-To use this feature, add `links` section to frontmatter.
-
-This page's frontmatter:
-
-```yaml
-links:
-  - title: GitHub
-    description: GitHub is the world's largest software development platform.
-    website: https://github.com
-    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-  - title: TypeScript
-    description: TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.
-    website: https://www.typescriptlang.org
-    image: ts-logo-128.jpg
-```
-
-`image` field accepts both local and external images.

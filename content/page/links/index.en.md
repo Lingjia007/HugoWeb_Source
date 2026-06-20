@@ -1,37 +1,40 @@
 ---
 title: Links
 links:
+  - title: Hugo
+    description: The world's fastest framework for building websites
+    website: https://gohugo.io
+    image: hugo-logo-wide.png
   - title: GitHub
-    description: GitHub is the world's largest software development platform.
+    description: Static website built with GitHub Pages
     website: https://github.com
-    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-  - title: TypeScript
-    description: TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.
-    website: https://www.typescriptlang.org
-    image: ts-logo-128.jpg
+    image: GitHub-Mark.png
+  - title: GitHub Copilot
+    description: AI programming assistant with intelligent code completion and generation
+    website: https://github.com/features/copilot
+    image: GithubCopilot.png
+  - title: DeepSeek
+    description: Explore the unknown
+    website: https://www.deepseek.com
+    image: deepseek.png
+  - title: RT-Thread
+    description: A small and beautiful IoT operating system
+    website: https://www.rt-thread.org
+    image: RT-Thread.png
+  - title: LVGL
+    description: Lightweight embedded graphics library
+    website: https://lvgl.io
+    image: lvgl.png
+  - title: Claude Code
+    description: AI coding assistant, an intelligent coding tool by Anthropic
+    website: https://claude.com/product/claude-code
+    image: Claude Code.png
+
 menu:
-    main: 
-        weight: -50
-        params:
-            icon: link
+  main:
+    weight: -50
+    params:
+      icon: link
 
 comments: false
 ---
-
-To use this feature, add `links` section to frontmatter.
-
-This page's frontmatter:
-
-```yaml
-links:
-  - title: GitHub
-    description: GitHub is the world's largest software development platform.
-    website: https://github.com
-    image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-  - title: TypeScript
-    description: TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.
-    website: https://www.typescriptlang.org
-    image: ts-logo-128.jpg
-```
-
-`image` field accepts both local and external images.
