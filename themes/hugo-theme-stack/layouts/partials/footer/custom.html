@@ -10,7 +10,6 @@
   });
 </script>
 
-
 <div id="aplayer"></div>
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
@@ -154,6 +153,7 @@
     var hr = document.getElementById("hr"); //时
     var mn = document.getElementById("mn"); //分
     var sc = document.getElementById("sc"); //秒
+    if (!hr || !mn || !sc) return;
 
     // 获取当前时间
     var date = new Date();
@@ -167,9 +167,9 @@
     var secondAngle = SS * 6;
 
     // 移除过渡效果以设置初始位置
-    hr.style.transition = 'none';
-    mn.style.transition = 'none';
-    sc.style.transition = 'none';
+    hr.style.transition = "none";
+    mn.style.transition = "none";
+    sc.style.transition = "none";
 
     // 设置初始位置到默认位置（如0度）
     hr.style.transform = "rotate(0deg)";
@@ -178,9 +178,9 @@
 
     // 重新应用过渡效果
     setTimeout(() => {
-      hr.style.transition = '';
-      mn.style.transition = '';
-      sc.style.transition = '';
+      hr.style.transition = "";
+      mn.style.transition = "";
+      sc.style.transition = "";
 
       // 设置初始位置到当前时间的位置
       hr.style.transform = "rotate(" + hourAngle + "deg)";
@@ -222,7 +222,6 @@
   document.addEventListener("pjax:complete", () => {
     // Stack脚本初始化
     window.Stack.init();
-    
   });
 </script>
 
@@ -467,7 +466,7 @@
     "{{ .Site.Home.Permalink }}background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
-    }
+    },
   );
 </script>
 
@@ -524,7 +523,10 @@
       do {
         ul.classList.add("open");
         ul = ul.parentElement.parentElement;
-      } while (ul !== undefined && (ul.localName === "ul" || ul.localName === "ol"));
+      } while (
+        ul !== undefined &&
+        (ul.localName === "ul" || ul.localName === "ol")
+      );
     });
   }
   document.addEventListener("pjax:complete", () => {
@@ -604,11 +606,11 @@
 <div class="js-Pjax2">
   <!-- 访问统计容器 -->
   <script>
-    (function() {
+    (function () {
       // 动态加载 vercount 脚本
-      const verScript = document.createElement('script');
+      const verScript = document.createElement("script");
       verScript.defer = true;
-      verScript.src = 'https://cn.vercount.one/js';
+      verScript.src = "https://cn.vercount.one/js";
       document.body.appendChild(verScript);
 
       // 显示/隐藏逻辑
@@ -616,15 +618,15 @@
         const viewCounts = document.querySelectorAll("#viewCount");
         if (viewCounts) {
           const isArticle = !!document.querySelector(".article-page");
-          viewCounts.forEach(ele => {
-            ele.style.display = isArticle ? '' : 'none';
+          viewCounts.forEach((ele) => {
+            ele.style.display = isArticle ? "" : "none";
           });
         }
       }
       // 初始化执行
       showHideView();
       // PJAX 完成后重新执行
-      document.addEventListener('pjax:complete', function() {
+      document.addEventListener("pjax:complete", function () {
         showHideView();
       });
     })();
@@ -632,48 +634,85 @@
 </div>
 
 {{- with .Site.Params.comments.giscus -}}
-  <div class="js-Pjax1">
-    <script>
-      (function () {
-        var giscusLang = 'en';
-        {{- if eq $.Lang "zh-cn" -}}
-          giscusLang = 'zh-CN';
-        {{- else if eq $.Lang "zh-hk" -}}
-          giscusLang = 'zh-HK';
-        {{- end -}}
+<script>
+  (function () {
+    var giscusConfig = {
+      repo: "{{- .repo -}}",
+      repoId: "{{- .repoID -}}",
+      category: "{{- .category -}}",
+      categoryId: "{{- .categoryID -}}",
+      mapping: '{{- default "title" .mapping -}}',
+      strict: "0",
+      reactionsEnabled: "1",
+      emitMetadata: "0",
+      inputPosition: '{{- default "top" .inputPosition -}}',
+      theme: '{{- default "light" .lightTheme -}}',
+      loading: "{{- .loading -}}",
+    };
+    var giscusLightTheme = '{{- default "light" .lightTheme -}}';
+    var giscusDarkTheme = '{{- default "dark_dimmed" .darkTheme -}}';
 
-        window.giscusConfig = {
-            repo: '{{- .repo -}}',
-            repoId: '{{- .repoID -}}',
-            category: '{{- .category -}}',
-            categoryId: '{{- .categoryID -}}',
-            mapping: '{{- default "title" .mapping -}}',
-            strict: '0',
-            reactionsEnabled: '1',
-            emitMetadata: '0',
-            inputPosition: '{{- default "top" .inputPosition -}}',
-            theme: '{{- default "light" .lightTheme -}}',
-            lang: giscusLang,
-            loading: '{{- .loading -}}'
-        };
+    function getGiscusLang() {
+      var path = window.location.pathname;
+      if (path.indexOf("/zh-hk") !== -1) return "zh-HK";
+      if (path.indexOf("/en") !== -1) return "en";
+      return "zh-CN";
+    }
 
-        let comment = document.querySelector(".comment");
-        if (!comment) return;
+    function getGiscusTheme() {
+      if (document.documentElement.dataset.scheme === "light") {
+        return giscusLightTheme;
+      }
+      return giscusDarkTheme;
+    }
 
-        function reloadComments() {
-          comment.innerHTML = '';
-          const newScript = document.createElement('script');
-          newScript.src = 'https://giscus.app/client.js';
-          for (let key in window.giscusConfig) {
-              newScript.setAttribute(`data-${key}`, window.giscusConfig[key]);
-          }
-          newScript.setAttribute('crossorigin', 'anonymous');
-          newScript.async = true;
-          comment.appendChild(newScript);
-        }
+    function setGiscusTheme(theme) {
+      var giscus = document.querySelector("iframe.giscus-frame");
+      if (giscus) {
+        giscus.contentWindow.postMessage(
+          { giscus: { setConfig: { theme: theme } } },
+          "https://giscus.app",
+        );
+      }
+    }
 
-        reloadComments();
-      })();
-    </script>
-  </div>
+    function loadGiscus() {
+      var comment = document.querySelector(".comment");
+      if (!comment) return;
+      comment.innerHTML = "";
+      var lang = getGiscusLang();
+      var script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.setAttribute("data-repo", giscusConfig.repo);
+      script.setAttribute("data-repo-id", giscusConfig.repoId);
+      script.setAttribute("data-category", giscusConfig.category);
+      script.setAttribute("data-category-id", giscusConfig.categoryId);
+      script.setAttribute("data-mapping", giscusConfig.mapping);
+      script.setAttribute("data-strict", giscusConfig.strict);
+      script.setAttribute(
+        "data-reactions-enabled",
+        giscusConfig.reactionsEnabled,
+      );
+      script.setAttribute("data-emit-metadata", giscusConfig.emitMetadata);
+      script.setAttribute("data-input-position", giscusConfig.inputPosition);
+      script.setAttribute("data-theme", giscusConfig.theme);
+      script.setAttribute("data-lang", lang);
+      script.setAttribute("data-loading", giscusConfig.loading);
+      script.setAttribute("crossorigin", "anonymous");
+      script.async = true;
+      comment.appendChild(script);
+    }
+
+    window.addEventListener("message", function (e) {
+      if (e.origin !== "https://giscus.app") return;
+      setGiscusTheme(getGiscusTheme());
+    });
+    window.addEventListener("onColorSchemeChange", function () {
+      setGiscusTheme(getGiscusTheme());
+    });
+
+    loadGiscus();
+    document.addEventListener("pjax:complete", loadGiscus);
+  })();
+</script>
 {{- end -}}

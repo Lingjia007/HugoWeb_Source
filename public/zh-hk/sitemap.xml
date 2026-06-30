@@ -2,459 +2,459 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/a/b%E5%88%86%E5%8D%80/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/a/b%E5%88%86%E5%8D%80/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/aes-256/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/aes-256/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/aes-256/"
+                href="http://localhost:1313/Hugo_Web/tags/aes-256/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/aes-256/"
+                href="http://localhost:1313/Hugo_Web/en/tags/aes-256/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/aes-256/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/aes-256/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/bootloader/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/bootloader/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/bootloader/"
+                href="http://localhost:1313/Hugo_Web/tags/bootloader/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/bootloader/"
+                href="http://localhost:1313/Hugo_Web/en/tags/bootloader/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/bootloader/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/bootloader/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/categories/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/categories/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/categories/"
+                href="http://localhost:1313/Hugo_Web/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/categories/"
+                href="http://localhost:1313/Hugo_Web/en/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/categories/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/categories/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/ed25519/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/ed25519/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/ed25519/"
+                href="http://localhost:1313/Hugo_Web/tags/ed25519/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/ed25519/"
+                href="http://localhost:1313/Hugo_Web/en/tags/ed25519/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/ed25519/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/ed25519/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/iap/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/iap/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/iap/"
+                href="http://localhost:1313/Hugo_Web/tags/iap/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/iap/"
+                href="http://localhost:1313/Hugo_Web/en/tags/iap/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/iap/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/iap/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/ota/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/ota/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/ota/"
+                href="http://localhost:1313/Hugo_Web/tags/ota/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/ota/"
+                href="http://localhost:1313/Hugo_Web/en/tags/ota/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/ota/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/ota/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/post/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/post/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/post/"
+                href="http://localhost:1313/Hugo_Web/post/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/post/"
+                href="http://localhost:1313/Hugo_Web/en/post/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/post/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/post/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/"
+                href="http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/"
+                href="http://localhost:1313/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/pyqt6/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/pyqt6/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/pyqt6/"
+                href="http://localhost:1313/Hugo_Web/tags/pyqt6/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/pyqt6/"
+                href="http://localhost:1313/Hugo_Web/en/tags/pyqt6/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/pyqt6/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/pyqt6/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/stm32/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/stm32/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/stm32/"
+                href="http://localhost:1313/Hugo_Web/tags/stm32/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/stm32/"
+                href="http://localhost:1313/Hugo_Web/en/tags/stm32/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/stm32/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/stm32/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%A8%AD%E8%A8%88a/b-%E9%9B%99%E5%88%86%E5%8D%80%E5%8A%A0%E5%AF%86%E7%B0%BD%E5%90%8D%E8%88%87%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%B4%9A/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%A8%AD%E8%A8%88a/b-%E9%9B%99%E5%88%86%E5%8D%80%E5%8A%A0%E5%AF%86%E7%B0%BD%E5%90%8D%E8%88%87%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%B4%9A/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/"
+                href="http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/"
+                href="http://localhost:1313/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%A8%AD%E8%A8%88a/b-%E9%9B%99%E5%88%86%E5%8D%80%E5%8A%A0%E5%AF%86%E7%B0%BD%E5%90%8D%E8%88%87%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%B4%9A/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%A8%AD%E8%A8%88a/b-%E9%9B%99%E5%88%86%E5%8D%80%E5%8A%A0%E5%AF%86%E7%B0%BD%E5%90%8D%E8%88%87%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%B4%9A/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/"
+                href="http://localhost:1313/Hugo_Web/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/"
+                href="http://localhost:1313/Hugo_Web/en/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/ymodem/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/ymodem/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/ymodem/"
+                href="http://localhost:1313/Hugo_Web/tags/ymodem/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/ymodem/"
+                href="http://localhost:1313/Hugo_Web/en/tags/ymodem/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/ymodem/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/ymodem/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/%E5%9B%BA%E4%BB%B6%E5%8A%A0%E5%AF%86/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/%E5%9B%BA%E4%BB%B6%E5%8A%A0%E5%AF%86/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/%E5%9B%BA%E4%BB%B6%E5%8A%A0%E5%AF%86/"
+                href="http://localhost:1313/Hugo_Web/tags/%E5%9B%BA%E4%BB%B6%E5%8A%A0%E5%AF%86/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/%E5%9B%BA%E4%BB%B6%E5%8A%A0%E5%AF%86/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/%E5%9B%BA%E4%BB%B6%E5%8A%A0%E5%AF%86/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/%E5%B7%AE%E5%88%86%E5%8D%87%E7%B4%9A/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/%E5%B7%AE%E5%88%86%E5%8D%87%E7%B4%9A/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/"
+                href="http://localhost:1313/Hugo_Web/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/css/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/css/</loc>
     <lastmod>2025-03-20T23:07:19+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/css/"
+                href="http://localhost:1313/Hugo_Web/tags/css/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/css/"
+                href="http://localhost:1313/Hugo_Web/en/tags/css/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/css/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/css/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/html/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/html/</loc>
     <lastmod>2025-03-20T23:07:19+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/html/"
+                href="http://localhost:1313/Hugo_Web/tags/html/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/html/"
+                href="http://localhost:1313/Hugo_Web/en/tags/html/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/html/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/html/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/markdown/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/markdown/</loc>
     <lastmod>2025-03-20T23:07:19+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/tags/markdown/"
+                href="http://localhost:1313/Hugo_Web/tags/markdown/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/tags/markdown/"
+                href="http://localhost:1313/Hugo_Web/en/tags/markdown/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/tags/markdown/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/markdown/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/p/markdown%E8%AA%9E%E6%B3%95%E7%A4%BA%E4%BE%8B/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/p/markdown%E8%AA%9E%E6%B3%95%E7%A4%BA%E4%BE%8B/</loc>
     <lastmod>2025-03-20T23:07:19+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/"
+                href="http://localhost:1313/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/p/markdown-syntax-guide/"
+                href="http://localhost:1313/Hugo_Web/en/p/markdown-syntax-guide/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/p/markdown%E8%AA%9E%E6%B3%95%E7%A4%BA%E4%BE%8B/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/p/markdown%E8%AA%9E%E6%B3%95%E7%A4%BA%E4%BE%8B/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/categories/%E4%B8%BB%E9%A1%8C/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/categories/%E4%B8%BB%E9%A1%8C/</loc>
     <lastmod>2025-03-20T23:07:19+08:00</lastmod>
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/tags/%E4%B8%BB%E9%A1%8C/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/tags/%E4%B8%BB%E9%A1%8C/</loc>
     <lastmod>2025-03-20T23:07:19+08:00</lastmod>
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/categories/%E8%AA%9E%E6%B3%95/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/categories/%E8%AA%9E%E6%B3%95/</loc>
     <lastmod>2025-03-20T23:07:19+08:00</lastmod>
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/page/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/page/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/page/"
+                href="http://localhost:1313/Hugo_Web/page/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/page/"
+                href="http://localhost:1313/Hugo_Web/en/page/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/page/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/page/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/archives/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/archives/</loc>
     <lastmod>2025-03-19T13:41:49+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/archives/"
+                href="http://localhost:1313/Hugo_Web/archives/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/archives/"
+                href="http://localhost:1313/Hugo_Web/en/archives/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/archives/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/archives/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/</loc>
     <lastmod>2025-03-19T13:41:49+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/"
+                href="http://localhost:1313/Hugo_Web/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/"
+                href="http://localhost:1313/Hugo_Web/en/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/</loc>
     <lastmod>2026-06-20T21:43:39+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/"
+                href="http://localhost:1313/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/links/"
+                href="http://localhost:1313/Hugo_Web/en/links/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/search/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/search/</loc>
     <lastmod>2025-03-19T13:41:49+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/search/"
+                href="http://localhost:1313/Hugo_Web/search/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/search/"
+                href="http://localhost:1313/Hugo_Web/en/search/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/search/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/search/"
                 />
   </url><url>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/</loc>
+    <loc>http://localhost:1313/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://lingjia007.github.io/Hugo_Web/%E5%85%B3%E4%BA%8E/"
+                href="http://localhost:1313/Hugo_Web/%E5%85%B3%E4%BA%8E/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://lingjia007.github.io/Hugo_Web/en/about/"
+                href="http://localhost:1313/Hugo_Web/en/about/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
-                href="https://lingjia007.github.io/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/"
+                href="http://localhost:1313/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/"
                 />
   </url>
 </urlset>
