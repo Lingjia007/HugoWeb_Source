@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-hk" dir="ltr">
-    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=3313&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="基於 PyQt6 + Fluent Design 的 STM32 IAP 上位機工具套件，涵蓋 AES-256 加密 + Ed25519 簽名固件打包流水線、HKDF 設備綁定密鑰派生、YMODEM 串口傳輸、PyOCD SWD 燒錄、雙差分引擎、LVGL 資源提取等核心技術詳解">
 <title>PyIAPToolKit：STM32 IAP 上位機工具套件設計與實現</title>
 
-<link rel='canonical' href='http://localhost:1313/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/'>
+<link rel='canonical' href='http://localhost:3313/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="PyIAPToolKit：STM32 IAP 上位機工具套件設計與實現">
 <meta property='og:description' content="基於 PyQt6 + Fluent Design 的 STM32 IAP 上位機工具套件，涵蓋 AES-256 加密 + Ed25519 簽名固件打包流水線、HKDF 設備綁定密鑰派生、YMODEM 串口傳輸、PyOCD SWD 燒錄、雙差分引擎、LVGL 資源提取等核心技術詳解">
-<meta property='og:url' content='http://localhost:1313/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/'>
+<meta property='og:url' content='http://localhost:3313/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/'>
 <meta property='og:site_name' content='lingsir007'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='IAP' /><meta property='article:tag' content='PyQt6' /><meta property='article:tag' content='AES-256' /><meta property='article:tag' content='Ed25519' /><meta property='article:tag' content='YMODEM' /><meta property='article:tag' content='OTA' /><meta property='article:tag' content='差分升級' /><meta property='article:published_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-30T15:49:53&#43;08:00'/><meta property='og:image' content='http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='IAP' /><meta property='article:tag' content='PyQt6' /><meta property='article:tag' content='AES-256' /><meta property='article:tag' content='Ed25519' /><meta property='article:tag' content='YMODEM' /><meta property='article:tag' content='OTA' /><meta property='article:tag' content='差分升級' /><meta property='article:published_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-30T15:49:53&#43;08:00'/><meta property='og:image' content='http://localhost:3313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png' />
 <meta name="twitter:title" content="PyIAPToolKit：STM32 IAP 上位機工具套件設計與實現">
 <meta name="twitter:description" content="基於 PyQt6 + Fluent Design 的 STM32 IAP 上位機工具套件，涵蓋 AES-256 加密 + Ed25519 簽名固件打包流水線、HKDF 設備綁定密鑰派生、YMODEM 串口傳輸、PyOCD SWD 燒錄、雙差分引擎、LVGL 資源提取等核心技術詳解"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png' />
+    <meta name="twitter:image" content='http://localhost:3313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png' />
     <link rel="shortcut icon" href="/icons/favicon.ico" />
 
     </head>
@@ -234,11 +234,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="http://localhost:1313/Hugo_Web/" >简体中文</option>
+                                    <option value="http://localhost:3313/Hugo_Web/" >简体中文</option>
                                 
-                                    <option value="http://localhost:1313/Hugo_Web/zh-hk/" selected>繁體中文</option>
+                                    <option value="http://localhost:3313/Hugo_Web/zh-hk/" selected>繁體中文</option>
                                 
-                                    <option value="http://localhost:1313/Hugo_Web/en/" >English</option>
+                                    <option value="http://localhost:3313/Hugo_Web/en/" >English</option>
                                 
                             </select>
                         </li>
@@ -447,7 +447,7 @@
             </div><div id="wordCount">
             <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
             <time class="article-wordcount">
-                4904  字
+                4910  字
             </time>
         </div>
 
@@ -479,9 +479,9 @@
 
             <div>
                 
-                    <a href="http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/" class="link">简体中文</a>
+                    <a href="http://localhost:3313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/" class="link">简体中文</a>
                 
-                    <a href="http://localhost:1313/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/" class="link">English</a>
+                    <a href="http://localhost:3313/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/" class="link">English</a>
                 
             </div>
         </footer>
@@ -495,7 +495,9 @@
     
     <h2 id="前言">前言
 </h2><p>在上一篇 <a class="link" href="../stm32f407-secure-bootloader/" >STM32F407 安全 Bootloader 設計</a> 中，我們詳細剖析了設備端的 A/B 雙分區、加密簽名與多渠道升級機制。然而，一個完整的 IAP 系統還需要<strong>上位機工具</strong>來完成固件打包、加密簽名、傳輸燒錄等環節。本文將介紹 <strong>PyIAPToolKit</strong> —— 一個基於 PyQt6 + Fluent Design 的 STM32 IAP 上位機工具套件，它是 Bootloader 專案在 PC 端的配套工具。</p>
-<hr>
+<blockquote class="alert alert-note">
+    <p><a class="link" href="https://github.com/Lingjia007/PyIAPToolKit/releases/tag/v1.0.0"  target="_blank" rel="noopener"
+    >下載發行版 v1.0.0</a></p></blockquote><hr>
 <h2 id="一專案概覽">一、專案概覽
 </h2><h3 id="11-功能矩陣">1.1 功能矩陣
 </h3><div class="table-wrapper"><table>
@@ -1964,7 +1966,7 @@
             
                 
             
-        本網站已穩定運行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;總計<span id="articleCount">&lt; 3 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 13.92 k ></span>字
+        本網站已穩定運行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;總計<span id="articleCount">&lt; 3 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 13.93 k ></span>字
     </section>
     <section class="powerby">
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 構建 <br />
@@ -2083,7 +2085,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "http://localhost:1313/Hugo_Web/zh-hk/";
+  const staticDir = "http://localhost:3313/Hugo_Web/zh-hk/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -2222,6 +2224,7 @@
     var hr = document.getElementById("hr"); 
     var mn = document.getElementById("mn"); 
     var sc = document.getElementById("sc"); 
+    if (!hr || !mn || !sc) return;
 
     
     var date = new Date();
@@ -2329,7 +2332,7 @@
   });
 </script>
 
-<script src="http://localhost:1313/Hugo_Web/zh-hk/js/topbar.min.js"></script>
+<script src="http://localhost:3313/Hugo_Web/zh-hk/js/topbar.min.js"></script>
 
 <script>
   
@@ -2358,12 +2361,12 @@
     
     path: {
       homePath: "/",
-      modelPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/live2d-moc3/",
-      cssPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/waifu.css",
-      tipsJsonPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/my-waifu-tips.json",
+      modelPath: "http:\/\/localhost:3313\/Hugo_Web\/zh-hk\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:3313\/Hugo_Web\/zh-hk\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:3313\/Hugo_Web\/zh-hk\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/live2dcubismcore.js",
-      live2dSdkPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/live2d-sdk.js",
+      live2dCorePath: "http:\/\/localhost:3313\/Hugo_Web\/zh-hk\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:3313\/Hugo_Web\/zh-hk\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -2510,7 +2513,7 @@
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/icons/codeMore.png";
+      img.src = "http:\/\/localhost:3313\/Hugo_Web\/zh-hk\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -2526,11 +2529,11 @@
 
 <div id="particles-js"></div>
 
-<script src="http://localhost:1313/Hugo_Web/zh-hk/background/particles.min.js"></script>
+<script src="http://localhost:3313/Hugo_Web/zh-hk/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/background/particlesjs-config.json",
+    "http:\/\/localhost:3313\/Hugo_Web\/zh-hk\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     },
@@ -2606,7 +2609,7 @@
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(http://localhost:1313/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(http://localhost:3313/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -2625,7 +2628,7 @@
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("http://localhost:1313/Hugo_Web/zh-hk/icons/backTop.svg");
+    background-image: url("http://localhost:3313/Hugo_Web/zh-hk/icons/backTop.svg");
   }
 </style>
 

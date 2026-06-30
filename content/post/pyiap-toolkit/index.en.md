@@ -21,6 +21,9 @@ math: true
 
 In the previous post [STM32F407 Secure Bootloader Design](../stm32f407-secure-bootloader/), we examined the device-side A/B dual-partition, encryption/signing, and multi-channel upgrade mechanisms in detail. However, a complete IAP system also requires **host-side tools** to handle firmware packaging, encryption/signing, transmission/flashing, and other steps. This article introduces **PyIAPToolKit** — an STM32 IAP host tool suite based on PyQt6 + Fluent Design, which serves as the PC-side companion tool for the Bootloader project.
 
+> [!NOTE]
+> [Download Release v1.0.0](https://github.com/Lingjia007/PyIAPToolKit/releases/tag/v1.0.0)
+
 ---
 
 ## Project Overview

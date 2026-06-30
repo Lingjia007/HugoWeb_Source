@@ -2,19 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>lingsir007</title>
-        <link>http://localhost:1313/Hugo_Web/</link>
+        <link>http://localhost:3313/Hugo_Web/</link>
         <description>Recent content on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
-        <copyright>lingsir007</copyright><atom:link href="http://localhost:1313/Hugo_Web/index.xml" rel="self" type="application/rss+xml" /><item>
+        <copyright>lingsir007</copyright><atom:link href="http://localhost:3313/Hugo_Web/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>PyIAPToolKit：STM32 IAP 上位机工具套件设计与实现</title>
-        <link>http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/</link>
+        <link>http://localhost:3313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/</link>
         <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/</guid>
-        <description>&lt;img src="http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png" alt="Featured image of post PyIAPToolKit：STM32 IAP 上位机工具套件设计与实现" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+        <guid>http://localhost:3313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/</guid>
+        <description>&lt;img src="http://localhost:3313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png" alt="Featured image of post PyIAPToolKit：STM32 IAP 上位机工具套件设计与实现" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;在上一篇 &lt;a class=&#34;link&#34; href=&#34;../stm32f407-secure-bootloader/&#34; &gt;STM32F407 安全 Bootloader 设计&lt;/a&gt; 中，我们详细剖析了设备端的 A/B 双分区、加密签名与多渠道升级机制。然而，一个完整的 IAP 系统还需要&lt;strong&gt;上位机工具&lt;/strong&gt;来完成固件打包、加密签名、传输烧录等环节。本文将介绍 &lt;strong&gt;PyIAPToolKit&lt;/strong&gt; —— 一个基于 PyQt6 + Fluent Design 的 STM32 IAP 上位机工具套件，它是 Bootloader 项目在 PC 端的配套工具。&lt;/p&gt;
-&lt;hr&gt;
+&lt;blockquote class=&#34;alert alert-note&#34;&gt;
+    &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/Lingjia007/PyIAPToolKit/releases/tag/v1.0.0&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;下载发行版 v1.0.0&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;&lt;hr&gt;
 &lt;h2 id=&#34;一项目概览&#34;&gt;一、项目概览
 &lt;/h2&gt;&lt;h3 id=&#34;11-功能矩阵&#34;&gt;1.1 功能矩阵
 &lt;/h3&gt;&lt;table&gt;
@@ -1331,11 +1333,11 @@
         </item>
         <item>
         <title>STM32F407 安全 Bootloader 设计：A/B 双分区、加密签名与多渠道升级</title>
-        <link>http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/</link>
+        <link>http://localhost:3313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/</link>
         <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/</guid>
-        <description>&lt;img src="http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.png" alt="Featured image of post STM32F407 安全 Bootloader 设计：A/B 双分区、加密签名与多渠道升级" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+        <guid>http://localhost:3313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/</guid>
+        <description>&lt;img src="http://localhost:3313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.png" alt="Featured image of post STM32F407 安全 Bootloader 设计：A/B 双分区、加密签名与多渠道升级" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;在物联网和嵌入式设备领域，固件升级（OTA）是产品生命周期中不可或缺的一环。然而，升级过程中的&lt;strong&gt;断电崩溃、固件篡改、版本回滚&lt;/strong&gt;等问题，往往让开发者头疼不已。本文将详细介绍一个基于 STM32F407VGT6 的安全 Bootloader 项目，它通过 &lt;strong&gt;A/B 双分区&lt;/strong&gt;、&lt;strong&gt;安全固件包&lt;/strong&gt;、&lt;strong&gt;地址重定位&lt;/strong&gt; 等机制，系统性地解决了这些痛点。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;一解决了什么问题&#34;&gt;一、解决了什么问题？
@@ -3217,11 +3219,11 @@
         </item>
         <item>
         <title>Markdown语法示例</title>
-        <link>http://localhost:1313/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/</link>
+        <link>http://localhost:3313/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/</link>
         <pubDate>Tue, 11 Mar 2025 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/</guid>
-        <description>&lt;img src="http://localhost:1313/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown语法示例" /&gt;&lt;p&gt;本文提供了一个可以在 Hugo 内容文件中使用的基本 Markdown 语法示例，还展示了基本 HTML 元素是否在 Hugo 主题中用 CSS 装饰。&lt;/p&gt;
+        <guid>http://localhost:3313/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/</guid>
+        <description>&lt;img src="http://localhost:3313/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown语法示例" /&gt;&lt;p&gt;本文提供了一个可以在 Hugo 内容文件中使用的基本 Markdown 语法示例，还展示了基本 HTML 元素是否在 Hugo 主题中用 CSS 装饰。&lt;/p&gt;
 &lt;h2 id=&#34;标题&#34;&gt;标题
 &lt;/h2&gt;&lt;p&gt;下面的 HTML &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt;—&lt;code&gt;&amp;lt;h6&amp;gt;&lt;/code&gt; 元素表示六个级别的节标题 &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt; 是最高的节级别，而 &lt;code&gt;&amp;lt;h6&amp;gt;&lt;/code&gt; 是最低的节级别。&lt;/p&gt;
 &lt;h1 id=&#34;h1&#34;&gt;H1
@@ -3616,19 +3618,19 @@ $$&lt;p&gt;其中：&lt;/p&gt;
         </item>
         <item>
         <title>归档</title>
-        <link>http://localhost:1313/Hugo_Web/archives/</link>
+        <link>http://localhost:3313/Hugo_Web/archives/</link>
         <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/Hugo_Web/archives/</guid>
+        <guid>http://localhost:3313/Hugo_Web/archives/</guid>
         <description></description>
         </item>
         <item>
         <title>Emoji Support</title>
-        <link>http://localhost:1313/Hugo_Web/p/emoji-support/</link>
+        <link>http://localhost:3313/Hugo_Web/p/emoji-support/</link>
         <pubDate>Tue, 05 Mar 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/Hugo_Web/p/emoji-support/</guid>
-        <description>&lt;img src="http://localhost:1313/Hugo_Web/p/emoji-support/the-creative-exchange-d2zvqp3fpro-unsplash.jpg" alt="Featured image of post Emoji Support" /&gt;&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;
+        <guid>http://localhost:3313/Hugo_Web/p/emoji-support/</guid>
+        <description>&lt;img src="http://localhost:3313/Hugo_Web/p/emoji-support/the-creative-exchange-d2zvqp3fpro-unsplash.jpg" alt="Featured image of post Emoji Support" /&gt;&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;
 &lt;p&gt;The &lt;a class=&#34;link&#34; href=&#34;https://gohugo.io/functions/emojify/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;&lt;code&gt;emojify&lt;/code&gt;&lt;/a&gt; function can be called directly in templates or &lt;a class=&#34;link&#34; href=&#34;https://gohugo.io/templates/shortcode-templates/#inline-shortcodes&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Inline Shortcodes&lt;/a&gt;.&lt;/p&gt;
@@ -3655,10 +3657,10 @@ $$&lt;p&gt;其中：&lt;/p&gt;
         </item>
         <item>
         <title>关于</title>
-        <link>http://localhost:1313/Hugo_Web/%E5%85%B3%E4%BA%8E/</link>
+        <link>http://localhost:3313/Hugo_Web/%E5%85%B3%E4%BA%8E/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/Hugo_Web/%E5%85%B3%E4%BA%8E/</guid>
+        <guid>http://localhost:3313/Hugo_Web/%E5%85%B3%E4%BA%8E/</guid>
         <description>&lt;p&gt;本站基于 &lt;a class=&#34;link&#34; href=&#34;https://gohugo.io/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Hugo&lt;/a&gt; 静态站点生成器构建，使用 &lt;a class=&#34;link&#34; href=&#34;https://github.com/CaiJimmy/hugo-theme-stack&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;hugo-theme-stack&lt;/a&gt; 主题，通过 GitHub Actions 工作流实现&lt;strong&gt;双平台自动部署&lt;/strong&gt;——推送到 &lt;code&gt;main&lt;/code&gt; 分支即触发构建与发布，无需手动操作。&lt;/p&gt;
@@ -3776,18 +3778,18 @@ $$&lt;p&gt;其中：&lt;/p&gt;
         </item>
         <item>
         <title>搜索</title>
-        <link>http://localhost:1313/Hugo_Web/search/</link>
+        <link>http://localhost:3313/Hugo_Web/search/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/Hugo_Web/search/</guid>
+        <guid>http://localhost:3313/Hugo_Web/search/</guid>
         <description></description>
         </item>
         <item>
         <title>友情链接</title>
-        <link>http://localhost:1313/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</link>
+        <link>http://localhost:3313/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</guid>
+        <guid>http://localhost:3313/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</guid>
         <description></description>
         </item>
         
