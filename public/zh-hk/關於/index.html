@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-hk" dir="ltr">
     <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="This is a test page for i18n support.\n">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="本站基於 Hugo 靜態站點生成器構建，使用 hugo-theme-stack 主題，透過 GitHub Actions 工作流實現雙平台自動部署——推送到 main 分支即觸發構建與發布，無需手動操作。\n部署架構\r部署目標 存取地址 發布分支 說明 GitHub Pages https://lingjia007.github.io/Hugo_Web/ master 主站點，使用源倉庫 hugo.yaml 中的 baseURL Netlify https://lingsir007.netlify.app/ netlify 鏡像站點，工作流會自動改寫 baseURL 以適配獨立域名 源代碼倉庫與發布倉庫分離：構建產物被推送到外部倉庫 Lingjia007/Hugo_Web 的對應分支，由 GitHub Pages / Netlify 自動拉取發布。\n">
 <title>關於</title>
 
 <link rel='canonical' href='http://localhost:1313/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="關於">
-<meta property='og:description' content="This is a test page for i18n support.\n">
+<meta property='og:description' content="本站基於 Hugo 靜態站點生成器構建，使用 hugo-theme-stack 主題，透過 GitHub Actions 工作流實現雙平台自動部署——推送到 main 分支即觸發構建與發布，無需手動操作。\n部署架構\r部署目標 存取地址 發布分支 說明 GitHub Pages https://lingjia007.github.io/Hugo_Web/ master 主站點，使用源倉庫 hugo.yaml 中的 baseURL Netlify https://lingsir007.netlify.app/ netlify 鏡像站點，工作流會自動改寫 baseURL 以適配獨立域名 源代碼倉庫與發布倉庫分離：構建產物被推送到外部倉庫 Lingjia007/Hugo_Web 的對應分支，由 GitHub Pages / Netlify 自動拉取發布。\n">
 <meta property='og:url' content='http://localhost:1313/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/'>
 <meta property='og:site_name' content='lingsir007'>
 <meta property='og:type' content='article'><meta property='article:section' content='Page' /><meta property='article:modified_time' content='2025-03-19T13:41:49&#43;08:00'/>
 <meta name="twitter:title" content="關於">
-<meta name="twitter:description" content="This is a test page for i18n support.\n">
+<meta name="twitter:description" content="本站基於 Hugo 靜態站點生成器構建，使用 hugo-theme-stack 主題，透過 GitHub Actions 工作流實現雙平台自動部署——推送到 main 分支即觸發構建與發布，無需手動操作。\n部署架構\r部署目標 存取地址 發布分支 說明 GitHub Pages https://lingjia007.github.io/Hugo_Web/ master 主站點，使用源倉庫 hugo.yaml 中的 baseURL Netlify https://lingsir007.netlify.app/ netlify 鏡像站點，工作流會自動改寫 baseURL 以適配獨立域名 源代碼倉庫與發布倉庫分離：構建產物被推送到外部倉庫 Lingjia007/Hugo_Web 的對應分支，由 GitHub Pages / Netlify 自動拉取發布。\n">
     <link rel="shortcut icon" href="/icons/favicon.ico" />
 
     </head>
@@ -270,7 +270,49 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+        
+
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目錄</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#部署架構">部署架構</a></li>
+    <li><a href="#工作流詳解">工作流詳解</a>
+      <ol>
+        <li><a href="#job-1deploy-to-gh-pages">Job 1：<code>deploy-to-gh-pages</code></a></li>
+        <li><a href="#job-2deploy-to-netlify">Job 2：<code>deploy-to-netlify</code></a></li>
+      </ol>
+    </li>
+    <li><a href="#觸發與密鑰">觸發與密鑰</a></li>
+    <li><a href="#本地預覽">本地預覽</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="main-article">
@@ -321,8 +363,120 @@
     <section class="article-content">
     
     
-    <p>This is a test page for i18n support.</p>
-
+    <p>本站基於 <a class="link" href="https://gohugo.io/"  target="_blank" rel="noopener"
+    >Hugo</a> 靜態站點生成器構建，使用 <a class="link" href="https://github.com/CaiJimmy/hugo-theme-stack"  target="_blank" rel="noopener"
+    >hugo-theme-stack</a> 主題，透過 GitHub Actions 工作流實現<strong>雙平台自動部署</strong>——推送到 <code>main</code> 分支即觸發構建與發布，無需手動操作。</p>
+<h2 id="部署架構">部署架構
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>部署目標</th>
+          <th>存取地址</th>
+          <th>發布分支</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>GitHub Pages</td>
+          <td><a class="link" href="https://lingjia007.github.io/Hugo_Web/"  target="_blank" rel="noopener"
+    >https://lingjia007.github.io/Hugo_Web/</a></td>
+          <td><code>master</code></td>
+          <td>主站點，使用源倉庫 <code>hugo.yaml</code> 中的 baseURL</td>
+      </tr>
+      <tr>
+          <td>Netlify</td>
+          <td><a class="link" href="https://lingsir007.netlify.app/"  target="_blank" rel="noopener"
+    >https://lingsir007.netlify.app/</a></td>
+          <td><code>netlify</code></td>
+          <td>鏡像站點，工作流會自動改寫 baseURL 以適配獨立域名</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>源代碼倉庫與發布倉庫分離：構建產物被推送到外部倉庫 <code>Lingjia007/Hugo_Web</code> 的對應分支，由 GitHub Pages / Netlify 自動拉取發布。</p>
+<h2 id="工作流詳解">工作流詳解
+</h2><p>工作流定義於 <a class="link" href="https://github.com/Lingjia007/HugoWeb_Source/blob/main/.github/workflows/deploy.yml"  target="_blank" rel="noopener"
+    >.github/workflows/deploy.yml</a>，包含兩個並行 Job。</p>
+<h3 id="job-1deploy-to-gh-pages">Job 1：<code>deploy-to-gh-pages</code>
+</h3><p>推送到 GitHub Pages 的流程：</p>
+<ol>
+<li><strong>Checkout</strong> — 拉取源倉庫（含子模組，<code>fetch-depth: 0</code> 保留完整 Git 歷史用於 <code>lastmod</code> 時間戳）</li>
+<li><strong>Git Configuration</strong> — 關閉 <code>quotePath</code>、<code>autocrlf</code>，開啟 <code>safecrlf</code>，避免中文路徑與 CRLF 問題</li>
+<li><strong>Set up Hugo</strong> — 透過 <code>peaceiris/actions-hugo@v2</code> 安裝最新版 Hugo</li>
+<li><strong>Build</strong> — <code>hugo -F --cleanDestinationDir</code> 構建並清空舊產物</li>
+<li><strong>Copy static and assets</strong> — 將 <code>static/</code> 與 <code>assets/</code> 複製到 <code>public/en</code>、<code>public/zh-hk</code> 多語言目錄</li>
+<li><strong>Deploy</strong> — 透過 <code>peaceiris/actions-gh-pages@v3</code> 將 <code>./public</code> 推送到 <code>Lingjia007/Hugo_Web</code> 的 <code>master</code> 分支，提交訊息沿用 HEAD commit message</li>
+</ol>
+<h3 id="job-2deploy-to-netlify">Job 2：<code>deploy-to-netlify</code>
+</h3><p>推送到 Netlify 分支的流程，差異在於構建前需先改寫配置以適配獨立域名：</p>
+<ol>
+<li>
+<p><strong>Checkout main</strong> — 顯式指定 <code>ref: main</code></p>
+</li>
+<li>
+<p><strong>Git Configuration</strong> — 同上</p>
+</li>
+<li>
+<p><strong>Switch to netlify branch</strong> — <code>git checkout -B netlify</code> 新建並切換</p>
+</li>
+<li>
+<p><strong>Modify baseURL</strong> — <code>sed</code> 將 <code>hugo.yaml</code> 首行 baseURL 從 GitHub Pages 地址替換為 Netlify 地址：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sed -i <span class="s1">&#39;1s#https://lingjia007.github.io/Hugo_Web/#https://lingsir007.netlify.app/#&#39;</span> hugo.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>Modify Waifu Tips Path</strong> — 看板娘提示檔案中去除 <code>Hugo_Web/</code> 路徑前綴，避免子路徑錯誤：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sed -i <span class="s1">&#39;s#Hugo_Web/##g&#39;</span> static/js/my-waifu-tips.json
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>Commit &amp; Push</strong> — 以 GitHub Actions 身份提交配置變更，<code>--force</code> 強制推送到 <code>netlify</code> 分支</p>
+</li>
+<li>
+<p><strong>Set up Hugo + Build</strong> — 同 Job 1</p>
+</li>
+<li>
+<p><strong>Deploy</strong> — 推送到 <code>Lingjia007/Hugo_Web</code> 的 <code>netlify</code> 分支</p>
+</li>
+</ol>
+<h2 id="觸發與密鑰">觸發與密鑰
+</h2><ul>
+<li><strong>觸發條件</strong>：<code>push</code> 到 <code>main</code> 分支</li>
+<li><strong>認證方式</strong>：使用倉庫 Secret <code>TOKEN</code>（Personal Access Token），授予對外部倉庫 <code>Lingjia007/Hugo_Web</code> 的寫入權限</li>
+<li><strong>權限宣告</strong>：<code>deploy-to-netlify</code> Job 宣告 <code>permissions: contents: write</code>，確保 <code>git push</code> 操作被允許</li>
+</ul>
+<h2 id="本地預覽">本地預覽
+</h2><p>提交前可使用以下命令在本地預覽：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hugo server -D
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如需模擬 GitHub Pages 的子路徑部署效果：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hugo server -D --baseURL https://lingjia007.github.io/Hugo_Web/ --appendPort<span class="o">=</span><span class="nb">false</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
 </section>
 
 
@@ -470,7 +624,11 @@
             
                 
             
-        本網站已穩定運行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;總計<span id="articleCount">&lt; 1 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 0.99 k ></span>字
+                
+            
+                
+            
+        本網站已穩定運行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;總計<span id="articleCount">&lt; 3 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 13.92 k ></span>字
     </section>
     <section class="powerby">
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 構建 <br />

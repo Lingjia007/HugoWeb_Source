@@ -2,6 +2,7 @@
 title: "STM32F407 安全 Bootloader 设计：A/B 双分区、加密签名与多渠道升级"
 date: 2026-06-20
 description: "基于 STM32F407VGT6 的工业级安全 Bootloader 完整设计，涵盖 A/B 双分区无缝升级、AES-256 加密 + Ed25519 签名安全固件包、地址重定位、差分升级、多渠道下载（UART/SD卡/SPI Flash/WiFi OTA）等核心技术详解"
+image: STM32F407安全Bootloader设计.png
 categories:
   - "嵌入式"
 tags:
@@ -45,6 +46,9 @@ STM32F407VGT6 拥有 1MB 内部 Flash，分区如下：
 | `0x0808_0000` | Slot B         | 384 KB | Sector 8-10      |
 | `0x080E_0000` | Download Cache | 64 KB  | Sector 11 (部分) |
 | `0x080F_0000` | Metadata       | 64 KB  | Sector 11 (部分) |
+
+> [!TIP]
+> 为什么 Bootloader 占用 128KB？因为本项目目前为测试 Demo，未做精简优化——实际上一个精简的 Bootloader 通常只需 32-48KB。当前 128KB 中包含了完整的菜单系统、加密库（AES/Ed25519/HKDF）、HPatch 差分、ESP8266 WiFi/MQTT 等所有功能模块。在量产化时，可通过裁剪不需要的功能，将 Bootloader 缩小至合理大小，从而为 App 释放更多 Flash 空间。
 
 ### 链接脚本（Scatter File）
 

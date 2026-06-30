@@ -1,0 +1,3370 @@
+<!DOCTYPE html>
+<html lang="zh-hk" dir="ltr">
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="基於 STM32F407VGT6 的工業級安全 Bootloader 完整設計，涵蓋 A/B 雙分區無縫升級、AES-256 加密 + Ed25519 簽名安全固件包、地址重定位、差分升級、多渠道下載（UART/SD卡/SPI Flash/WiFi OTA）等核心技術詳解">
+<title>STM32F407 安全 Bootloader 設計：A/B 雙分區、加密簽名與多渠道升級</title>
+
+<link rel='canonical' href='http://localhost:1313/Hugo_Web/zh-hk/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%A8%AD%E8%A8%88a/b-%E9%9B%99%E5%88%86%E5%8D%80%E5%8A%A0%E5%AF%86%E7%B0%BD%E5%90%8D%E8%88%87%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%B4%9A/'>
+
+<link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="STM32F407 安全 Bootloader 設計：A/B 雙分區、加密簽名與多渠道升級">
+<meta property='og:description' content="基於 STM32F407VGT6 的工業級安全 Bootloader 完整設計，涵蓋 A/B 雙分區無縫升級、AES-256 加密 + Ed25519 簽名安全固件包、地址重定位、差分升級、多渠道下載（UART/SD卡/SPI Flash/WiFi OTA）等核心技術詳解">
+<meta property='og:url' content='http://localhost:1313/Hugo_Web/zh-hk/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%A8%AD%E8%A8%88a/b-%E9%9B%99%E5%88%86%E5%8D%80%E5%8A%A0%E5%AF%86%E7%B0%BD%E5%90%8D%E8%88%87%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%B4%9A/'>
+<meta property='og:site_name' content='lingsir007'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='Bootloader' /><meta property='article:tag' content='IAP' /><meta property='article:tag' content='A/B分區' /><meta property='article:tag' content='固件加密' /><meta property='article:tag' content='Ed25519' /><meta property='article:tag' content='OTA' /><meta property='article:published_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-30T15:35:40&#43;08:00'/><meta property='og:image' content='http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.png' />
+<meta name="twitter:title" content="STM32F407 安全 Bootloader 設計：A/B 雙分區、加密簽名與多渠道升級">
+<meta name="twitter:description" content="基於 STM32F407VGT6 的工業級安全 Bootloader 完整設計，涵蓋 A/B 雙分區無縫升級、AES-256 加密 + Ed25519 簽名安全固件包、地址重定位、差分升級、多渠道下載（UART/SD卡/SPI Flash/WiFi OTA）等核心技術詳解"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.png' />
+    <link rel="shortcut icon" href="/icons/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切換選單">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/Hugo_Web/zh-hk/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/Hugo_Web/img/avatar_hu_6974417c8ac44e16.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤔</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/Hugo_Web/zh-hk">lingsir007</a></h1>
+            <h2 class="site-description">歡迎來的我的網站</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/Lingjia007?tab=repositories'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/Hugo_Web/zh-hk/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主頁</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>關於</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/zh-hk/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>歸檔</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/zh-hk/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜尋</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情鏈接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/" >简体中文</option>
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/zh-hk/" selected>繁體中文</option>
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/en/" >English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>深色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+        
+
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目錄</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#一解決了什麼問題">一、解決了什麼問題？</a></li>
+    <li><a href="#二flash-內存佈局">二、Flash 內存佈局</a>
+      <ol>
+        <li><a href="#鏈接腳本scatter-file">鏈接腳本（Scatter File）</a></li>
+      </ol>
+    </li>
+    <li><a href="#三啟動流程與跳轉機制">三、啟動流程與跳轉機制</a>
+      <ol>
+        <li><a href="#31-完整啟動流程">3.1 完整啟動流程</a></li>
+        <li><a href="#32-跳轉核心代碼">3.2 跳轉核心代碼</a></li>
+      </ol>
+    </li>
+    <li><a href="#四ab-雙分區系統">四、A/B 雙分區系統</a>
+      <ol>
+        <li><a href="#41-元數據結構">4.1 元數據結構</a></li>
+        <li><a href="#42-分區狀態機">4.2 分區狀態機</a></li>
+        <li><a href="#43-追加寫入策略">4.3 追加寫入策略</a></li>
+      </ol>
+    </li>
+    <li><a href="#五安全固件包系統">五、安全固件包系統</a>
+      <ol>
+        <li><a href="#51-固件包格式">5.1 固件包格式</a></li>
+        <li><a href="#52-header-結構">5.2 Header 結構</a></li>
+        <li><a href="#53-安全下載全流程">5.3 安全下載全流程</a></li>
+        <li><a href="#54-密鑰派生設備綁定加密">5.4 密鑰派生：設備綁定加密</a></li>
+        <li><a href="#55-密鑰存儲方案">5.5 密鑰存儲方案</a></li>
+      </ol>
+    </li>
+    <li><a href="#六地址重定位一份固件適配兩個分區">六、地址重定位：一份固件適配兩個分區</a>
+      <ol>
+        <li><a href="#61-問題">6.1 問題</a></li>
+        <li><a href="#62-解決方案">6.2 解決方案</a></li>
+      </ol>
+    </li>
+    <li><a href="#七平台抽象層transport-架構">七、平台抽象層：Transport 架構</a>
+      <ol>
+        <li><a href="#71-統一接口設計">7.1 統一接口設計</a></li>
+        <li><a href="#72-已實現的-transport">7.2 已實現的 Transport</a></li>
+        <li><a href="#73-靈活組合">7.3 靈活組合</a></li>
+      </ol>
+    </li>
+    <li><a href="#八多渠道固件升級">八、多渠道固件升級</a>
+      <ol>
+        <li><a href="#81-uart-ymodem">8.1 UART YMODEM</a></li>
+        <li><a href="#82-sd-卡升級">8.2 SD 卡升級</a></li>
+        <li><a href="#83-spi-flash-升級">8.3 SPI Flash 升級</a></li>
+        <li><a href="#84-wifi-ota-升級">8.4 WiFi OTA 升級</a></li>
+        <li><a href="#85-差分升級-hpatch--tuz">8.5 差分升級 (HPatch + tuz)</a></li>
+      </ol>
+    </li>
+    <li><a href="#九交互式菜單系統">九、交互式菜單系統</a>
+      <ol>
+        <li><a href="#91-宏控制開關">9.1 宏控制開關</a></li>
+        <li><a href="#92-完整菜單樹">9.2 完整菜單樹</a></li>
+      </ol>
+    </li>
+    <li><a href="#十安全鏈路全景">十、安全鏈路全景</a></li>
+    <li><a href="#十一源碼深入剖析">十一、源碼深入剖析</a>
+      <ol>
+        <li><a href="#111-mainc啟動決策主入口">11.1 main.c：啟動決策主入口</a></li>
+        <li><a href="#112-bootloader_corec下載引擎">11.2 bootloader_core.c：下載引擎</a></li>
+        <li><a href="#113-firmware_packagec安全固件包處理引擎">11.3 firmware_package.c：安全固件包處理引擎</a></li>
+        <li><a href="#114-ab_partitioncab-分區管理">11.4 ab_partition.c：A/B 分區管理</a></li>
+        <li><a href="#115-service_hpatchc差分升級實現">11.5 service_hpatch.c：差分升級實現</a></li>
+        <li><a href="#116-esp8266_ota_apicwifi-ota-封裝">11.6 esp8266_ota_api.c：WiFi OTA 封裝</a></li>
+        <li><a href="#117-整體分層架構">11.7 整體分層架構</a></li>
+      </ol>
+    </li>
+    <li><a href="#十二總結">十二、總結</a></li>
+    <li><a href="#參考資料">參考資料</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/Hugo_Web/zh-hk/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%A8%AD%E8%A8%88a/b-%E9%9B%99%E5%88%86%E5%8D%80%E5%8A%A0%E5%AF%86%E7%B0%BD%E5%90%8D%E8%88%87%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%B4%9A/">
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1_hu_f9a80f4bfd0c7f4f.png"
+                        srcset="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1_hu_f9a80f4bfd0c7f4f.png 800w, /Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1_hu_d25729fd9b796b1c.png 1600w"
+                        width="800" 
+                        height="443" 
+                        loading="lazy"
+                        alt="Featured image of post STM32F407 安全 Bootloader 設計：A/B 雙分區、加密簽名與多渠道升級" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/Hugo_Web/zh-hk/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" >
+                嵌入式
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/Hugo_Web/zh-hk/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%A8%AD%E8%A8%88a/b-%E9%9B%99%E5%88%86%E5%8D%80%E5%8A%A0%E5%AF%86%E7%B0%BD%E5%90%8D%E8%88%87%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%B4%9A/">STM32F407 安全 Bootloader 設計：A/B 雙分區、加密簽名與多渠道升級</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            基於 STM32F407VGT6 的工業級安全 Bootloader 完整設計，涵蓋 A/B 雙分區無縫升級、AES-256 加密 &#43; Ed25519 簽名安全固件包、地址重定位、差分升級、多渠道下載（UART/SD卡/SPI Flash/WiFi OTA）等核心技術詳解
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jun 20, 2026</time>
+            </div>
+        <div class="article-lastmod">
+                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M10 18l5 -5a1.414 1.414 0 0 0 -2 -2l-5 5v2h2z" /></svg>
+                <time>
+                    Jun 30, 2026 15:35 CST
+                </time>
+            </div><div id="wordCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
+            <time class="article-wordcount">
+                7274  字
+            </time>
+        </div>
+
+        
+
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                
+                <span id="vercount_value_page_pv">loading... </span> 次
+            </time>
+        </div>
+
+    </footer>
+    
+
+    
+        <footer class="article-translations">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+            <div>
+                
+                    <a href="http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/" class="link">简体中文</a>
+                
+                    <a href="http://localhost:1313/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/" class="link">English</a>
+                
+            </div>
+        </footer>
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="前言">前言
+</h2><p>在物聯網和嵌入式設備領域，固件升級（OTA）是產品生命週期中不可或缺的一環。然而，升級過程中的<strong>斷電崩潰、固件篡改、版本回滾</strong>等問題，往往讓開發者頭疼不已。本文將詳細介紹一個基於 STM32F407VGT6 的安全 Bootloader 項目，它通過 <strong>A/B 雙分區</strong>、<strong>安全固件包</strong>、<strong>地址重定位</strong> 等機制，系統性地解決了這些痛點。</p>
+<hr>
+<h2 id="一解決了什麼問題">一、解決了什麼問題？
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>問題</th>
+          <th>傳統方案</th>
+          <th>本項目方案</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>升級中斷電導致設備變磚</td>
+          <td>單分區直接覆蓋，斷電即死</td>
+          <td>A/B 雙分區，升級失敗自動回滾</td>
+      </tr>
+      <tr>
+          <td>固件被篡改或偽造</td>
+          <td>無校驗或僅 CRC</td>
+          <td>Ed25519 簽名 + HMAC-SHA256 認證</td>
+      </tr>
+      <tr>
+          <td>固件被竊取逆向</td>
+          <td>明文傳輸</td>
+          <td>AES-256-CBC/CTR 加密 + 設備綁定密鑰</td>
+      </tr>
+      <tr>
+          <td>舊版本固件降級攻擊</td>
+          <td>無防護</td>
+          <td>安全計數器防回滾</td>
+      </tr>
+      <tr>
+          <td>為兩個分區維護兩套編譯配置</td>
+          <td>維護兩份工程</td>
+          <td>地址自動重定位 + 雙 Target 編譯，源碼只需一份</td>
+      </tr>
+      <tr>
+          <td>升級包過大佔用帶寬</td>
+          <td>全量升級</td>
+          <td>HPatch + tuz 差分升級</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="二flash-內存佈局">二、Flash 內存佈局
+</h2><p>STM32F407VGT6 擁有 1MB 內部 Flash，分區如下：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>起始地址</th>
+          <th>區域</th>
+          <th>大小</th>
+          <th>Flash 扇區</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>0x0800_0000</code></td>
+          <td>Bootloader</td>
+          <td>128 KB</td>
+          <td>Sector 0-4</td>
+      </tr>
+      <tr>
+          <td><code>0x0802_0000</code></td>
+          <td>Slot A</td>
+          <td>384 KB</td>
+          <td>Sector 5-7</td>
+      </tr>
+      <tr>
+          <td><code>0x0808_0000</code></td>
+          <td>Slot B</td>
+          <td>384 KB</td>
+          <td>Sector 8-10</td>
+      </tr>
+      <tr>
+          <td><code>0x080E_0000</code></td>
+          <td>Download Cache</td>
+          <td>64 KB</td>
+          <td>Sector 11 (部分)</td>
+      </tr>
+      <tr>
+          <td><code>0x080F_0000</code></td>
+          <td>Metadata</td>
+          <td>64 KB</td>
+          <td>Sector 11 (部分)</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote class="alert alert-tip">
+    <p>為什麼 Bootloader 佔用 128KB？因為本項目目前為測試 Demo，未做精簡優化——實際上一個精簡的 Bootloader 通常只需 32-48KB。當前 128KB 中包含了完整的菜單系統、加密庫（AES/Ed25519/HKDF）、HPatch 差分、ESP8266 WiFi/MQTT 等所有功能模塊。在量產化時，可通過裁剪不需要的功能，將 Bootloader 縮小至合理大小，從而為 App 釋放更多 Flash 空間。</p></blockquote><h3 id="鏈接腳本scatter-file">鏈接腳本（Scatter File）
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">LR_IROM1</span> <span class="mh">0x08000000</span> <span class="mh">0x00020000</span>  <span class="p">{</span>    <span class="p">;</span> <span class="n">Bootloader</span> <span class="mi">128</span><span class="n">KB</span>
+</span></span><span class="line"><span class="cl">  <span class="n">ER_IROM1</span> <span class="mh">0x08000000</span> <span class="mh">0x00020000</span>  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="o">*.</span><span class="n">o</span> <span class="p">(</span><span class="n">RESET</span><span class="p">,</span> <span class="o">+</span><span class="n">First</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="o">*</span><span class="p">(</span><span class="n">InRoot</span><span class="o">$$</span><span class="n">Sections</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="o">.</span><span class="n">ANY</span> <span class="p">(</span><span class="o">+</span><span class="n">RO</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="o">.</span><span class="n">ANY</span> <span class="p">(</span><span class="o">+</span><span class="n">XO</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="n">RW_IRAM1</span> <span class="mh">0x20000000</span> <span class="mh">0x0001BFFC</span>  <span class="p">{</span>  <span class="p">;</span> <span class="err">主</span> <span class="n">RAM</span>
+</span></span><span class="line"><span class="cl">   <span class="o">.</span><span class="n">ANY</span> <span class="p">(</span><span class="o">+</span><span class="n">RW</span> <span class="o">+</span><span class="n">ZI</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="n">RW_IRAM_NOINIT</span> <span class="mh">0x2001BFFC</span> <span class="n">UNINIT</span> <span class="mh">0x00000004</span>  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="o">*</span><span class="p">(</span><span class="o">.</span><span class="n">bss</span><span class="o">.</span><span class="n">NoInit</span><span class="p">)</span>                    <span class="p">;</span> <span class="n">Bootloader</span><span class="o">/</span><span class="n">App</span> <span class="err">通信標誌</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>關鍵設計</strong>：<code>NoInit</code> 區域位於 <code>0x2001BFFC</code>，存放 <code>update_flag</code> 變量。軟復位後該變量不被清零，用於 Bootloader 和 App 之間的狀態傳遞。</p>
+<blockquote class="alert alert-note">
+    <p><code>update_flag</code> 的魔術值定義：</p>
+<ul>
+<li><code>0x5A5A5A5A</code> (<code>UPDATE_FLAG_MAGIC</code>) — App 請求固件更新</li>
+<li><code>0xA5A5A5A5</code> (<code>JUMP_FLAG_MAGIC</code>) — 請求跳轉到 App（軟復位後快速跳轉）</li>
+<li><code>0x424F4F54</code> (<code>BOOT_CONFIRM_MAGIC</code>) — 啟動確認標記</li>
+</ul></blockquote><hr>
+<h2 id="三啟動流程與跳轉機制">三、啟動流程與跳轉機制
+</h2><h3 id="31-完整啟動流程">3.1 完整啟動流程
+</h3><ol>
+<li><strong>上電/復位</strong></li>
+<li>檢查 <code>update_flag == JUMP_FLAG_MAGIC</code>？→ 是：清除 flag → 直接跳轉 App（快速啟動）</li>
+<li><code>HAL_Init()</code> → <code>SystemClock_Config()</code> → 外設初始化</li>
+<li>A/B 分區狀態檢查：
+<ul>
+<li><strong>TESTING</strong> 狀態 → 驗證固件有效性
+<ul>
+<li>無效 → 回滾到另一分區</li>
+<li>啟動嘗試超過3次 → 回滾</li>
+<li>有效 → 增加啟動嘗試計數</li>
+</ul>
+</li>
+<li><strong>CONFIRMED</strong> 狀態 → 正常啟動</li>
+</ul>
+</li>
+<li>等待 UART 命令（1.5秒超時）
+<ul>
+<li>收到 &lsquo;M&rsquo; → 進入 Bootloader 菜單</li>
+<li>超時 → 繼續</li>
+</ul>
+</li>
+<li>檢查 <code>update_flag == UPDATE_FLAG_MAGIC</code>？→ 是：進入 Bootloader 菜單（App 請求更新）</li>
+<li>自動跳轉到活動分區的 App</li>
+</ol>
+<h3 id="32-跳轉核心代碼">3.2 跳轉核心代碼
+</h3><p>跳轉分兩步實現，通過軟復位確保硬件狀態乾淨：</p>
+<p><strong>第一步：請求跳轉（設置標誌 + 軟復位）</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">bootloader_request_jump</span><span class="p">(</span><span class="kt">ab_slot_t</span> <span class="n">slot</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">app_addr</span> <span class="o">=</span> <span class="nf">bootloader_get_slot_addr</span><span class="p">(</span><span class="n">slot</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">app_addr</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="o">!</span><span class="nf">bootloader_validate_sp</span><span class="p">(</span><span class="n">app_addr</span><span class="p">))</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">ab_partition_set_active_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">);</span>  <span class="c1">// 設置活動分區
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">update_flag</span> <span class="o">=</span> <span class="n">JUMP_FLAG_MAGIC</span><span class="p">;</span>       <span class="c1">// 設置跳轉標誌
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">__DSB</span><span class="p">();</span> <span class="nf">__ISB</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">NVIC_SystemReset</span><span class="p">();</span>                  <span class="c1">// 軟復位
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>第二步：實際執行跳轉（復位後執行）</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">bootloader_execute_jump</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">app_addr</span> <span class="o">=</span> <span class="nf">bootloader_get_slot_addr</span><span class="p">(</span><span class="n">AB_SLOT_AUTO</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">app_stack_ptr</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">__IO</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="n">app_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">app_reset_handler</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">__IO</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)(</span><span class="n">app_addr</span> <span class="o">+</span> <span class="mi">4</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">SysTick</span><span class="o">-&gt;</span><span class="n">CTRL</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>           <span class="c1">// 關閉 SysTick
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">__set_PRIMASK</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>            <span class="c1">// 使能中斷
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">SCB</span><span class="o">-&gt;</span><span class="n">VTOR</span> <span class="o">=</span> <span class="n">app_addr</span><span class="p">;</span>        <span class="c1">// 重定向中斷向量表
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">__DSB</span><span class="p">();</span> <span class="nf">__ISB</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">__set_MSP</span><span class="p">(</span><span class="n">app_stack_ptr</span><span class="p">);</span>    <span class="c1">// 設置主棧指針
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">((</span><span class="n">pFunction</span><span class="p">)</span><span class="n">app_reset_handler</span><span class="p">)();</span>  <span class="c1">// 跳轉到 App ResetHandler
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>SP 驗證</strong>確保棧指針在合法 SRAM 範圍內：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">bootloader_validate_sp</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">app_addr</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">sp</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">__IO</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="n">app_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span><span class="n">sp</span> <span class="o">&gt;=</span> <span class="mh">0x20000000</span> <span class="o">&amp;&amp;</span> <span class="n">sp</span> <span class="o">&lt;=</span> <span class="mh">0x2FFE0000</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote class="alert alert-tip">
+    <p>為什麼跳轉分兩步？直接跳轉雖然更快，但軟復位能確保所有外設和中斷狀態被乾淨地重置。本項目在正常啟動流程中使用 <code>request_jump</code>（軟復位），而在 <code>update_flag == JUMP_FLAG_MAGIC</code> 時直接調用 <code>execute_jump</code> 實現快速啟動——因為此時是剛從 App 軟復位回來，硬件狀態已經是乾淨的。</p></blockquote><hr>
+<h2 id="四ab-雙分區系統">四、A/B 雙分區系統
+</h2><h3 id="41-元數據結構">4.1 元數據結構
+</h3><p>元數據存儲在 Flash 末尾的 Metadata 區域，採用<strong>追加寫入</strong>策略避免頻繁擦除：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="nf">__attribute__</span><span class="p">((</span><span class="n">packed</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">fw_version</span><span class="p">;</span>         <span class="c1">// 固件版本
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">security_counter</span><span class="p">;</span>   <span class="c1">// 安全計數器（防回滾）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">fw_size</span><span class="p">;</span>            <span class="c1">// 固件大小
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">ab_slot_state_t</span> <span class="n">state</span><span class="p">;</span>       <span class="c1">// 分區狀態
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span> <span class="n">boot_attempts</span><span class="p">;</span>       <span class="c1">// 啟動嘗試次數
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span> <span class="n">sha256</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>          <span class="c1">// 固件 SHA256
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span> <span class="n">reserved</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">ab_slot_meta_t</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="nf">__attribute__</span><span class="p">((</span><span class="n">packed</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">magic</span><span class="p">;</span>              <span class="c1">// 0x41425441 (&#34;ABTA&#34;)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">version</span><span class="p">;</span>            <span class="c1">// 版本號 = 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">ab_slot_t</span> <span class="n">active_slot</span><span class="p">;</span>       <span class="c1">// 活動分區 (A/B)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">ab_slot_meta_t</span> <span class="n">slots</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>     <span class="c1">// 兩個分區的元數據
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">crc32</span><span class="p">;</span>              <span class="c1">// CRC32 校驗
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="kt">ab_metadata_t</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="42-分區狀態機">4.2 分區狀態機
+</h3><ul>
+<li><strong>IDLE</strong> → 寫入新固件 → <strong>TESTING</strong></li>
+<li><strong>TESTING</strong> → App 確認 → <strong>CONFIRMED</strong></li>
+<li><strong>TESTING</strong> → 啟動失敗/超限3次 → <strong>ROLLBACK</strong> → 切換到另一分區</li>
+</ul>
+<p>各狀態說明：</p>
+<ul>
+<li><strong>IDLE</strong>：初始狀態，分區無有效固件</li>
+<li><strong>TESTING</strong>：新固件寫入後標記為測試狀態，啟動時增加 <code>boot_attempts</code></li>
+<li><strong>CONFIRMED</strong>：App 運行正常後主動確認，標記為穩定版本</li>
+<li><strong>INVALID</strong>：固件校驗失敗</li>
+</ul>
+<h3 id="43-追加寫入策略">4.3 追加寫入策略
+</h3><p>64KB 的 Metadata 區域被劃分為 128 字節對齊的實例（最多 512 個）。每次更新元數據時，追加寫入下一個實例位置，而非擦除重寫。當實例用完或位與不匹配時，執行<strong>壓縮</strong>：擦除整個扇區後重新寫入最新數據。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 追加寫入核心邏輯
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="nf">ab_partition_write_metadata</span><span class="p">(</span><span class="k">const</span> <span class="kt">ab_metadata_t</span> <span class="o">*</span><span class="n">meta</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 找到下一個空閒實例位置
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">addr</span> <span class="o">=</span> <span class="nf">find_next_free_instance</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">addr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 實例用完，執行壓縮
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="nf">compact_metadata</span><span class="p">(</span><span class="n">meta</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 追加寫入
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nf">flash_write</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">ab_metadata_t</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="五安全固件包系統">五、安全固件包系統
+</h2><h3 id="51-固件包格式">5.1 固件包格式
+</h3><p>自定義 <code>.iap.bin</code> 格式，將加密、簽名、校驗融為一體：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>區域</th>
+          <th>大小</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Header</td>
+          <td>64 bytes</td>
+          <td>魔術字、版本、加密/簽名算法等</td>
+      </tr>
+      <tr>
+          <td>DynamicSalt</td>
+          <td>16 bytes</td>
+          <td>隨機鹽值，每次打包不同</td>
+      </tr>
+      <tr>
+          <td>IV</td>
+          <td>16 bytes</td>
+          <td>AES 初始化向量</td>
+      </tr>
+      <tr>
+          <td>Ciphertext</td>
+          <td>N bytes</td>
+          <td>AES-256-CBC/CTR 加密的固件</td>
+      </tr>
+      <tr>
+          <td>Signature</td>
+          <td>64 bytes</td>
+          <td>Ed25519 數字簽名</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="52-header-結構">5.2 Header 結構
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="nf">__attribute__</span><span class="p">((</span><span class="n">packed</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">magic</span><span class="p">;</span>                  <span class="c1">// 0x01504149
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span>  <span class="n">header_version</span><span class="p">;</span>         <span class="c1">// 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span>  <span class="n">firmware_major</span><span class="p">;</span>         <span class="c1">// 主版本號
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span>  <span class="n">firmware_minor</span><span class="p">;</span>         <span class="c1">// 次版本號
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span>  <span class="n">firmware_patch</span><span class="p">;</span>         <span class="c1">// 補丁版本號
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">total_payload_size</span><span class="p">;</span>     <span class="c1">// Salt + IV + Ciphertext 總大小
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span>  <span class="n">image_type</span><span class="p">;</span>             <span class="c1">// APP=0x01, BOOTLOADER=0x02
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span>  <span class="n">encryption_algo</span><span class="p">;</span>        <span class="c1">// NONE=0, AES256-CBC=1, ECB=2, CTR=3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span>  <span class="n">signature_algo</span><span class="p">;</span>         <span class="c1">// NONE=0, ED25519=1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">hardware_compat</span><span class="p">;</span>        <span class="c1">// 硬件兼容性標識
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">security_counter</span><span class="p">;</span>       <span class="c1">// 安全計數器（防回滾）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">build_timestamp</span><span class="p">;</span>        <span class="c1">// 構建時間戳
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span>  <span class="n">reserved</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span>  <span class="n">header_checksum</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>    <span class="c1">// HMAC-SHA256 校驗
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="kt">fw_pkg_header_t</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="53-安全下載全流程">5.3 安全下載全流程
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>步驟</th>
+          <th>操作</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>1</td>
+          <td>讀取 Header → 驗證 Magic + Header Version</td>
+      </tr>
+      <tr>
+          <td>2</td>
+          <td>HMAC-SHA256 驗證 Header（使用設備 DevKey）</td>
+      </tr>
+      <tr>
+          <td>3</td>
+          <td>硬件兼容性檢查</td>
+      </tr>
+      <tr>
+          <td>4</td>
+          <td>安全計數器防回滾檢查</td>
+      </tr>
+      <tr>
+          <td>5</td>
+          <td>讀取 DynamicSalt + IV</td>
+      </tr>
+      <tr>
+          <td>6</td>
+          <td>HKDF 密鑰派生：AES_Key = HKDF(Salt, DevKey, UID)</td>
+      </tr>
+      <tr>
+          <td>7</td>
+          <td>初始化 AES-256 解密上下文</td>
+      </tr>
+      <tr>
+          <td>8</td>
+          <td>循環：讀密文(4KB) → AES解密 → 寫入Flash</td>
+      </tr>
+      <tr>
+          <td>9</td>
+          <td>讀取 Ed25519 簽名</td>
+      </tr>
+      <tr>
+          <td>10</td>
+          <td>SHA-512 流式哈希驗證（Header+Salt+IV+Ciphertext）</td>
+      </tr>
+      <tr>
+          <td>11</td>
+          <td>Ed25519 簽名驗證</td>
+      </tr>
+      <tr>
+          <td>12</td>
+          <td>回讀 Flash → SHA256 完整性校驗</td>
+      </tr>
+      <tr>
+          <td>13</td>
+          <td>更新 A/B 元數據 → 設置活動分區(TESTING)</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="54-密鑰派生設備綁定加密">5.4 密鑰派生：設備綁定加密
+</h3><p>這是安全體系的核心設計。每台 STM32 芯片都有唯一的 UID（12 字節，地址 <code>0x1FFF7A10</code>），通過 HKDF 將 DevKey 與 UID 綁定：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">AES_Key = HKDF(
+</span></span><span class="line"><span class="cl">    salt     = DynamicSalt,   // 16 bytes, 每個固件包隨機生成
+</span></span><span class="line"><span class="cl">    IKM      = DevKey,        // 16 bytes, 存儲在 OTP 中
+</span></span><span class="line"><span class="cl">    info     = UID,           // 12 bytes, STM32 唯一ID
+</span></span><span class="line"><span class="cl">    key_len  = 32 bytes
+</span></span><span class="line"><span class="cl">)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>效果</strong>：即使 DevKey 相同，不同設備派生出的 AES 密鑰也不同。固件包只能由目標設備解密，<strong>實現設備綁定加密</strong>。</p>
+<h3 id="55-密鑰存儲方案">5.5 密鑰存儲方案
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>密鑰</th>
+          <th>存儲位置</th>
+          <th>特性</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>DevKey (16B)</td>
+          <td>STM32 OTP 區域</td>
+          <td>一次性寫入，不可修改</td>
+      </tr>
+      <tr>
+          <td>Ed25519 公鑰 (32B)</td>
+          <td>固件中硬編碼</td>
+          <td>可公開</td>
+      </tr>
+      <tr>
+          <td>UID (12B)</td>
+          <td>STM32 唯一ID 寄存器</td>
+          <td>出廠固化</td>
+      </tr>
+      <tr>
+          <td>AES 密鑰 (32B)</td>
+          <td>運行時 HKDF 派生</td>
+          <td>不存儲，用完即棄</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="六地址重定位一份固件適配兩個分區">六、地址重定位：一份固件適配兩個分區
+</h2><h3 id="61-問題">6.1 問題
+</h3><p>Slot A 起始地址 <code>0x08020000</code>，Slot B 起始地址 <code>0x08080000</code>。為 Slot A 編譯的固件，其中斷向量表和絕對地址跳轉都指向 Slot A 的地址範圍，直接寫入 Slot B 無法運行。</p>
+<h3 id="62-解決方案">6.2 解決方案
+</h3><p>寫入 Slot B 時，對每個 32 位字進行掃描，如果值落在 Slot A 地址範圍內，自動加上偏移量：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define RELOCATE_OFFSET  0x00060000  </span><span class="c1">// Slot B - Slot A
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">uint32_t</span> <span class="nf">internal_flash_relocate_word</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">word</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">word</span> <span class="o">&gt;=</span> <span class="n">SLOT_A_START_ADDR</span> <span class="o">&amp;&amp;</span> <span class="n">word</span> <span class="o">&lt;</span> <span class="n">SLOT_A_END_ADDR</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">word</span> <span class="o">+</span> <span class="n">RELOCATE_OFFSET</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">word</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>注意</strong>：地址重定位能處理大部分絕對地址的修正（如中斷向量表、函數指針等），但並非萬能。實際工程中仍需在 Keil 中配置兩個 Target，通過各自的鏈接腳本（Scatter File）控制編譯地址，確保絕對地址和相對地址的尋址正確。重定位機制的意義在於：<strong>App 側只需維護一份源碼</strong>，通過切換 Target 編譯出 Slot A / Slot B 兩個版本的固件，而無需在代碼層面做地址適配。</p>
+<blockquote class="alert alert-warning">
+    <p>地址重定位的局限性：它只能識別和修正<strong>落在 Slot A 地址範圍內的絕對地址字面量</strong>。對於通過 PC 相對偏移尋址的指令（Thumb-2 的 BL/BLX 等），由於偏移量與基地址無關，重定位不會也不需要修改。但如果代碼中有通過運行時計算得出的地址（如函數指針數組、虛表等），重定位可能無法覆蓋所有情況，因此仍需雙 Target 編譯保證正確性。</p></blockquote><hr>
+<h2 id="七平台抽象層transport-架構">七、平台抽象層：Transport 架構
+</h2><h3 id="71-統一接口設計">7.1 統一接口設計
+</h3><p>通過 <code>platform_transport_base_t</code> 抽象出 Source（讀取）和 Target（寫入）兩種角色：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Source 接口 - 從某處讀取數據
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int16_t</span> <span class="p">(</span><span class="o">*</span><span class="n">open</span><span class="p">)(</span><span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">ctx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">*</span> <span class="n">total_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int16_t</span> <span class="p">(</span><span class="o">*</span><span class="n">read</span><span class="p">)(</span><span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">ctx</span><span class="p">,</span> <span class="kt">uint8_t</span><span class="o">*</span> <span class="n">buf</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">size</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">*</span> <span class="n">bytes_read</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int16_t</span> <span class="p">(</span><span class="o">*</span><span class="n">close</span><span class="p">)(</span><span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">ctx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">platform_transport_source_ops_t</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Target 接口 - 向某處寫入數據
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int16_t</span> <span class="p">(</span><span class="o">*</span><span class="n">open</span><span class="p">)(</span><span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">ctx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">total_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int16_t</span> <span class="p">(</span><span class="o">*</span><span class="n">write</span><span class="p">)(</span><span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">ctx</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">offset</span><span class="p">,</span> <span class="k">const</span> <span class="kt">uint8_t</span><span class="o">*</span> <span class="n">data</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">len</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int16_t</span> <span class="p">(</span><span class="o">*</span><span class="n">read</span><span class="p">)(</span><span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">ctx</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">uint8_t</span><span class="o">*</span> <span class="n">buf</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">size</span><span class="p">,</span> <span class="kt">uint32_t</span><span class="o">*</span> <span class="n">bytes_read</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int16_t</span> <span class="p">(</span><span class="o">*</span><span class="n">close</span><span class="p">)(</span><span class="k">const</span> <span class="kt">void</span><span class="o">*</span> <span class="n">ctx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">platform_transport_target_ops_t</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="72-已實現的-transport">7.2 已實現的 Transport
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Transport</th>
+          <th style="text-align: center">Source</th>
+          <th style="text-align: center">Target</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>g_slot_a_flash</code></td>
+          <td style="text-align: center">-</td>
+          <td style="text-align: center">Yes</td>
+          <td>Slot A 內部 Flash</td>
+      </tr>
+      <tr>
+          <td><code>g_slot_b_flash</code></td>
+          <td style="text-align: center">-</td>
+          <td style="text-align: center">Yes</td>
+          <td>Slot B 內部 Flash（帶重定位）</td>
+      </tr>
+      <tr>
+          <td><code>g_download_cache_flash</code></td>
+          <td style="text-align: center">-</td>
+          <td style="text-align: center">Yes</td>
+          <td>下載緩存區</td>
+      </tr>
+      <tr>
+          <td><code>g_fatfs_transport</code></td>
+          <td style="text-align: center">Yes</td>
+          <td style="text-align: center">Yes</td>
+          <td>SD 卡 FatFS</td>
+      </tr>
+      <tr>
+          <td><code>g_lfs_transport</code></td>
+          <td style="text-align: center">Yes</td>
+          <td style="text-align: center">Yes</td>
+          <td>SPI Flash LittleFS</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="73-靈活組合">7.3 靈活組合
+</h3><p>Transport 架構使得下載邏輯與存儲介質完全解耦：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 從 SD 卡下載到 Slot A
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">bootloader_download</span><span class="p">(</span><span class="n">g_fatfs_transport</span><span class="p">,</span> <span class="s">&#34;firmware.bin&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">g_slot_a_flash</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 從 SPI Flash 下載到 Slot B（自動重定位）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">bootloader_download</span><span class="p">(</span><span class="n">g_lfs_transport</span><span class="p">,</span> <span class="s">&#34;firmware.bin&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">g_slot_b_flash</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="八多渠道固件升級">八、多渠道固件升級
+</h2><h3 id="81-uart-ymodem">8.1 UART YMODEM
+</h3><p>通過串口進行固件下載，支持 128 字節和 1K 字節包大小。<code>Ymodem_Receive_To_Slot()</code> 支持直接下載到指定的 A/B 分區。</p>
+<h3 id="82-sd-卡升級">8.2 SD 卡升級
+</h3><p>從 SD 卡讀取 <code>.bin</code> / <code>.iap.bin</code> / <code>.hdiff</code> 文件，通過 FatFS Transport 讀取後寫入內部 Flash。</p>
+<h3 id="83-spi-flash-升級">8.3 SPI Flash 升級
+</h3><p>從 W25Q128 SPI Flash 讀取固件文件（通過 LittleFS 文件系統管理），適用於無 SD 卡卡槽的產品。</p>
+<h3 id="84-wifi-ota-升級">8.4 WiFi OTA 升級
+</h3><p>通過 ESP8266 WiFi 模塊連接 OneNET 物聯網平台，支持 MQTT 協議接收升級通知、HTTP 下載固件包、進度上報和結果通知。</p>
+<h3 id="85-差分升級-hpatch--tuz">8.5 差分升級 (HPatch + tuz)
+</h3><p>使用 HPatch Lite + tuz 壓縮算法實現差分升級，大幅減少傳輸數據量：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 差分升級核心流程
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="nf">service_hpatch_apply</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">patch_path</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                         <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">patch_source</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                         <span class="kt">ab_slot_t</span> <span class="n">target_slot</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 1. 讀取舊固件（當前活動分區）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 2. 讀取差分文件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 3. HPatch 合成新固件 → 寫入目標分區
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 緩衝區：16KB cache + 4KB dict + 8KB stream
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="九交互式菜單系統">九、交互式菜單系統
+</h2><p>Bootloader 提供了功能豐富的交互式菜單，通過 UART4 訪問。所有功能項通過宏定義控制編譯，可在 <code>menu.h</code> 中或編譯選項中配置。</p>
+<h3 id="91-宏控制開關">9.1 宏控制開關
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>宏名</th>
+          <th>默認值</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>MENU_ENABLE_DOWNLOAD</code></td>
+          <td>1 (啟用)</td>
+          <td>固件下載</td>
+      </tr>
+      <tr>
+          <td><code>MENU_ENABLE_UPLOAD</code></td>
+          <td>0 (禁用)</td>
+          <td>固件上傳</td>
+      </tr>
+      <tr>
+          <td><code>MENU_ENABLE_SPI_FLASH_STORE</code></td>
+          <td>1 (啟用)</td>
+          <td>SPI Flash 存儲</td>
+      </tr>
+      <tr>
+          <td><code>MENU_ENABLE_EXECUTE_APP</code></td>
+          <td>1 (啟用)</td>
+          <td>執行應用程序</td>
+      </tr>
+      <tr>
+          <td><code>MENU_ENABLE_FLASH_PROTECTION</code></td>
+          <td>0 (禁用)</td>
+          <td>Flash 寫保護切換</td>
+      </tr>
+      <tr>
+          <td><code>MENU_ENABLE_AES_DECRYPT</code></td>
+          <td>0 (禁用)</td>
+          <td>AES 解密</td>
+      </tr>
+      <tr>
+          <td><code>MENU_ENABLE_HPATCH</code></td>
+          <td>1 (啟用)</td>
+          <td>HPatch 差分升級</td>
+      </tr>
+      <tr>
+          <td><code>MENU_ENABLE_UART_PASSTHROUGH</code></td>
+          <td>0 (禁用)</td>
+          <td>UART 串口透傳</td>
+      </tr>
+      <tr>
+          <td><code>MENU_ENABLE_ESP8266_WIFI</code></td>
+          <td>0 (禁用)</td>
+          <td>ESP8266 WiFi &amp; OTA</td>
+      </tr>
+      <tr>
+          <td><code>MENU_ENABLE_ED25519_VERIFY</code></td>
+          <td>0 (禁用)</td>
+          <td>Ed25519 簽名驗證</td>
+      </tr>
+      <tr>
+          <td><code>MENU_ENABLE_RNG_DEVKEY</code></td>
+          <td>0 (禁用)</td>
+          <td>RNG 設備密鑰生成</td>
+      </tr>
+      <tr>
+          <td><code>MENU_ENABLE_FIRMWARE_PACKAGE</code></td>
+          <td>1 (啟用)</td>
+          <td>固件包解析</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote class="alert alert-note">
+    <p>所有宏均採用 <code>#ifndef</code> 守衛模式，可通過編譯器選項 <code>-DMENU_ENABLE_XXX=1</code> 在外部覆蓋默認值。只有 <code>[F] A/B Partition Management</code> 無條件編譯，始終存在。</p></blockquote><h3 id="92-完整菜單樹">9.2 完整菜單樹
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>快捷鍵</th>
+          <th>菜單</th>
+          <th>子菜單</th>
+          <th>控制宏</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>[1]</strong></td>
+          <td>Download image</td>
+          <td></td>
+          <td><code>MENU_ENABLE_DOWNLOAD</code></td>
+          <td>固件下載</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[1] Download via Serial (Ymodem)</td>
+          <td></td>
+          <td>串口下載</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[2] Download from SD card (FATFS)</td>
+          <td></td>
+          <td>SD卡下載</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[3] Download from SPI Flash (LittleFS)</td>
+          <td></td>
+          <td>SPI Flash下載</td>
+      </tr>
+      <tr>
+          <td><strong>[2]</strong></td>
+          <td>Upload image from internal Flash</td>
+          <td>-</td>
+          <td><code>MENU_ENABLE_UPLOAD</code></td>
+          <td>Ymodem上傳</td>
+      </tr>
+      <tr>
+          <td><strong>[3]</strong></td>
+          <td>Store image to SPI-Flash LFS</td>
+          <td></td>
+          <td><code>MENU_ENABLE_SPI_FLASH_STORE</code></td>
+          <td>SPI Flash存儲</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[1] Store image from TF card</td>
+          <td></td>
+          <td>SD卡轉存</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[2] Store image from Flash</td>
+          <td></td>
+          <td>內部Flash轉存</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[3] Show stored images</td>
+          <td></td>
+          <td>查看已存儲文件</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[4] Delete stored image</td>
+          <td></td>
+          <td>刪除文件</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[5] Delete entire file system</td>
+          <td></td>
+          <td>刪除整個文件系統</td>
+      </tr>
+      <tr>
+          <td><strong>[4]</strong></td>
+          <td>Execute the loaded application</td>
+          <td>-</td>
+          <td><code>MENU_ENABLE_EXECUTE_APP</code></td>
+          <td>跳轉到App</td>
+      </tr>
+      <tr>
+          <td><strong>[5]</strong></td>
+          <td>Toggle Flash write protection</td>
+          <td>-</td>
+          <td><code>MENU_ENABLE_FLASH_PROTECTION</code></td>
+          <td>Flash寫保護切換</td>
+      </tr>
+      <tr>
+          <td><strong>[6]</strong></td>
+          <td>Decrypt and download encrypted firmware</td>
+          <td></td>
+          <td><code>MENU_ENABLE_AES_DECRYPT</code></td>
+          <td>AES解密下載</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[1] Decrypt from SD card and download to Flash</td>
+          <td></td>
+          <td>SD卡解密下載</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[2] Decrypt from SPI Flash and download to Flash</td>
+          <td></td>
+          <td>SPI Flash解密下載</td>
+      </tr>
+      <tr>
+          <td><strong>[7]</strong></td>
+          <td>Decrypt .bin.aes file on SD card</td>
+          <td>-</td>
+          <td><code>MENU_ENABLE_AES_DECRYPT</code></td>
+          <td>SD卡AES解密</td>
+      </tr>
+      <tr>
+          <td><strong>[8]</strong></td>
+          <td>HPatch differential upgrade</td>
+          <td></td>
+          <td><code>MENU_ENABLE_HPATCH</code></td>
+          <td>差分升級</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[1] HPatch upgrade from SD card</td>
+          <td></td>
+          <td>SD卡差分升級</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[2] HPatch upgrade from SPI Flash</td>
+          <td></td>
+          <td>SPI Flash差分升級</td>
+      </tr>
+      <tr>
+          <td><strong>[9]</strong></td>
+          <td>UART4 &lt;-&gt; USART1 Passthrough</td>
+          <td>-</td>
+          <td><code>MENU_ENABLE_UART_PASSTHROUGH</code></td>
+          <td>串口透傳</td>
+      </tr>
+      <tr>
+          <td><strong>[A]</strong></td>
+          <td>ESP8266 WiFi &amp; OTA Test</td>
+          <td></td>
+          <td><code>MENU_ENABLE_ESP8266_WIFI</code></td>
+          <td>WiFi與OTA</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[1] WiFi Init &amp; Connect AP</td>
+          <td></td>
+          <td>WiFi初始化連接</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[2] AT Command Test</td>
+          <td></td>
+          <td>AT指令測試</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[3] TCP Connect Test</td>
+          <td></td>
+          <td>TCP連接測試</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[4] Enter Transparent Mode</td>
+          <td></td>
+          <td>進入透傳模式</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[5] Exit Transparent Mode</td>
+          <td></td>
+          <td>退出透傳模式</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[6] Set OTA Target: Internal Flash</td>
+          <td></td>
+          <td>OTA目標：內部Flash</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[7] Set OTA Target: SD Card (FATFS)</td>
+          <td></td>
+          <td>OTA目標：SD卡</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[8] Set OTA Target: SPI Flash (LFS)</td>
+          <td></td>
+          <td>OTA目標：SPI Flash</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[9] OneNET OTA Download</td>
+          <td></td>
+          <td>OneNET OTA下載</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[A] Show Current Time</td>
+          <td></td>
+          <td>顯示當前時間</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[B] MQTT Test Menu →</td>
+          <td></td>
+          <td>MQTT子菜單</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[1] Check MQTT Connection Status</td>
+          <td></td>
+          <td>檢查MQTT連接</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[2] Configure MQTT User</td>
+          <td></td>
+          <td>配置MQTT用戶</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[3] Connect to MQTT Server</td>
+          <td></td>
+          <td>連接MQTT伺服器</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[4] Subscribe Property Topics</td>
+          <td></td>
+          <td>訂閱屬性主題</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[5] Publish Property</td>
+          <td></td>
+          <td>發佈屬性</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[6] Listen &amp; Auto Reply Property Set</td>
+          <td></td>
+          <td>監聽並自動回覆</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[7] Disconnect MQTT</td>
+          <td></td>
+          <td>斷開MQTT</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[8] Sync Time (SNTP)</td>
+          <td></td>
+          <td>SNTP時間同步</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[9] Publish RTC Time (1s interval)</td>
+          <td></td>
+          <td>週期發佈RTC時間</td>
+      </tr>
+      <tr>
+          <td><strong>[B]</strong></td>
+          <td>Ed25519 Signature Verify</td>
+          <td></td>
+          <td><code>MENU_ENABLE_ED25519_VERIFY</code></td>
+          <td>簽名驗證</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[1] Verify firmware on SD card</td>
+          <td></td>
+          <td>SD卡簽名驗證</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[2] Verify firmware on SPI Flash</td>
+          <td></td>
+          <td>SPI Flash簽名驗證</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[3] Buffer verify test</td>
+          <td></td>
+          <td>緩衝區驗證測試</td>
+      </tr>
+      <tr>
+          <td><strong>[C]</strong></td>
+          <td>Generate Device Key (RNG)</td>
+          <td>-</td>
+          <td><code>MENU_ENABLE_RNG_DEVKEY</code></td>
+          <td>RNG生成設備密鑰</td>
+      </tr>
+      <tr>
+          <td><strong>[D]</strong></td>
+          <td>Write DevKey to OTP</td>
+          <td>-</td>
+          <td><code>MENU_ENABLE_RNG_DEVKEY</code></td>
+          <td>寫入OTP設備密鑰</td>
+      </tr>
+      <tr>
+          <td><strong>[E]</strong></td>
+          <td>Firmware Package Parse</td>
+          <td></td>
+          <td><code>MENU_ENABLE_FIRMWARE_PACKAGE</code></td>
+          <td>固件包解析</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[1] Parse package from SD card (FATFS)</td>
+          <td></td>
+          <td>SD卡解析</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[2] Parse package from SPI Flash (LFS)</td>
+          <td></td>
+          <td>SPI Flash解析</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[3] Secure Download to A/B (SD Card)</td>
+          <td></td>
+          <td>安全下載到A/B分區</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[4] Secure Download to A/B (SPI Flash)</td>
+          <td></td>
+          <td>安全下載到A/B分區</td>
+      </tr>
+      <tr>
+          <td><strong>[F]</strong></td>
+          <td>A/B Partition Management</td>
+          <td></td>
+          <td>無（始終啟用）</td>
+          <td>A/B分區管理</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[1] Show A/B Partition Status</td>
+          <td></td>
+          <td>查看分區狀態</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[2] Set Active Slot</td>
+          <td></td>
+          <td>設置活動分區</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[3] Confirm Current Slot</td>
+          <td></td>
+          <td>確認當前分區</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[4] Rollback</td>
+          <td></td>
+          <td>回滾</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td></td>
+          <td>[5] Jump to Slot</td>
+          <td></td>
+          <td>跳轉到指定分區</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="十安全鏈路全景">十、安全鏈路全景
+</h2><p><strong>固件包構建端：</strong></p>
+<ol>
+<li>原始固件 → SHA256（附加到末尾）</li>
+<li>→ AES-256 加密</li>
+<li>→ Ed25519 簽名</li>
+<li>→ <code>.iap.bin</code></li>
+</ol>
+<p><strong>設備端驗證：</strong></p>
+<ol>
+<li><code>.iap.bin</code> → HMAC-SHA256 驗證（DevKey）</li>
+<li>→ 硬件兼容檢查</li>
+<li>→ 防回滾檢查</li>
+<li>→ HKDF 派生 AES 密鑰（Salt + DevKey + UID）</li>
+<li>→ AES 解密 → 寫入 Flash</li>
+<li>→ SHA-512 流式哈希 → Ed25519 簽名驗證</li>
+<li>→ 回讀 Flash SHA-256 校驗</li>
+</ol>
+<p>完整的安全鏈路形成了 <strong>信任鏈</strong>：HMAC 保證包來源可信 → 加密保證內容機密 → 簽名保證完整性 → 防回滾保證版本不可降級 → SHA256 回讀校驗保證 Flash 寫入正確。</p>
+<hr>
+<h2 id="十一源碼深入剖析">十一、源碼深入剖析
+</h2><h3 id="111-mainc啟動決策主入口">11.1 main.c：啟動決策主入口
+</h3><p><code>main()</code> 是整個 Bootloader 的決策中心，核心邏輯如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 軟復位快速跳轉（HAL_Init 之前） =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">update_flag</span> <span class="o">==</span> <span class="n">JUMP_FLAG_MAGIC</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">update_flag</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">__DSB</span><span class="p">();</span> <span class="nf">__ISB</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">ab_slot_t</span> <span class="n">slot</span> <span class="o">=</span> <span class="nf">ab_partition_get_active_slot_from_flash</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">bootloader_execute_jump</span><span class="p">();</span>  <span class="c1">// 直接跳轉，最快啟動
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 標準初始化 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">HAL_Init</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">SystemClock_Config</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">MX_GPIO_Init</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">MX_UART4_Init</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">MX_SPI1_Init</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ... 其他外設初始化
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">platform_config_init</span><span class="p">();</span>       <span class="c1">// 註冊所有 Transport 驅動
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">ab_partition_init</span><span class="p">();</span>          <span class="c1">// 讀取 A/B 元數據
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== A/B 分區啟動檢查 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">ab_slot_t</span> <span class="n">active</span> <span class="o">=</span> <span class="nf">ab_partition_get_active_slot</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">ab_slot_state_t</span> <span class="n">state</span> <span class="o">=</span> <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">slots</span><span class="p">[</span><span class="n">active</span><span class="p">].</span><span class="n">state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="n">AB_SLOT_TESTING</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">ab_partition_validate_slot</span><span class="p">(</span><span class="n">active</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">ab_partition_rollback</span><span class="p">();</span>        <span class="c1">// 固件無效，回滾
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">slots</span><span class="p">[</span><span class="n">active</span><span class="p">].</span><span class="n">boot_attempts</span> <span class="o">&gt;=</span> <span class="n">AB_MAX_BOOT_RETRIES</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">ab_partition_rollback</span><span class="p">();</span>        <span class="c1">// 超過3次，回滾
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">ab_partition_increment_boot_attempts</span><span class="p">(</span><span class="n">active</span><span class="p">);</span>  <span class="c1">// 遞增嘗試計數
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== SD卡掛載 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nf">SD_Detect</span><span class="p">()</span> <span class="o">==</span> <span class="n">SD_PRESENT</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">f_mount</span><span class="p">(</span><span class="o">&amp;</span><span class="n">SDFatFS</span><span class="p">,</span> <span class="n">SDPath</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 菜單入口判斷 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">Serial_PutString</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\r\n</span><span class="s">按 &#39;M&#39; 進入 Bootloader 菜單 (1.5s 超時)...</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">WaitForSerialCommand</span><span class="p">(</span><span class="mi">1500</span><span class="p">)</span> <span class="o">==</span> <span class="sc">&#39;M&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">Main_Menu</span><span class="p">();</span>             <span class="c1">// 進入交互式菜單
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">update_flag</span> <span class="o">==</span> <span class="n">UPDATE_FLAG_MAGIC</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">Main_Menu</span><span class="p">();</span>             <span class="c1">// App 請求更新
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">bootloader_request_jump</span><span class="p">(</span><span class="n">active</span><span class="p">);</span>  <span class="c1">// 自動跳轉 App
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote class="alert alert-note">
+    <p>軟復位快速跳轉放在 <code>HAL_Init()</code> <strong>之前</strong>執行，這意味著此時所有外設都未初始化，但 <code>bootloader_execute_jump()</code> 只操作內核寄存器（MSP、VTOR），不依賴任何外設，因此是安全的。這種設計將 App 啟動延遲降到了最低。</p></blockquote><h3 id="112-bootloader_corec下載引擎">11.2 bootloader_core.c：下載引擎
+</h3><p><code>bootloader_download()</code> 是普通下載的核心，通過 Transport 抽象層實現源到目標的數據搬運：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">bootloader_download</span><span class="p">(</span><span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">source</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">target</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">buf</span><span class="p">[</span><span class="n">DOWNLOAD_BUF_SIZE</span><span class="p">];</span>  <span class="c1">// 4096 字節緩衝區
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">total_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">bytes_read</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 1. 打開源傳輸
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="nf">TRANSPORT_SOURCE_OPEN</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">total_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">TRANSPORT_STATUS_OK</span><span class="p">)</span> <span class="k">return</span> <span class="n">BL_ERR_OPEN_SRC</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 2. 打開目標傳輸
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">ret</span> <span class="o">=</span> <span class="nf">TRANSPORT_TARGET_OPEN</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">total_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">TRANSPORT_STATUS_OK</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">TRANSPORT_SOURCE_CLOSE</span><span class="p">(</span><span class="n">source</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">BL_ERR_OPEN_DST</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 3. 循環讀取 → 寫入
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">do</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ret</span> <span class="o">=</span> <span class="nf">TRANSPORT_SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">bytes_read</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">TRANSPORT_STATUS_OK</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">bytes_read</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ret</span> <span class="o">=</span> <span class="nf">TRANSPORT_TARGET_WRITE</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">TRANSPORT_STATUS_OK</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">offset</span> <span class="o">+=</span> <span class="n">bytes_read</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">bytes_read</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 4. 關閉傳輸
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">TRANSPORT_TARGET_CLOSE</span><span class="p">(</span><span class="n">target</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">TRANSPORT_SOURCE_CLOSE</span><span class="p">(</span><span class="n">source</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="n">TRANSPORT_STATUS_OK</span><span class="p">)</span> <span class="o">?</span> <span class="nl">BL_OK</span> <span class="p">:</span> <span class="nf">transport_status_to_bootloader</span><span class="p">(</span><span class="n">ret</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>bootloader_secure_download()</code> 則在普通下載的基礎上，增加了完整的安全驗證鏈路：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">bootloader_secure_download</span><span class="p">(</span><span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">source</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">target</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                <span class="k">const</span> <span class="kt">fw_pkg_verify_config_t</span> <span class="o">*</span><span class="n">config</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                <span class="kt">fw_pkg_ctx_t</span> <span class="o">*</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 調用固件包處理引擎，完成：
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// HMAC驗證 → 防回滾 → HKDF密鑰派生 → AES解密 → Ed25519簽名驗證
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="nf">fw_pkg_process_ex</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">FW_PKG_OK</span><span class="p">)</span> <span class="k">return</span> <span class="nf">fw_pkg_err_to_bootloader</span><span class="p">(</span><span class="n">ret</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">BL_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="113-firmware_packagec安全固件包處理引擎">11.3 firmware_package.c：安全固件包處理引擎
+</h3><p>這是安全體系最核心的文件（1107 行），<code>fw_pkg_process_ex()</code> 的完整流程：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">fw_pkg_process_ex</span><span class="p">(</span><span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">source</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                       <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">target</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                       <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                       <span class="k">const</span> <span class="kt">fw_pkg_verify_config_t</span> <span class="o">*</span><span class="n">config</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                       <span class="kt">fw_pkg_ctx_t</span> <span class="o">*</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">fw_pkg_header_t</span> <span class="n">header</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">salt</span><span class="p">[</span><span class="n">SALT_SIZE</span><span class="p">],</span> <span class="n">iv</span><span class="p">[</span><span class="n">IV_SIZE</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">signature</span><span class="p">[</span><span class="n">SIGNATURE_SIZE</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">aes_ctx_t</span> <span class="n">aes_ctx</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">sha512_ctx_t</span> <span class="n">sha512_ctx</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">sha256_ctx_t</span> <span class="n">sha256_ctx</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 1. 讀取並解析 Header =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">header</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">header</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">fw_pkg_parse_header</span><span class="p">(</span><span class="o">&amp;</span><span class="n">header</span><span class="p">);</span>  <span class="c1">// 驗證 Magic + Version
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 2. HMAC-SHA256 驗證 Header =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">fw_pkg_verify_header_hmac</span><span class="p">(</span><span class="o">&amp;</span><span class="n">header</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">devkey</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 3. 硬件兼容性檢查 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">hardware_compat</span> <span class="o">!=</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">hardware_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">FW_PKG_ERR_HW_INCOMPAT</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 4. 防回滾檢查 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">fw_pkg_check_rollback</span><span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">security_counter</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">min_security_counter</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 5. 讀取 DynamicSalt + IV =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">salt</span><span class="p">,</span> <span class="n">SALT_SIZE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">iv</span><span class="p">,</span> <span class="n">IV_SIZE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 6. HKDF 密鑰派生 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span> <span class="n">aes_key</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">fw_pkg_derive_aes_key</span><span class="p">(</span><span class="n">salt</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">devkey</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">uid</span><span class="p">,</span> <span class="n">aes_key</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 7. 初始化 AES 解密 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">fw_pkg_decrypt_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">aes_ctx</span><span class="p">,</span> <span class="n">header</span><span class="p">.</span><span class="n">encryption_algo</span><span class="p">,</span> <span class="n">aes_key</span><span class="p">,</span> <span class="n">iv</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 8. 打開目標，循環解密寫入 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">TARGET_OPEN</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">ciphertext_size</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">remaining</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">uint32_t</span> <span class="n">chunk</span> <span class="o">=</span> <span class="nf">MIN</span><span class="p">(</span><span class="n">remaining</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bytes_read</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">fw_pkg_decrypt_payload</span><span class="p">(</span><span class="o">&amp;</span><span class="n">aes_ctx</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">,</span> <span class="n">is_last</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">TARGET_WRITE</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">offset</span> <span class="o">+=</span> <span class="n">bytes_read</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">remaining</span> <span class="o">-=</span> <span class="n">bytes_read</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 9. 讀取並驗證 Ed25519 簽名 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">SIGNATURE_SIZE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">fw_pkg_verify_signature</span><span class="p">(</span><span class="o">&amp;</span><span class="n">header</span><span class="p">,</span> <span class="n">salt</span><span class="p">,</span> <span class="n">iv</span><span class="p">,</span> <span class="n">ciphertext</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">ciphertext_size</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">ed25519_pubkey</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 10. 回讀 Flash SHA-256 校驗 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sha256_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">firmware_size</span><span class="p">;</span> <span class="n">offset</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">TARGET_READ</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">chunk</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">sha256_update</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">chunk</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sha256_final</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">,</span> <span class="n">computed_hash</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 與固件末尾內嵌的 SHA-256 比對
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 11. 填充結果上下文 =====
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">fw_version</span> <span class="o">=</span> <span class="n">header</span><span class="p">.</span><span class="n">firmware_version</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">security_counter</span> <span class="o">=</span> <span class="n">header</span><span class="p">.</span><span class="n">security_counter</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">sha256</span><span class="p">,</span> <span class="n">computed_hash</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">FW_PKG_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote class="alert alert-important">
+    <p>HKDF 密鑰派生是設備綁定加密的關鍵。<code>fw_pkg_derive_aes_key()</code> 的三個輸入中，<code>DynamicSalt</code> 每包隨機生成，<code>DevKey</code> 存儲在 OTP 中每台設備不同，<code>UID</code> 是芯片出廠唯一ID。三者組合確保：即使固件包被截獲，也無法在其他設備上解密。</p></blockquote><h3 id="114-ab_partitioncab-分區管理">11.4 ab_partition.c：A/B 分區管理
+</h3><p>元數據的追加寫入策略是 A/B 分區管理的精髓：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 元數據實例對齊：128 字節對齊，最多 512 個實例
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define METADATA_INSTANCE_ALIGN  128
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define METADATA_MAX_INSTANCES   (METADATA_SIZE / METADATA_INSTANCE_ALIGN)
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">ab_write_metadata_raw</span><span class="p">(</span><span class="k">const</span> <span class="kt">ab_metadata_t</span> <span class="o">*</span><span class="n">meta</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">METADATA_START_ADDR</span> <span class="o">+</span> <span class="n">g_ab_current_instance</span> <span class="o">*</span> <span class="n">METADATA_INSTANCE_ALIGN</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 檢查能否直接寫入（Flash 只允許 1→0）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nf">can_write_at</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">meta</span><span class="p">)))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">ab_flash_write_words</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="p">(</span><span class="k">const</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="n">meta</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                             <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">meta</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">g_ab_current_instance</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 無法追加寫入，執行壓縮
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">ab_compact_and_write</span><span class="p">(</span><span class="n">meta</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>回滾邏輯確保設備始終可啟動：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">ab_partition_rollback</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">ab_slot_t</span> <span class="n">current</span> <span class="o">=</span> <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">active_slot</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">ab_slot_t</span> <span class="n">fallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">current</span> <span class="o">==</span> <span class="n">AB_SLOT_A</span><span class="p">)</span> <span class="o">?</span> <span class="nl">AB_SLOT_B</span> <span class="p">:</span> <span class="n">AB_SLOT_A</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 標記當前槽位為無效
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">slots</span><span class="p">[</span><span class="n">current</span><span class="p">].</span><span class="n">state</span> <span class="o">=</span> <span class="n">AB_SLOT_INVALID</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 驗證回退槽位有有效固件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">ab_partition_validate_slot</span><span class="p">(</span><span class="n">fallback</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">AB_ERR_NO_VALID_SLOT</span><span class="p">;</span>  <span class="c1">// 兩個槽位都無效！
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 切換到回退槽位
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">active_slot</span> <span class="o">=</span> <span class="n">fallback</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">slots</span><span class="p">[</span><span class="n">fallback</span><span class="p">].</span><span class="n">state</span> <span class="o">=</span> <span class="n">AB_SLOT_CONFIRMED</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">slots</span><span class="p">[</span><span class="n">fallback</span><span class="p">].</span><span class="n">boot_attempts</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">ab_partition_metadata_flush</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">AB_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote class="alert alert-warning">
+    <p>如果兩個槽位都無效（<code>ab_partition_rollback</code> 返回 <code>AB_ERR_NO_VALID_SLOT</code>），設備將無法自動啟動，只能停留在 Bootloader 菜單等待手動刷入固件。這是 A/B 分區最後的防線——設備不會變磚，但需要人工干預。</p></blockquote><h3 id="115-service_hpatchc差分升級實現">11.5 service_hpatch.c：差分升級實現
+</h3><p>差分升級使用 HPatch Lite + tuz 壓縮，內存佔用可控：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 靜態分配的緩衝區（編譯期確定）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">uint8_t</span> <span class="n">tuz_dict_and_cache</span><span class="p">[</span><span class="n">HPATCH_DICT_SIZE</span> <span class="o">+</span> <span class="n">HPATCH_CACHE_SIZE</span><span class="p">];</span>  <span class="c1">// 4KB + 16KB
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">uint8_t</span> <span class="n">stream_diff_buf</span><span class="p">[</span><span class="n">HPATCH_STREAM_BUF_SIZE</span><span class="p">];</span>                   <span class="c1">// 8KB
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">uint8_t</span> <span class="n">patch_temp_buf</span><span class="p">[</span><span class="n">HPATCH_CACHE_SIZE</span><span class="p">];</span>                         <span class="c1">// 16KB
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">hpatch_upgrade</span><span class="p">(</span><span class="kt">hpatch_config_t</span> <span class="o">*</span><span class="n">config</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 1. 打開差分文件、舊固件、創建輸出文件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">diff_file</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">diff_path</span><span class="p">,</span> <span class="s">&#34;rb&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old_file</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">old_path</span><span class="p">,</span> <span class="s">&#34;rb&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">out_file</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">out_path</span><span class="p">,</span> <span class="s">&#34;wb&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 2. 解析差分文件頭
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">hpatch_lite_open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">listener</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">new_size</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">compress_type</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 3. 若使用 tuz 壓縮，初始化解壓流
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">compress_type</span> <span class="o">==</span> <span class="n">hpi_compress_tuz</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">tuz_TStream_open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tuz_stream_obj</span><span class="p">,</span> <span class="n">tuz_dict_and_cache</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                         <span class="n">dict_size</span><span class="p">,</span> <span class="n">tuz_fs_read_code</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 替換讀取回調為流式解壓
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">listener</span><span class="p">.</span><span class="n">read_diff</span> <span class="o">=</span> <span class="n">stream_read_diff</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 4. 執行差分補丁應用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">hpatch_lite_patch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">listener</span><span class="p">,</span> <span class="n">new_size</span><span class="p">,</span> <span class="n">patch_temp_buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 5. 清理
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">close</span><span class="p">(</span><span class="o">&amp;</span><span class="n">diff_file</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">close</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old_file</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">close</span><span class="p">(</span><span class="o">&amp;</span><span class="n">out_file</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote class="alert alert-tip">
+    <p>差分升級的典型效果：假設舊固件 384KB，新固件 386KB，差分文件可能只有 5-20KB。在帶寬受限的場景（如 NB-IoT、LoRa）下，差分升級能顯著減少傳輸時間和流量費用。</p></blockquote><h3 id="116-esp8266_ota_apicwifi-ota-封裝">11.6 esp8266_ota_api.c：WiFi OTA 封裝
+</h3><p>WiFi OTA 是對 OneNET 物聯網平台的薄封裝：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">onenet_ota_ctx_t</span> <span class="n">g_ota_ctx</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">esp8266_ota_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 注入三個依賴：WiFi模塊、RTC（用於MQTT認證時間戳）、MQTT客戶端
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">onenet_ota_ctx_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">g_ota_ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">g_esp8266_wifi</span><span class="p">.</span><span class="n">base</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="o">&amp;</span><span class="n">g_rtc</span><span class="p">.</span><span class="n">base</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">g_esp8266_mqtt</span><span class="p">.</span><span class="n">base</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">esp8266_ota_download</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">onenet_ota_process_upgrade</span><span class="p">(</span><span class="o">&amp;</span><span class="n">g_ota_ctx</span><span class="p">);</span>  <span class="c1">// MQTT接收 → HTTP下載 → 寫入目標
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>支持三種下載目標：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">esp8266_ota_set_target_internal_flash</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>  <span class="c1">// 直接寫入內部 Flash
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">esp8266_ota_set_target_sd_card</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>          <span class="c1">// 保存到 SD 卡
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">esp8266_ota_set_target_spi_flash</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>         <span class="c1">// 保存到 SPI Flash
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="117-整體分層架構">11.7 整體分層架構
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>層級</th>
+          <th>模塊</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>應用層</strong></td>
+          <td>Menu</td>
+          <td>交互式菜單，4600+行</td>
+      </tr>
+      <tr>
+          <td><strong>核心層</strong></td>
+          <td>Bootloader Core</td>
+          <td>下載/跳轉/安全下載</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>├ firmware_package</td>
+          <td>包解析/HMAC/AES/Ed25519</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>└ ab_partition</td>
+          <td>A/B分區/回滾/元數據管理</td>
+      </tr>
+      <tr>
+          <td><strong>服務層</strong></td>
+          <td>Service Layer</td>
+          <td>功能服務</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>├ service_hpatch</td>
+          <td>差分升級</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>├ esp8266_ota_api</td>
+          <td>WiFi OTA (OneNET)</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>└ service_aes_decrypt / service_ed25519_verify</td>
+          <td>加解密/簽名驗證</td>
+      </tr>
+      <tr>
+          <td><strong>抽象層</strong></td>
+          <td>Platform Transport</td>
+          <td>傳輸抽象</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>├ Source</td>
+          <td>FatFS / LittleFS / Ymodem / HTTP</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td>└ Target</td>
+          <td>Internal Flash / FatFS / LittleFS</td>
+      </tr>
+      <tr>
+          <td><strong>硬件層</strong></td>
+          <td>HAL</td>
+          <td>STM32F407: Flash/RNG/SPI/UART/SDIO/RTC</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="十二總結">十二、總結
+</h2><p>本項目是一個功能完備的工業級安全 Bootloader，核心亮點：</p>
+<ol>
+<li><strong>A/B 雙分區</strong>：無縫升級 + 自動回滾，設備永不變磚</li>
+<li><strong>完整安全體系</strong>：HMAC 認證 + AES-256 加密 + Ed25519 簽名 + 防回滾 + 設備綁定密鑰</li>
+<li><strong>地址重定位 + 雙 Target 編譯</strong>：源碼只需一份，簡化構建流程</li>
+<li><strong>Transport 抽象</strong>：下載邏輯與存儲介質完全解耦，易於擴展</li>
+<li><strong>多渠道升級</strong>：UART / SD卡 / SPI Flash / WiFi OTA，覆蓋各種場景</li>
+<li><strong>差分升級</strong>：HPatch + tuz 減少傳輸數據量</li>
+<li><strong>交互式菜單</strong>：功能豐富，便於調試和生產使用</li>
+</ol>
+<hr>
+<h2 id="參考資料">參考資料
+</h2><ul>
+<li><a class="link" href="https://www.st.com/resource/en/reference_manual/dm00031020.pdf"  target="_blank" rel="noopener"
+    >STM32F4xx Reference Manual</a></li>
+<li><a class="link" href="https://ed25519.cr.yp.to/"  target="_blank" rel="noopener"
+    >Ed25519: High-speed high-security signatures</a></li>
+<li><a class="link" href="https://tools.ietf.org/html/rfc5869"  target="_blank" rel="noopener"
+    >HKDF (RFC 5869)</a></li>
+<li><a class="link" href="https://github.com/sisong/HPatchLite"  target="_blank" rel="noopener"
+    >HPatchLite - 差分補丁庫</a></li>
+<li><a class="link" href="https://github.com/littlefs-project/littlefs"  target="_blank" rel="noopener"
+    >LittleFS - 嵌入式文件系統</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/Hugo_Web/zh-hk/tags/stm32/">STM32</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/bootloader/">Bootloader</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/iap/">IAP</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/a/b%E5%88%86%E5%8D%80/">A/B分區</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/%E5%9B%BA%E4%BB%B6%E5%8A%A0%E5%AF%86/">固件加密</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/ed25519/">Ed25519</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/ota/">OTA</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            上次改過於 Jun 30, 2026 15:35 CST
+        </span>
+    </section></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const mainArticleElement = document.querySelector(".main-article");
+    renderMathInElement(mainArticleElement, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  });
+</script>
+<div class="math-katex"></div>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相關內容</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/">
+        
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_f8913fdcd1a8711e.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post PyIAPToolKit：STM32 IAP 上位機工具套件設計與實現"
+                        
+                        data-hash="md5-vOO1Pj1Sm7lmL3XzOtUpuQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">PyIAPToolKit：STM32 IAP 上位機工具套件設計與實現</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <script
+  src="https://giscus.app/client.js"
+  data-repo="Lingjia007/Hugo_Web"
+  data-repo-id="R_kgDOOH5NOA"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOOH5NOM4Cn-zx"
+  data-mapping="title"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="light"
+  data-lang="zh-CN"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async
+></script>
+<script>
+  function setGiscusTheme(theme) {
+    let giscus = document.querySelector("iframe.giscus-frame");
+    if (giscus) {
+      giscus.contentWindow.postMessage(
+        {
+          giscus: {
+            setConfig: {
+              theme: theme,
+            },
+          },
+        },
+        "https://giscus.app"
+      );
+    }
+  }
+
+  (function () {
+    addEventListener("message", (e) => {
+      if (event.origin !== "https://giscus.app") return;
+      handler();
+    });
+    window.addEventListener("onColorSchemeChange", handler);
+
+    function handler() {
+      if (document.documentElement.dataset.scheme === "light") {
+        setGiscusTheme('light');
+      } else {
+        setGiscusTheme('dark_dimmed');
+      }
+    }
+  })();
+</script>
+    <div class="comment"></div>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 lingsir007
+    </section>
+    
+    <section class="running-time">
+        
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+        本網站已穩定運行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;總計<span id="articleCount">&lt; 3 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 13.92 k ></span>字
+    </section>
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 構建 <br />
+        主題 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 設計
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script> <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
+<script>
+  var pjax = new Pjax({
+    selectors: ["title", ".main-container", ".js-Pjax1", ".js-Pjax2"],
+  });
+</script>
+
+
+<div id="aplayer"></div>
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<script>
+  const staticDir = "http://localhost:1313/Hugo_Web/zh-hk/";
+  const ap = new APlayer({
+    container: document.getElementById("aplayer"),
+    audio: [
+      {
+        name: "Keil Generic Key",
+        artist: "EDGE",
+        url: staticDir + "music/Keil Generic Key-EDGE/song.mp3",
+        cover: staticDir + "music/Keil Generic Key-EDGE/cover.png",
+        lrc: staticDir + "music/Keil Generic Key-EDGE/lyric.lrc",
+      },
+      {
+        name: "查无此字",
+        artist: "林奕匡",
+        url: staticDir + "music/查无此字-林奕匡/song.mp3",
+        cover: staticDir + "music/查无此字-林奕匡/cover.jpg",
+        lrc: staticDir + "music/查无此字-林奕匡/lyric.lrc",
+      },
+      {
+        name: "爱别等",
+        artist: "洪卓立",
+        url: staticDir + "music/爱别等-洪卓立/song.mp3",
+        cover: staticDir + "music/爱别等-洪卓立/cover.jpg",
+        lrc: staticDir + "music/爱别等-洪卓立/lyric.lrc",
+      },
+      {
+        name: "乖乖报到",
+        artist: "MC 张天赋",
+        url: staticDir + "music/乖乖报到-MC 张天赋/song.mp3",
+        cover: staticDir + "music/乖乖报到-MC 张天赋/cover.jpg",
+        lrc: staticDir + "music/乖乖报到-MC 张天赋/lyric.lrc",
+      },
+      {
+        name: "指纹",
+        artist: "胡歌",
+        url: staticDir + "music/指纹-胡歌/song.mp3",
+        cover: staticDir + "music/指纹-胡歌/cover.jpg",
+        lrc: staticDir + "music/指纹-胡歌/lyric.lrc",
+      },
+      {
+        name: "还记得",
+        artist: "周柏豪",
+        url: staticDir + "music/还记得-周柏豪/song.mp3",
+        cover: staticDir + "music/还记得-周柏豪/cover.jpg",
+        lrc: staticDir + "music/还记得-周柏豪/lyric.lrc",
+      },
+      {
+        name: "摄氏零度",
+        artist: "张敬轩",
+        url: staticDir + "music/摄氏零度-张敬轩/song.mp3",
+        cover: staticDir + "music/摄氏零度-张敬轩/cover.jpg",
+        lrc: staticDir + "music/摄氏零度-张敬轩/lyric.lrc",
+      },
+      {
+        name: "下一位前度",
+        artist: "林家谦",
+        url: staticDir + "music/下一位前度-林家谦/song.mp3",
+        cover: staticDir + "music/下一位前度-林家谦/cover.jpg",
+        lrc: staticDir + "music/下一位前度-林家谦/lyric.lrc",
+      },
+      {
+        name: "初初",
+        artist: "古巨基",
+        url: staticDir + "music/初初-古巨基/song.mp3",
+        cover: staticDir + "music/初初-古巨基/cover.jpg",
+        lrc: staticDir + "music/初初-古巨基/lyric.lrc",
+      },
+      {
+        name: "这个故事教训我们",
+        artist: "李克勤",
+        url: staticDir + "music/这个故事教训我们-李克勤/song.mp3",
+        cover: staticDir + "music/这个故事教训我们-李克勤/cover.jpg",
+        lrc: staticDir + "music/这个故事教训我们-李克勤/lyric.lrc",
+      },
+      {
+        name: "最后祝福",
+        artist: "黄宗泽",
+        url: staticDir + "music/最后祝福-黄宗泽/song.mp3",
+        cover: staticDir + "music/最后祝福-黄宗泽/cover.jpg",
+        lrc: staticDir + "music/最后祝福-黄宗泽/lyric.lrc",
+      }
+    ],
+    lrcType: 3,
+    fixed: true
+  });
+</script>
+
+<script>
+  
+  function calculateRunningDays(startDateStr, elementId) {
+    let s1 = new Date(startDateStr.replace(/-/g, "/"));
+    let s2 = new Date();
+    let timeDifference = s2.getTime() - s1.getTime();
+
+    let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+    
+    let dayText = "天"; 
+    let hourText = "小時";
+    let minuteText = "分鐘";
+
+    let result = `<span>< ${days} ${dayText} ${hours} ${hourText} ${minutes} ${minuteText} ></span>`;
+    document.getElementById(elementId).innerHTML = result;
+    }
+
+    document.addEventListener("pjax:complete", () => {
+        calculateRunningDays('2025-3-14', 'runningdays');
+    });
+    calculateRunningDays('2025-3-14', 'runningdays');
+</script>
+
+<script>
+  pjax._handleResponse = pjax.handleResponse;
+  pjax.handleResponse = function (responseText, request, href, options) {
+    if (request.responseText.match("<html")) {
+      if (responseText) {
+        
+        let newDom = new DOMParser().parseFromString(responseText, "text/html");
+        
+        let bodyClass = newDom.body.className;
+        document.body.setAttribute("class", bodyClass);
+      }
+      
+      pjax._handleResponse(responseText, request, href, options);
+    } else {
+      
+    }
+  };
+</script>
+
+<script>
+  
+  function initClock() {
+    
+    var hr = document.getElementById("hr"); 
+    var mn = document.getElementById("mn"); 
+    var sc = document.getElementById("sc"); 
+
+    
+    var date = new Date();
+    var HH = date.getHours();
+    var MM = date.getMinutes();
+    var SS = date.getSeconds();
+
+    
+    var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+    var minuteAngle = MM * 6 + (SS / 60) * 6;
+    var secondAngle = SS * 6;
+
+    
+    hr.style.transition = 'none';
+    mn.style.transition = 'none';
+    sc.style.transition = 'none';
+
+    
+    hr.style.transform = "rotate(0deg)";
+    mn.style.transform = "rotate(0deg)";
+    sc.style.transform = "rotate(0deg)";
+
+    
+    setTimeout(() => {
+      hr.style.transition = '';
+      mn.style.transition = '';
+      sc.style.transition = '';
+
+      
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 0);
+
+    
+    setInterval(function () {
+      var date = new Date();
+      var HH = date.getHours();
+      var MM = date.getMinutes();
+      var SS = date.getSeconds();
+
+      
+      var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+      var minuteAngle = MM * 6 + (SS / 60) * 6;
+      var secondAngle = SS * 6;
+
+      
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 1000);
+  }
+
+  
+  window.onload = function () {
+    initClock();
+  };
+
+  
+  document.addEventListener("pjax:complete", () => {
+    initClock();
+  });
+</script>
+
+<script>
+  document.addEventListener("pjax:complete", () => {
+    
+    window.Stack.init();
+    
+  });
+</script>
+
+<script>
+  async function renderKaTeX() {
+    
+    let katex = document.querySelector(".math-katex");
+    if (!katex) {
+      return;
+    }
+    
+    while (typeof renderMathInElement !== "function") {
+      await delay(500);
+    }
+    
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  }
+
+  
+
+  function delay(time) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, time);
+    });
+  }
+
+  document.addEventListener("pjax:complete", () => {
+    renderKaTeX();
+  });
+</script>
+
+<script src="http://localhost:1313/Hugo_Web/zh-hk/js/topbar.min.js"></script>
+
+<script>
+  
+  topbar.config({
+    barColors: {
+      0: "rgba(255,  255, 255, 1)", 
+      "1.0": "rgba(0, 149, 234,  1)", 
+    },
+  });
+
+  document.addEventListener("pjax:send", () => {
+    
+    topbar.show();
+  });
+
+  document.addEventListener("pjax:complete", () => {
+    
+    topbar.hide();
+  });
+</script>
+
+<script>
+  const cdnPath =
+    "https://cdn.jsdelivr.net/gh/Lingjia007/live2d-widget-v3@main";
+  const config = {
+    
+    path: {
+      homePath: "/",
+      modelPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/my-waifu-tips.json",
+      tipsJsPath: cdnPath + "/waifu-tips.js",
+      live2dCorePath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/live2d-sdk.js",
+    },
+    
+    tools: [
+      "hitokoto",
+      "asteroids",
+      "express",
+      "switch-model",
+      "switch-texture",
+      "photo",
+      "info",
+      "quit",
+    ],
+    
+    drag: {
+      enable: true,
+      direction: ["x", 0],
+    },
+    
+    switchType: "order",
+  };
+
+  
+  if (screen.width >= 10) {
+    Promise.all([
+      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(config.path.live2dCorePath, "js"),
+      loadExternalResource(config.path.live2dSdkPath, "js"),
+      loadExternalResource(config.path.tipsJsPath, "js"),
+    ]).then(() => {
+      initWidget({
+        homePath: config.path.homePath,
+        waifuPath: config.path.tipsJsonPath,
+        cdnPath: config.path.modelPath,
+        tools: config.tools,
+        dragEnable: config.drag.enable,
+        dragDirection: config.drag.direction,
+        switchType: config.switchType,
+      });
+    });
+    function waitForElement(selector, callback) {
+      new MutationObserver(function (mutations) {
+        if (document.querySelector(selector)) {
+          callback();
+          this.disconnect();
+        }
+      }).observe(document.documentElement, { childList: true, subtree: true });
+    }
+  }
+
+  
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      let tag;
+      if (type === "css") {
+        tag = document.createElement("link");
+        tag.rel = "stylesheet";
+        tag.href = url;
+      } else if (type === "js") {
+        tag = document.createElement("script");
+        tag.src = url;
+      }
+      if (tag) {
+        tag.onload = () => resolve(url);
+        tag.onerror = () => reject(url);
+        document.head.appendChild(tag);
+      }
+    });
+  }
+</script>
+
+<style>
+  .highlight {
+     
+    max-height: 400px;
+    overflow: hidden;
+  }
+
+  .code-show {
+    max-height: none !important;
+  }
+
+  .code-more-box {
+    width: 100%;
+    padding-top: 78px;
+    background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(rgba(255, 255, 255, 0)),
+      to(#fff)
+    );
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .code-more-btn {
+    display: block;
+    margin: auto;
+    width: 44px;
+    height: 22px;
+    background: #f0f0f5;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding-top: 6px;
+    cursor: pointer;
+  }
+
+  .code-more-img {
+    cursor: pointer !important;
+    display: block;
+    margin: auto;
+    width: 22px;
+    height: 16px;
+  }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach((codeBlock) => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement("div");
+      codeMoreBox.classList.add("code-more-box");
+      
+      let codeMoreBtn = document.createElement("span");
+      codeMoreBtn.classList.add("code-more-btn");
+      codeMoreBtn.addEventListener("click", () => {
+        codeBlock.classList.add("code-show");
+        codeMoreBox.style.display = "none";
+        
+        window.dispatchEvent(new Event("resize"));
+      });
+      
+      let img = document.createElement("img");
+      img.classList.add("code-more-img");
+      img.src = "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/icons/codeMore.png";
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox);
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initCodeMoreBox();
+  });
+  initCodeMoreBox();
+</script>
+
+<div id="particles-js"></div>
+
+<script src="http://localhost:1313/Hugo_Web/zh-hk/background/particles.min.js"></script>
+<script>
+  particlesJS.load(
+    "particles-js",
+    "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/background/particlesjs-config.json",
+    function () {
+      console.log("particles.js loaded - callback");
+    }
+  );
+</script>
+
+<style>
+  #particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+  }
+</style>
+
+<style>
+  #TableOfContents > ul,
+  ol {
+    ul,
+    ol {
+      display: none;
+    }
+    .open {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  function initTocHide() {
+    
+    let toc = document.querySelector(".widget--toc");
+    if (!toc) {
+      return;
+    }
+    
+    window.addEventListener("scroll", function () {
+      
+      let openUl = document.querySelectorAll(".open");
+      if (openUl.length > 0) {
+        openUl.forEach((ul) => {
+          ul.classList.remove("open");
+        });
+      }
+      
+      let currentLi = document.querySelector(".active-class");
+      if (!currentLi) {
+        return;
+      }
+      
+      if (currentLi.children.length > 1) {
+        currentLi.children[1].classList.add("open");
+      }
+      
+      let ul = currentLi.parentElement;
+      do {
+        ul.classList.add("open");
+        ul = ul.parentElement.parentElement;
+      } while (ul !== undefined && (ul.localName === "ul" || ul.localName === "ol"));
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initTocHide();
+  });
+  initTocHide();
+</script>
+
+<style>
+  @font-face {
+    font-family: "AlibabaPuHuiTi-3-65-Medium";
+    src: url(http://localhost:1313/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+      format("truetype");
+  }
+
+  :root {
+    --base-font-family: "AlibabaPuHuiTi-3-65-Medium";
+    --code-font-family: "AlibabaPuHuiTi-3-65-Medium";
+  }
+</style>
+
+<style>
+  #backTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    z-index: 99;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-image: url("http://localhost:1313/Hugo_Web/zh-hk/icons/backTop.svg");
+  }
+</style>
+
+<script>
+  
+
+  function initScrollTop() {
+    let rightSideBar = document.querySelector(".right-sidebar");
+    if (!rightSideBar) {
+      return;
+    }
+    
+    let btn = document.createElement("div");
+    btn.id = "backTopBtn";
+    btn.onclick = backToTop;
+    rightSideBar.appendChild(btn);
+    
+    window.onscroll = function () {
+      
+      if (
+        document.body.scrollTop > 20 ||
+        document.documentElement.scrollTop > 20
+      ) {
+        btn.style.display = "block";
+      } else {
+        btn.style.display = "none";
+      }
+    };
+  }
+
+  
+
+  function backToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initScrollTop();
+  });
+  initScrollTop();
+</script>
+
+<div class="js-Pjax2">
+  
+  <script>
+    (function() {
+      
+      const verScript = document.createElement('script');
+      verScript.defer = true;
+      verScript.src = 'https://cn.vercount.one/js';
+      document.body.appendChild(verScript);
+
+      
+      function showHideView() {
+        const viewCounts = document.querySelectorAll("#viewCount");
+        if (viewCounts) {
+          const isArticle = !!document.querySelector(".article-page");
+          viewCounts.forEach(ele => {
+            ele.style.display = isArticle ? '' : 'none';
+          });
+        }
+      }
+      
+      showHideView();
+      
+      document.addEventListener('pjax:complete', function() {
+        showHideView();
+      });
+    })();
+  </script>
+</div><div class="js-Pjax1">
+    <script>
+      (function () {
+        var pathName = window.location.pathname;
+        let langFromPath = 'zh-CN';
+        if (pathName.includes('/zh-hk')) {
+            langFromPath = 'zh-HK';
+        } else if (pathName.includes('/en')) {
+            langFromPath = 'en';
+        }
+        
+        window.giscusConfig = {
+            repo: 'Lingjia007\/Hugo_Web',
+            repoId: 'R_kgDOOH5NOA',
+            category: 'Announcements',
+            categoryId: 'DIC_kwDOOH5NOM4Cn-zx',
+            mapping: 'title',
+            strict: '0',
+            reactionsEnabled: '1',
+            emitMetadata: '0',
+            inputPosition: 'top',
+            theme: 'light',
+            lang: langFromPath, 
+            loading: 'lazy'
+        };
+
+        console.log('giscus_language set to:', window.giscusConfig.lang);
+
+        let comment = document.querySelector(".comment");
+        if (!comment) return;
+
+        
+        const placeholder = document.createElement('div');
+        placeholder.className = 'giscus-placeholder';
+        placeholder.style.minHeight = '160px';
+        placeholder.style.backgroundColor = 'transparent';
+        
+        
+        const siteFooter = document.querySelector('.site-footer');
+        if (siteFooter) {
+          siteFooter.parentNode.insertBefore(placeholder, siteFooter);
+        }
+
+        function reloadComments() {
+          
+          placeholder.innerHTML = '';
+          
+          
+          const newScript = document.createElement('script');
+          newScript.src = 'https://giscus.app/client.js';
+          for (let key in window.giscusConfig) {
+            newScript.setAttribute(`data-${key}`, window.giscusConfig[key]);
+          }
+          newScript.setAttribute('crossorigin', 'anonymous');
+          newScript.async = true;
+          
+          placeholder.appendChild(newScript);
+        }
+
+        reloadComments();
+        
+        setTimeout(reloadComments, 700);
+      })();
+    </script>
+  </div>
+
+    </body>
+</html>

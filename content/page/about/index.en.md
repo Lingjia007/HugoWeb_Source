@@ -1,13 +1,5 @@
 ---
 title: About
-description: Hugo, the world's fastest framework for building websites
-date: '2019-02-28'
-aliases:
-  - about-us
-  - about-hugo
-  - contact
-license: CC BY-NC-ND
-lastmod: '2020-10-09'
 menu:
     main: 
         weight: -90
@@ -15,20 +7,71 @@ menu:
             icon: user
 ---
 
-Written in Go, Hugo is an open source static site generator available under the [Apache License 2.0.](https://github.com/gohugoio/hugo/blob/master/LICENSE) Hugo supports TOML, YAML and JSON data file types, Markdown and HTML content files and uses shortcodes to add rich content. Other notable features are taxonomies, multilingual mode, image processing, custom output formats, HTML/CSS/JS minification and support for Sass SCSS workflows.
+This site is built with [Hugo](https://gohugo.io/) static site generator, using the [hugo-theme-stack](https://github.com/CaiJimmy/hugo-theme-stack) theme. It is deployed automatically to **dual platforms** through GitHub Actions — pushing to the `main` branch triggers the build and publish workflow, no manual operation required.
 
-Hugo makes use of a variety of open source projects including:
+## Deployment Architecture
 
-* https://github.com/yuin/goldmark
-* https://github.com/alecthomas/chroma
-* https://github.com/muesli/smartcrop
-* https://github.com/spf13/cobra
-* https://github.com/spf13/viper
+| Target | URL | Branch | Notes |
+| ------ | --- | ------ | ----- |
+| GitHub Pages | https://lingjia007.github.io/Hugo_Web/ | `master` | Primary site, uses baseURL from source repo's `hugo.yaml` |
+| Netlify | https://lingsir007.netlify.app/ | `netlify` | Mirror site, workflow auto-rewrites baseURL for the standalone domain |
 
-Hugo is ideal for blogs, corporate websites, creative portfolios, online magazines, single page applications or even a website with thousands of pages.
+The source repository and publish repository are separated: build artifacts are pushed to the external repository `Lingjia007/Hugo_Web` on the corresponding branch, then pulled and published automatically by GitHub Pages / Netlify.
 
-Hugo is for people who want to hand code their own website without worrying about setting up complicated runtimes, dependencies and databases.
+## Workflow Details
 
-Websites built with Hugo are extremely fast, secure and can be deployed anywhere including, AWS, GitHub Pages, Heroku, Netlify and any other hosting provider.
+The workflow is defined in [.github/workflows/deploy.yml](https://github.com/Lingjia007/HugoWeb_Source/blob/main/.github/workflows/deploy.yml) and contains two parallel jobs.
 
-Learn more and contribute on [GitHub](https://github.com/gohugoio).
+### Job 1: `deploy-to-gh-pages`
+
+Pipeline to GitHub Pages:
+
+1. **Checkout** — Clone source repo (with submodules, `fetch-depth: 0` to preserve full Git history for `lastmod` timestamps)
+2. **Git Configuration** — Disable `quotePath`, `autocrlf`; enable `safecrlf` to avoid CJK path and CRLF issues
+3. **Set up Hugo** — Install latest Hugo via `peaceiris/actions-hugo@v2`
+4. **Build** — `hugo -F --cleanDestinationDir` to build and clean stale artifacts
+5. **Copy static and assets** — Copy `static/` and `assets/` into `public/en`, `public/zh-hk` multilingual directories
+6. **Deploy** — Push `./public` to the `master` branch of `Lingjia007/Hugo_Web` via `peaceiris/actions-gh-pages@v3`, inheriting the HEAD commit message
+
+### Job 2: `deploy-to-netlify`
+
+Pipeline to the Netlify branch. The difference is that the config must be rewritten before build to adapt the standalone domain:
+
+1. **Checkout main** — Explicitly specify `ref: main`
+2. **Git Configuration** — Same as above
+3. **Switch to netlify branch** — `git checkout -B netlify` to create and switch
+4. **Modify baseURL** — `sed` replaces the first line of baseURL in `hugo.yaml` from the GitHub Pages URL to the Netlify URL:
+
+   ```bash
+   sed -i '1s#https://lingjia007.github.io/Hugo_Web/#https://lingsir007.netlify.app/#' hugo.yaml
+   ```
+
+5. **Modify Waifu Tips Path** — Strip the `Hugo_Web/` path prefix from the waifu tips file to avoid subpath errors:
+
+   ```bash
+   sed -i 's#Hugo_Web/##g' static/js/my-waifu-tips.json
+   ```
+
+6. **Commit & Push** — Commit config changes as GitHub Actions, force-push to the `netlify` branch
+7. **Set up Hugo + Build** — Same as Job 1
+8. **Deploy** — Push to the `netlify` branch of `Lingjia007/Hugo_Web`
+
+## Triggers & Secrets
+
+- **Trigger**: `push` to the `main` branch
+- **Authentication**: Uses the repository Secret `TOKEN` (Personal Access Token), granting write access to the external repository `Lingjia007/Hugo_Web`
+- **Permissions**: The `deploy-to-netlify` job declares `permissions: contents: write` to allow `git push` operations
+
+## Local Preview
+
+Preview locally before committing:
+
+```bash
+hugo server -D
+```
+
+To simulate the GitHub Pages subpath deployment:
+
+```bash
+hugo server -D --baseURL https://lingjia007.github.io/Hugo_Web/ --appendPort=false
+```

@@ -1,0 +1,2814 @@
+<!DOCTYPE html>
+<html lang="zh-hk" dir="ltr">
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="基於 PyQt6 + Fluent Design 的 STM32 IAP 上位機工具套件，涵蓋 AES-256 加密 + Ed25519 簽名固件打包流水線、HKDF 設備綁定密鑰派生、YMODEM 串口傳輸、PyOCD SWD 燒錄、雙差分引擎、LVGL 資源提取等核心技術詳解">
+<title>PyIAPToolKit：STM32 IAP 上位機工具套件設計與實現</title>
+
+<link rel='canonical' href='http://localhost:1313/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/'>
+
+<link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="PyIAPToolKit：STM32 IAP 上位機工具套件設計與實現">
+<meta property='og:description' content="基於 PyQt6 + Fluent Design 的 STM32 IAP 上位機工具套件，涵蓋 AES-256 加密 + Ed25519 簽名固件打包流水線、HKDF 設備綁定密鑰派生、YMODEM 串口傳輸、PyOCD SWD 燒錄、雙差分引擎、LVGL 資源提取等核心技術詳解">
+<meta property='og:url' content='http://localhost:1313/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/'>
+<meta property='og:site_name' content='lingsir007'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='IAP' /><meta property='article:tag' content='PyQt6' /><meta property='article:tag' content='AES-256' /><meta property='article:tag' content='Ed25519' /><meta property='article:tag' content='YMODEM' /><meta property='article:tag' content='OTA' /><meta property='article:tag' content='差分升級' /><meta property='article:published_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-30T15:25:40&#43;08:00'/><meta property='og:image' content='http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png' />
+<meta name="twitter:title" content="PyIAPToolKit：STM32 IAP 上位機工具套件設計與實現">
+<meta name="twitter:description" content="基於 PyQt6 + Fluent Design 的 STM32 IAP 上位機工具套件，涵蓋 AES-256 加密 + Ed25519 簽名固件打包流水線、HKDF 設備綁定密鑰派生、YMODEM 串口傳輸、PyOCD SWD 燒錄、雙差分引擎、LVGL 資源提取等核心技術詳解"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png' />
+    <link rel="shortcut icon" href="/icons/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切換選單">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/Hugo_Web/zh-hk/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/Hugo_Web/img/avatar_hu_6974417c8ac44e16.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤔</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/Hugo_Web/zh-hk">lingsir007</a></h1>
+            <h2 class="site-description">歡迎來的我的網站</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/Lingjia007?tab=repositories'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/Hugo_Web/zh-hk/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主頁</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/zh-hk/%E9%97%9C%E6%96%BC/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>關於</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/zh-hk/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>歸檔</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/zh-hk/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜尋</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/zh-hk/%E5%8F%8B%E6%83%85%E9%8F%88%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情鏈接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/" >简体中文</option>
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/zh-hk/" selected>繁體中文</option>
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/en/" >English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>深色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+        
+
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目錄</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#一專案概覽">一、專案概覽</a>
+      <ol>
+        <li><a href="#11-功能矩陣">1.1 功能矩陣</a></li>
+        <li><a href="#12-技術棧">1.2 技術棧</a></li>
+        <li><a href="#13-專案結構">1.3 專案結構</a></li>
+      </ol>
+    </li>
+    <li><a href="#二應用架構">二、應用架構</a>
+      <ol>
+        <li><a href="#21-fluentwindow-側邊欄導航">2.1 FluentWindow 側邊欄導航</a></li>
+        <li><a href="#22-啟動流程">2.2 啟動流程</a></li>
+        <li><a href="#23-qthread--pyqtsignal-異步模式">2.3 QThread + pyqtSignal 異步模式</a></li>
+      </ol>
+    </li>
+    <li><a href="#三固件打包流水線核心">三、固件打包流水線（核心）</a>
+      <ol>
+        <li><a href="#31-固件頭結構64-字節">3.1 固件頭結構（64 字節）</a></li>
+        <li><a href="#32-最終固件包格式">3.2 最終固件包格式</a></li>
+        <li><a href="#33-打包線程核心邏輯">3.3 打包線程核心邏輯</a></li>
+        <li><a href="#34-可視化對比">3.4 可視化對比</a></li>
+      </ol>
+    </li>
+    <li><a href="#四hkdf-設備綁定密鑰派生">四、HKDF 設備綁定密鑰派生</a>
+      <ol>
+        <li><a href="#41-兩階段-hkdf">4.1 兩階段 HKDF</a></li>
+        <li><a href="#42-密鑰派生鏈路">4.2 密鑰派生鏈路</a></li>
+      </ol>
+    </li>
+    <li><a href="#五aes-256-加密模組">五、AES-256 加密模組</a>
+      <ol>
+        <li><a href="#51-支持的加密模式">5.1 支持的加密模式</a></li>
+        <li><a href="#52-加密流程">5.2 加密流程</a></li>
+        <li><a href="#53-解密與校驗">5.3 解密與校驗</a></li>
+      </ol>
+    </li>
+    <li><a href="#六ed25519-數字簽名">六、Ed25519 數字簽名</a>
+      <ol>
+        <li><a href="#61-簽名流程">6.1 簽名流程</a></li>
+        <li><a href="#62-密鑰格式支持">6.2 密鑰格式支持</a></li>
+      </ol>
+    </li>
+    <li><a href="#七串口終端與-ymodem-傳輸">七、串口終端與 YMODEM 傳輸</a>
+      <ol>
+        <li><a href="#71-vt100-終端仿真">7.1 VT100 終端仿真</a></li>
+        <li><a href="#72-ymodem-固件傳輸">7.2 YMODEM 固件傳輸</a></li>
+        <li><a href="#73-調試器自動發現">7.3 調試器自動發現</a></li>
+      </ol>
+    </li>
+    <li><a href="#八pyocd-swd-燒錄">八、PyOCD SWD 燒錄</a></li>
+    <li><a href="#九雙差分引擎">九、雙差分引擎</a>
+      <ol>
+        <li><a href="#91-引擎對比">9.1 引擎對比</a></li>
+        <li><a href="#92-差分升級效果">9.2 差分升級效果</a></li>
+      </ol>
+    </li>
+    <li><a href="#十支付寶沙箱與自定義串口協議">十、支付寶沙箱與自定義串口協議</a>
+      <ol>
+        <li><a href="#101-幀格式">10.1 幀格式</a></li>
+        <li><a href="#102-命令集">10.2 命令集</a></li>
+      </ol>
+    </li>
+    <li><a href="#十一html-ui-提取lvgl-資源">十一、HTML UI 提取（LVGL 資源）</a></li>
+    <li><a href="#十二安全鏈路全景">十二、安全鏈路全景</a></li>
+    <li><a href="#十三nuitka-打包部署">十三、Nuitka 打包部署</a>
+      <ol>
+        <li><a href="#131-構建命令">13.1 構建命令</a></li>
+        <li><a href="#132-參數說明">13.2 參數說明</a></li>
+        <li><a href="#133-pyqt6-打包注意事項">13.3 PyQt6 打包注意事項</a></li>
+        <li><a href="#134-外部工具嵌入">13.4 外部工具嵌入</a></li>
+      </ol>
+    </li>
+    <li><a href="#十四配置系統">十四、配置系統</a></li>
+    <li><a href="#十五與-bootloader-的協作關係">十五、與 Bootloader 的協作關係</a></li>
+    <li><a href="#十六總結">十六、總結</a></li>
+    <li><a href="#參考資料">參考資料</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/">
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit_hu_ddb7f9f776002bc9.png"
+                        srcset="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit_hu_ddb7f9f776002bc9.png 800w, /Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit_hu_246c9597c3402105.png 1600w"
+                        width="800" 
+                        height="474" 
+                        loading="lazy"
+                        alt="Featured image of post PyIAPToolKit：STM32 IAP 上位機工具套件設計與實現" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/Hugo_Web/zh-hk/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" >
+                嵌入式
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/">PyIAPToolKit：STM32 IAP 上位機工具套件設計與實現</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            基於 PyQt6 &#43; Fluent Design 的 STM32 IAP 上位機工具套件，涵蓋 AES-256 加密 &#43; Ed25519 簽名固件打包流水線、HKDF 設備綁定密鑰派生、YMODEM 串口傳輸、PyOCD SWD 燒錄、雙差分引擎、LVGL 資源提取等核心技術詳解
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jun 20, 2026</time>
+            </div>
+        <div class="article-lastmod">
+                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M10 18l5 -5a1.414 1.414 0 0 0 -2 -2l-5 5v2h2z" /></svg>
+                <time>
+                    Jun 30, 2026 15:25 CST
+                </time>
+            </div><div id="wordCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
+            <time class="article-wordcount">
+                4904  字
+            </time>
+        </div>
+
+        
+
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                
+                <span id="vercount_value_page_pv">loading... </span> 次
+            </time>
+        </div>
+
+    </footer>
+    
+
+    
+        <footer class="article-translations">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+            <div>
+                
+                    <a href="http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/" class="link">简体中文</a>
+                
+                    <a href="http://localhost:1313/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/" class="link">English</a>
+                
+            </div>
+        </footer>
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="前言">前言
+</h2><p>在上一篇 <a class="link" href="../stm32f407-secure-bootloader/" >STM32F407 安全 Bootloader 設計</a> 中，我們詳細剖析了設備端的 A/B 雙分區、加密簽名與多渠道升級機制。然而，一個完整的 IAP 系統還需要<strong>上位機工具</strong>來完成固件打包、加密簽名、傳輸燒錄等環節。本文將介紹 <strong>PyIAPToolKit</strong> —— 一個基於 PyQt6 + Fluent Design 的 STM32 IAP 上位機工具套件，它是 Bootloader 專案在 PC 端的配套工具。</p>
+<hr>
+<h2 id="一專案概覽">一、專案概覽
+</h2><h3 id="11-功能矩陣">1.1 功能矩陣
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>功能</th>
+          <th>描述</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>串口終端</td>
+          <td>多標籤 VT100 終端，支持 YMODEM 固件傳輸</td>
+      </tr>
+      <tr>
+          <td>AES 加解密</td>
+          <td>5 種模式（CBC/ECB/CTR/CFB/OFB），HKDF 密鑰派生</td>
+      </tr>
+      <tr>
+          <td>固件頭封裝</td>
+          <td>64 字節二進制頭，含版本/演算法/安全計數器/HMAC 校驗</td>
+      </tr>
+      <tr>
+          <td>Ed25519 簽名</td>
+          <td>密鑰對生成、簽名、驗證，SHA-512 預雜湊</td>
+      </tr>
+      <tr>
+          <td>PyOCD 燒錄</td>
+          <td>SWD 調試探針固件燒錄，支持 CMSIS Pack 目標</td>
+      </tr>
+      <tr>
+          <td>增量差分</td>
+          <td>bsdiff4 / HPatchLite 雙引擎，OTA 增量更新</td>
+      </tr>
+      <tr>
+          <td>HTML UI 提取</td>
+          <td>Playwright 截圖提取 LVGL 嵌入式顯示資源</td>
+      </tr>
+      <tr>
+          <td>支付寶沙箱</td>
+          <td>IoT 售貨機支付集成，自定義串口協議與 STM32 通信</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="12-技術棧">1.2 技術棧
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>層次</th>
+          <th>技術選型</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>編程語言</td>
+          <td>Python 3</td>
+      </tr>
+      <tr>
+          <td>GUI 框架</td>
+          <td>PyQt6</td>
+      </tr>
+      <tr>
+          <td>UI 組件庫</td>
+          <td>qfluentwidgets（Fluent Design 風格）</td>
+      </tr>
+      <tr>
+          <td>串口通信</td>
+          <td>pyserial</td>
+      </tr>
+      <tr>
+          <td>終端仿真</td>
+          <td>pyte（VT100 解析）</td>
+      </tr>
+      <tr>
+          <td>固件傳輸</td>
+          <td>ymodem</td>
+      </tr>
+      <tr>
+          <td>加密庫</td>
+          <td>pycryptodome（AES, HMAC, Ed25519）</td>
+      </tr>
+      <tr>
+          <td>調試燒錄</td>
+          <td>pyocd（ARM Cortex SWD）</td>
+      </tr>
+      <tr>
+          <td>增量差分</td>
+          <td>bsdiff4, hpatchlite</td>
+      </tr>
+      <tr>
+          <td>瀏覽器自動化</td>
+          <td>playwright（Chromium headless）</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="13-專案結構">1.3 專案結構
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>模組</th>
+          <th>文件</th>
+          <th>代碼量</th>
+          <th>功能</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>入口</td>
+          <td><code>main.py</code></td>
+          <td>145 行</td>
+          <td>應用啟動、視窗建立</td>
+      </tr>
+      <tr>
+          <td>串口工具</td>
+          <td><code>serial_tools/serial_interface.py</code></td>
+          <td>2072 行</td>
+          <td>VT100 終端 + YMODEM</td>
+      </tr>
+      <tr>
+          <td>PyOCD 工具</td>
+          <td><code>pyocd_tools/pyocd_interface.py</code></td>
+          <td>945 行</td>
+          <td>SWD 燒錄</td>
+      </tr>
+      <tr>
+          <td>AES 工具</td>
+          <td><code>aes_tools/aes_interface.py</code></td>
+          <td>1099 行</td>
+          <td>加解密 + HKDF</td>
+      </tr>
+      <tr>
+          <td>BSDiff 工具</td>
+          <td><code>bsdiff_tools/bsdiff_interface.py</code></td>
+          <td>613 行</td>
+          <td>增量差分</td>
+      </tr>
+      <tr>
+          <td>HPatchLite 工具</td>
+          <td><code>hpatchlite_tools/hpatchlite_interface.py</code></td>
+          <td>863 行</td>
+          <td>增量差分</td>
+      </tr>
+      <tr>
+          <td>固件頭工具</td>
+          <td><code>firmware_header_tools/header_interface.py</code></td>
+          <td>2129 行</td>
+          <td>固件打包流水線</td>
+      </tr>
+      <tr>
+          <td>Ed25519 工具</td>
+          <td><code>ed25519_tools/ed25519_interface.py</code></td>
+          <td>936 行</td>
+          <td>數字簽名</td>
+      </tr>
+      <tr>
+          <td>HTML UI 提取</td>
+          <td><code>html_ui_extract_tools/html_ui_extract_interface.py</code></td>
+          <td>985 行</td>
+          <td>LVGL 資源提取</td>
+      </tr>
+      <tr>
+          <td>支付寶沙箱</td>
+          <td><code>alipay_sandbox_tools/alipay_sandbox_interface.py</code></td>
+          <td>1714 行</td>
+          <td>支付集成</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="二應用架構">二、應用架構
+</h2><h3 id="21-fluentwindow-側邊欄導航">2.1 FluentWindow 側邊欄導航
+</h3><p>主視窗採用 <code>FluentWindow</code> 側邊欄導航模式，10 個功能頁面各對應一個獨立模組：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="n">FluentWindow</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">serialInterface</span> <span class="o">=</span> <span class="n">SerialTabWidget</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">pyocdInterface</span> <span class="o">=</span> <span class="n">Pyocd_Tools_Widget</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">aesInterface</span> <span class="o">=</span> <span class="n">AES_Tools_Widget</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">bsdiffInterface</span> <span class="o">=</span> <span class="n">BSDiff_Tools_Widget</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">hpatchliteInterface</span> <span class="o">=</span> <span class="n">HPatchLite_Tools_Widget</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">firmwareHeaderInterface</span> <span class="o">=</span> <span class="n">FirmwareHeader_Widget</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">ed25519Interface</span> <span class="o">=</span> <span class="n">Ed25519_Widget</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">htmlUIExtractInterface</span> <span class="o">=</span> <span class="n">HTML_UI_Extract_Widget</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">alipaySandboxInterface</span> <span class="o">=</span> <span class="n">AlipaySandbox_Widget</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">settingInterface</span> <span class="o">=</span> <span class="n">SettingInterface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="22-啟動流程">2.2 啟動流程
+</h3><ol>
+<li>DPI 縮放初始化</li>
+<li>國際化翻譯加載（zh_CN, zh_HK, en_US）</li>
+<li>閃屏顯示</li>
+<li>主視窗建立與導航註冊</li>
+</ol>
+<h3 id="23-qthread--pyqtsignal-異步模式">2.3 QThread + pyqtSignal 異步模式
+</h3><p>所有耗時操作採用統一的異步工作模式，確保 GUI 主線程不被阻塞：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">XxxThread</span><span class="p">(</span><span class="n">QThread</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">progress_signal</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>   <span class="c1"># 進度回調</span>
+</span></span><span class="line"><span class="cl">    <span class="n">finished_signal</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># 完成通知</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 耗時操作</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">progress_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">percent</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">finished_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">success</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="三固件打包流水線核心">三、固件打包流水線（核心）
+</h2><p>這是整個工具套件最核心的功能，將原始固件經過完整的安全處理鏈路，生成可部署的 <code>.iap.bin</code> 固件包。</p>
+<h3 id="31-固件頭結構64-字節">3.1 固件頭結構（64 字節）
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>偏移</th>
+          <th>字段</th>
+          <th>大小</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>0x00</td>
+          <td>magic</td>
+          <td>4B</td>
+          <td><code>IAP\x01</code> 魔數</td>
+      </tr>
+      <tr>
+          <td>0x04</td>
+          <td>header_version</td>
+          <td>1B</td>
+          <td>頭版本號</td>
+      </tr>
+      <tr>
+          <td>0x05</td>
+          <td>firmware_version_major</td>
+          <td>1B</td>
+          <td>固件主版本</td>
+      </tr>
+      <tr>
+          <td>0x06</td>
+          <td>firmware_version_minor</td>
+          <td>1B</td>
+          <td>固件次版本</td>
+      </tr>
+      <tr>
+          <td>0x07</td>
+          <td>firmware_version_patch</td>
+          <td>1B</td>
+          <td>固件補丁版本</td>
+      </tr>
+      <tr>
+          <td>0x08</td>
+          <td>total_payload_size</td>
+          <td>4B</td>
+          <td>加密後載荷總大小</td>
+      </tr>
+      <tr>
+          <td>0x0C</td>
+          <td>image_type</td>
+          <td>1B</td>
+          <td>0x01=App, 0x02=Bootloader, 0x03=Resource</td>
+      </tr>
+      <tr>
+          <td>0x0D</td>
+          <td>encryption_algorithm</td>
+          <td>1B</td>
+          <td>0x00=None, 0x01=AES-256-CBC, 0x02=ECB, 0x03=CTR</td>
+      </tr>
+      <tr>
+          <td>0x0E</td>
+          <td>signature_algorithm</td>
+          <td>1B</td>
+          <td>0x00=None, 0x01=Ed25519</td>
+      </tr>
+      <tr>
+          <td>0x0F</td>
+          <td>hardware_compatibility</td>
+          <td>1B</td>
+          <td>硬件兼容性標識</td>
+      </tr>
+      <tr>
+          <td>0x10</td>
+          <td>security_counter</td>
+          <td>4B</td>
+          <td>安全計數器（防回滾）</td>
+      </tr>
+      <tr>
+          <td>0x14</td>
+          <td>build_timestamp</td>
+          <td>4B</td>
+          <td>構建時間戳</td>
+      </tr>
+      <tr>
+          <td>0x18</td>
+          <td>reserved</td>
+          <td>5B</td>
+          <td>保留字段</td>
+      </tr>
+      <tr>
+          <td>0x1D</td>
+          <td>header_checksum</td>
+          <td>32B</td>
+          <td>HMAC-SHA256 校驗（使用 DevKey）</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="32-最終固件包格式">3.2 最終固件包格式
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>區域</th>
+          <th>大小</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Header</td>
+          <td>64 bytes</td>
+          <td>魔術字、版本、加密/簽名演算法等</td>
+      </tr>
+      <tr>
+          <td>DynamicSalt</td>
+          <td>16 bytes</td>
+          <td>HKDF 鹽值，每固件獨立</td>
+      </tr>
+      <tr>
+          <td>IV</td>
+          <td>16 bytes</td>
+          <td>AES 初始化向量</td>
+      </tr>
+      <tr>
+          <td>Ciphertext</td>
+          <td>N bytes</td>
+          <td>AES-256 加密的固件 + 追加的 SHA-256</td>
+      </tr>
+      <tr>
+          <td>Signature</td>
+          <td>64 bytes</td>
+          <td>Ed25519 數字簽名</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="33-打包線程核心邏輯">3.3 打包線程核心邏輯
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">PackageThread</span><span class="p">(</span><span class="n">QThread</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 1. 讀取原始固件</span>
+</span></span><span class="line"><span class="cl">        <span class="n">firmware_data</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">firmware_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 2. 追加 SHA-256 雜湊用於完整性校驗</span>
+</span></span><span class="line"><span class="cl">        <span class="n">firmware_hash</span> <span class="o">=</span> <span class="n">SHA256</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">firmware_data</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data_to_encrypt</span> <span class="o">=</span> <span class="n">firmware_data</span> <span class="o">+</span> <span class="n">firmware_hash</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 3. AES-256 加密（密鑰由 HKDF 派生）</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cipher</span> <span class="o">=</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">aes_key</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_CBC</span><span class="p">,</span> <span class="n">iv</span><span class="o">=</span><span class="n">iv</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ciphertext</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">pad</span><span class="p">(</span><span class="n">data_to_encrypt</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">block_size</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 4. 構建固件頭</span>
+</span></span><span class="line"><span class="cl">        <span class="n">header</span> <span class="o">=</span> <span class="n">FirmwareHeader</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">header</span><span class="o">.</span><span class="n">header_checksum</span> <span class="o">=</span> <span class="n">HMAC</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">dev_key</span><span class="p">,</span> <span class="n">header_prefix</span><span class="p">,</span> <span class="n">SHA256</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 5. Ed25519 簽名（對 header + salt + iv + ciphertext）</span>
+</span></span><span class="line"><span class="cl">        <span class="n">signer</span> <span class="o">=</span> <span class="n">eddsa</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">private_key</span><span class="p">,</span> <span class="s1">&#39;rfc8032&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">signature</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 6. 組裝最終包</span>
+</span></span><span class="line"><span class="cl">        <span class="n">package</span> <span class="o">=</span> <span class="n">header_bytes</span> <span class="o">+</span> <span class="n">dynamic_salt</span> <span class="o">+</span> <span class="n">iv</span> <span class="o">+</span> <span class="n">ciphertext</span> <span class="o">+</span> <span class="n">signature</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote class="alert alert-note">
+    <p>加密前先追加 SHA-256 雜湊是關鍵設計。解密時，STM32 端先解密去除填充，再驗證末尾 32 字節 SHA-256 是否與解密數據的前部匹配，實現<strong>解密即校驗</strong>的雙重保障。</p></blockquote><h3 id="34-可視化對比">3.4 可視化對比
+</h3><p>打包完成後，<code>PackCompareDialog</code> 用顏色編碼展示固件包各區域：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>顏色</th>
+          <th>區域</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>藍色</td>
+          <td>Header（64B）</td>
+      </tr>
+      <tr>
+          <td>紅色</td>
+          <td>DynamicSalt（16B）</td>
+      </tr>
+      <tr>
+          <td>紫色</td>
+          <td>IV（16B）</td>
+      </tr>
+      <tr>
+          <td>綠色</td>
+          <td>Ciphertext（變長）</td>
+      </tr>
+      <tr>
+          <td>橙色</td>
+          <td>Signature（64B）</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="四hkdf-設備綁定密鑰派生">四、HKDF 設備綁定密鑰派生
+</h2><p>這是安全體系的核心機制，確保固件包只能由目標設備解密。</p>
+<h3 id="41-兩階段-hkdf">4.1 兩階段 HKDF
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">hkdf_extract</span><span class="p">(</span><span class="n">salt</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">ikm</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;HKDF-Extract: 從輸入密鑰材料提取固定長度的偽隨機密鑰&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">prk</span> <span class="o">=</span> <span class="n">HMAC</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">salt</span><span class="p">,</span> <span class="n">ikm</span><span class="p">,</span> <span class="n">digestmod</span><span class="o">=</span><span class="n">SHA256</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">prk</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">hkdf_expand</span><span class="p">(</span><span class="n">prk</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;HKDF-Expand: 將偽隨機密鑰擴展為所需長度的輸出密鑰材料&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">hash_len</span> <span class="o">=</span> <span class="n">SHA256</span><span class="o">.</span><span class="n">digest_size</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="n">length</span> <span class="o">+</span> <span class="n">hash_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">hash_len</span>
+</span></span><span class="line"><span class="cl">    <span class="n">okm</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">t</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span> <span class="o">=</span> <span class="n">HMAC</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">prk</span><span class="p">,</span> <span class="n">t</span> <span class="o">+</span> <span class="n">info</span> <span class="o">+</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">i</span><span class="p">]),</span> <span class="n">digestmod</span><span class="o">=</span><span class="n">SHA256</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">okm</span> <span class="o">+=</span> <span class="n">t</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">okm</span><span class="p">[:</span><span class="n">length</span><span class="p">]</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="42-密鑰派生鏈路">4.2 密鑰派生鏈路
+</h3><ol>
+<li><strong>Extract 階段</strong>：<code>HMAC-SHA256(salt=DynamicSalt, ikm=DevKey)</code> → PRK</li>
+<li><strong>Expand 階段</strong>：<code>HMAC-SHA256(PRK, info=UID || counter)</code> → 32 字節 AES 密鑰</li>
+</ol>
+<p>三個安全要素的角色：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>要素</th>
+          <th>來源</th>
+          <th>作用</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>DevKey (128-bit)</td>
+          <td>STM32 OTP 熔絲</td>
+          <td>設備密鑰，不可讀取</td>
+      </tr>
+      <tr>
+          <td>UID (96-bit)</td>
+          <td>STM32 晶片唯一 ID</td>
+          <td>HKDF-Expand 的 info 參數，實現密鑰與晶片綁定</td>
+      </tr>
+      <tr>
+          <td>DynamicSalt (128-bit)</td>
+          <td>每固件版本隨機生成</td>
+          <td>確保同設備不同固件版本產生不同加密密鑰</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote class="alert alert-important">
+    <p>三個要素缺一不可：DevKey 保證只有合法設備能解密，UID 保證固件包只能由特定晶片解密，DynamicSalt 保證同一設備的每次升級使用不同密鑰。這就是<strong>設備綁定加密</strong>的核心原理。</p></blockquote><hr>
+<h2 id="五aes-256-加密模組">五、AES-256 加密模組
+</h2><h3 id="51-支持的加密模式">5.1 支持的加密模式
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>模式</th>
+          <th>特點</th>
+          <th>適用場景</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>CBC</td>
+          <td>需 IV，並行解密</td>
+          <td>預設推薦</td>
+      </tr>
+      <tr>
+          <td>ECB</td>
+          <td>無 IV，相同明文→相同密文</td>
+          <td>不推薦（僅兼容舊方案）</td>
+      </tr>
+      <tr>
+          <td>CTR</td>
+          <td>流式加密，無需填充</td>
+          <td>高性能場景</td>
+      </tr>
+      <tr>
+          <td>CFB</td>
+          <td>流式加密，自同步</td>
+          <td>誤碼容忍場景</td>
+      </tr>
+      <tr>
+          <td>OFB</td>
+          <td>流式加密，無錯誤傳播</td>
+          <td>噪聲信道場景</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="52-加密流程">5.2 加密流程
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 加密前先追加 SHA-256 雜湊</span>
+</span></span><span class="line"><span class="cl"><span class="n">firmware_hash</span> <span class="o">=</span> <span class="n">SHA256</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">firmware_data</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">data_to_encrypt</span> <span class="o">=</span> <span class="n">firmware_data</span> <span class="o">+</span> <span class="n">firmware_hash</span>  <span class="c1"># 原始固件 + 32字節雜湊</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># PKCS7 填充後加密</span>
+</span></span><span class="line"><span class="cl"><span class="n">cipher</span> <span class="o">=</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_CBC</span><span class="p">,</span> <span class="n">iv</span><span class="o">=</span><span class="n">iv</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ciphertext</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">pad</span><span class="p">(</span><span class="n">data_to_encrypt</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">block_size</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="53-解密與校驗">5.3 解密與校驗
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 解密</span>
+</span></span><span class="line"><span class="cl"><span class="n">cipher</span> <span class="o">=</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_CBC</span><span class="p">,</span> <span class="n">iv</span><span class="o">=</span><span class="n">iv</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">plaintext</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">cipher</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">),</span> <span class="n">AES</span><span class="o">.</span><span class="n">block_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 分離固件和雜湊</span>
+</span></span><span class="line"><span class="cl"><span class="n">firmware</span> <span class="o">=</span> <span class="n">plaintext</span><span class="p">[:</span><span class="o">-</span><span class="mi">32</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">embedded_hash</span> <span class="o">=</span> <span class="n">plaintext</span><span class="p">[</span><span class="o">-</span><span class="mi">32</span><span class="p">:]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 校驗完整性</span>
+</span></span><span class="line"><span class="cl"><span class="n">computed_hash</span> <span class="o">=</span> <span class="n">SHA256</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">firmware</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">assert</span> <span class="n">computed_hash</span> <span class="o">==</span> <span class="n">embedded_hash</span><span class="p">,</span> <span class="s2">&#34;固件完整性校驗失敗&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="六ed25519-數字簽名">六、Ed25519 數字簽名
+</h2><h3 id="61-簽名流程">6.1 簽名流程
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 密鑰對生成</span>
+</span></span><span class="line"><span class="cl"><span class="n">key</span> <span class="o">=</span> <span class="n">ECC</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">curve</span><span class="o">=</span><span class="s1">&#39;ed25519&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 簽名（SHA-512 預雜湊，RFC8032 變體）</span>
+</span></span><span class="line"><span class="cl"><span class="n">signer</span> <span class="o">=</span> <span class="n">eddsa</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;rfc8032&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">signature</span> <span class="o">=</span> <span class="n">signer</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># 輸出 64 字節簽名</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 驗證</span>
+</span></span><span class="line"><span class="cl"><span class="n">verifier</span> <span class="o">=</span> <span class="n">eddsa</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;rfc8032&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">verifier</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="62-密鑰格式支持">6.2 密鑰格式支持
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>格式</th>
+          <th>用途</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>PEM</td>
+          <td>標準存儲格式</td>
+      </tr>
+      <tr>
+          <td>原始字節</td>
+          <td>嵌入式端使用</td>
+      </tr>
+      <tr>
+          <td>十六進制</td>
+          <td>調試顯示</td>
+      </tr>
+      <tr>
+          <td>C 數組</td>
+          <td>直接嵌入固件源碼</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote class="alert alert-tip">
+    <p>Ed25519 的公鑰只有 32 字節，簽名只有 64 字節，非常適合資源受限的嵌入式場景。相比 RSA-2048（256 字節簽名），Ed25519 在安全性和效率上都有顯著優勢。</p></blockquote><hr>
+<h2 id="七串口終端與-ymodem-傳輸">七、串口終端與 YMODEM 傳輸
+</h2><h3 id="71-vt100-終端仿真">7.1 VT100 終端仿真
+</h3><p>基於 pyte 實現 VT100 終端解析：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">PyteTerminal</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">24</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">pyte</span><span class="o">.</span><span class="n">Screen</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">pyte</span><span class="o">.</span><span class="n">Stream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># 解析 ANSI 轉義序列</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">get_display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">display</span>  <span class="c1"># 獲取渲染後的文本行</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>TerminalTextEdit</code> 實現了完整的終端模式：支持游標定位、顏色渲染（使用格式化快取優化性能）、滾動區域管理。</p>
+<h3 id="72-ymodem-固件傳輸">7.2 YMODEM 固件傳輸
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">YModem_Send_Thread</span><span class="p">(</span><span class="n">QThread</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serial_port</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">data</span>
+</span></span><span class="line"><span class="cl">        <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">serial_port</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">cli</span> <span class="o">=</span> <span class="n">ModemSocket</span><span class="p">(</span><span class="n">read</span><span class="p">,</span> <span class="n">write</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">result</span> <span class="o">=</span> <span class="n">cli</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_paths</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">ymodem_callback</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="73-調試器自動發現">7.3 調試器自動發現
+</h3><p>串口模組通過 USB VID/PID 自動識別 JLink/STLink/DAPLink，並與 PyOCD 模組聯動，減少用戶手動配置。</p>
+<hr>
+<h2 id="八pyocd-swd-燒錄">八、PyOCD SWD 燒錄
+</h2><p>通過 ARM SWD 接口直接燒錄 Flash，不經過 Bootloader：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Pyocd_Program_Thread</span><span class="p">(</span><span class="n">QThread</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">session</span> <span class="o">=</span> <span class="n">ConnectHelper</span><span class="o">.</span><span class="n">session_with_chosen_probe</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">connect_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connect_mode</span><span class="p">,</span>  <span class="c1"># halt/attach/pre-reset</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">board</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">board</span>
+</span></span><span class="line"><span class="cl">            <span class="n">flash</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">flash</span>
+</span></span><span class="line"><span class="cl">            <span class="n">flash</span><span class="o">.</span><span class="n">build_image</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">flash</span><span class="o">.</span><span class="n">program</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="bp">self</span><span class="o">.</span><span class="n">firmware_data</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">base_address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_address</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">erase</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">erase_mode</span><span class="p">,</span>  <span class="c1"># chip/sector/no-erase</span>
+</span></span><span class="line"><span class="cl">                <span class="n">trust_crc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trust_crc</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>特性</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>探針自動刷新</td>
+          <td>5 秒間隔，變更檢測</td>
+      </tr>
+      <tr>
+          <td>CMSIS Pack 支持</td>
+          <td>掃描 .pack/.pdsc 獲取目標 MCU 定義</td>
+      </tr>
+      <tr>
+          <td>預設目標</td>
+          <td><code>stm32f407vgtx</code></td>
+      </tr>
+      <tr>
+          <td>擦除模式</td>
+          <td>全片擦除 / 扇區擦除 / 不擦除</td>
+      </tr>
+      <tr>
+          <td>連接模式</td>
+          <td>halt / attach / pre-reset</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="九雙差分引擎">九、雙差分引擎
+</h2><p>同時集成 bsdiff4 和 HPatchLite 兩種差分引擎，為不同場景提供選擇。</p>
+<h3 id="91-引擎對比">9.1 引擎對比
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>特性</th>
+          <th>bsdiff4</th>
+          <th>HPatchLite</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>類型</td>
+          <td>Python 庫</td>
+          <td>外部可執行文件</td>
+      </tr>
+      <tr>
+          <td>壓縮演算法</td>
+          <td>bzip2</td>
+          <td>tuz / zlib / lzma / lzma2</td>
+      </tr>
+      <tr>
+          <td>集成方式</td>
+          <td><code>import bsdiff4</code></td>
+          <td>子進程調用</td>
+      </tr>
+      <tr>
+          <td>並行支持</td>
+          <td>無</td>
+          <td>支持多線程</td>
+      </tr>
+      <tr>
+          <td>原地補丁</td>
+          <td>不支持</td>
+          <td>支持</td>
+      </tr>
+      <tr>
+          <td>適用場景</td>
+          <td>簡單快速</td>
+          <td>高級選項、嵌入式端兼容</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="92-差分升級效果">9.2 差分升級效果
+</h3><p>假設舊固件 384KB，新固件 386KB，差分文件可能只有 5-20KB。在頻寬受限的場景下，差分升級能顯著減少傳輸時間和流量費用。</p>
+<hr>
+<h2 id="十支付寶沙箱與自定義串口協議">十、支付寶沙箱與自定義串口協議
+</h2><h3 id="101-幀格式">10.1 幀格式
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">0xAA 0x55 | CMD(1B) | LEN(2B, 大端序) | DATA(NB) | 0x0D 0x0A
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_build_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">header</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mh">0xAA</span><span class="p">,</span> <span class="mh">0x55</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tail</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mh">0x0D</span><span class="p">,</span> <span class="mh">0x0A</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">length</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">header</span> <span class="o">+</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">cmd</span><span class="p">])</span> <span class="o">+</span> <span class="n">length</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="n">tail</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="102-命令集">10.2 命令集
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>方向</th>
+          <th>CMD</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>PC→STM32</td>
+          <td>0x01</td>
+          <td>發送二維碼 URL</td>
+      </tr>
+      <tr>
+          <td>PC→STM32</td>
+          <td>0x02</td>
+          <td>支付狀態通知</td>
+      </tr>
+      <tr>
+          <td>PC→STM32</td>
+          <td>0x03</td>
+          <td>發送交易號</td>
+      </tr>
+      <tr>
+          <td>PC→STM32</td>
+          <td>0x04</td>
+          <td>心跳響應</td>
+      </tr>
+      <tr>
+          <td>STM32→PC</td>
+          <td>0x81</td>
+          <td>請求二維碼</td>
+      </tr>
+      <tr>
+          <td>STM32→PC</td>
+          <td>0x82</td>
+          <td>查詢支付狀態</td>
+      </tr>
+      <tr>
+          <td>STM32→PC</td>
+          <td>0x83</td>
+          <td>關閉訂單</td>
+      </tr>
+      <tr>
+          <td>STM32→PC</td>
+          <td>0x84</td>
+          <td>心跳</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote class="alert alert-note">
+    <p>命令編碼規則：<code>0x0x</code> 為 PC→STM32，<code>0x8x</code> 為 STM32→PC，最高位區分方向。接收線程 <code>SerialReceiveThread</code> 解析 <code>0xAA 0x55</code> 幀頭，提取命令碼和數據載荷。</p></blockquote><hr>
+<h2 id="十一html-ui-提取lvgl-資源">十一、HTML UI 提取（LVGL 資源）
+</h2><p>通過 Playwright（Chromium headless）自動截圖，將 HTML/CSS 設計稿轉換為 LVGL 嵌入式顯示資源：</p>
+<ol>
+<li>加載 HTML 文件到 headless 瀏覽器</li>
+<li>截取指定區域/元素</li>
+<li>轉換為 C 數組格式的圖像數據</li>
+<li>輸出為 LVGL 兼容的 <code>.c</code> / <code>.h</code> 文件</li>
+</ol>
+<hr>
+<h2 id="十二安全鏈路全景">十二、安全鏈路全景
+</h2><p><strong>上位機構建端：</strong></p>
+<ol>
+<li>原始固件 → SHA-256 雜湊追加</li>
+<li>→ HKDF 派生 AES 密鑰（DynamicSalt + DevKey + UID）</li>
+<li>→ AES-256 加密</li>
+<li>→ 構建 Header + HMAC-SHA256 校驗</li>
+<li>→ Ed25519 簽名</li>
+<li>→ <code>.iap.bin</code></li>
+</ol>
+<p><strong>設備端驗證（STM32 Bootloader）：</strong></p>
+<ol>
+<li><code>.iap.bin</code> → HMAC-SHA256 驗證 Header（DevKey）</li>
+<li>→ 硬件兼容檢查</li>
+<li>→ 防回滾檢查（安全計數器）</li>
+<li>→ HKDF 派生 AES 密鑰（Salt + DevKey + UID）</li>
+<li>→ AES 解密 → 寫入 Flash</li>
+<li>→ SHA-512 流式雜湊 → Ed25519 簽名驗證</li>
+<li>→ 回讀 Flash SHA-256 校驗</li>
+</ol>
+<p><strong>安全分層防禦：</strong></p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>層</th>
+          <th>機制</th>
+          <th>解決的問題</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>真實性</td>
+          <td>Ed25519 簽名</td>
+          <td>誰簽的？</td>
+      </tr>
+      <tr>
+          <td>頭完整性</td>
+          <td>HMAC-SHA256</td>
+          <td>頭被篡改？</td>
+      </tr>
+      <tr>
+          <td>機密性</td>
+          <td>AES-256 加密</td>
+          <td>內容保密</td>
+      </tr>
+      <tr>
+          <td>載荷完整性</td>
+          <td>SHA-256 雜湊</td>
+          <td>數據正確？</td>
+      </tr>
+      <tr>
+          <td>防回滾</td>
+          <td>Security Counter</td>
+          <td>舊版本？</td>
+      </tr>
+      <tr>
+          <td>密鑰隔離</td>
+          <td>HKDF 派生</td>
+          <td>同設備不同密鑰</td>
+      </tr>
+      <tr>
+          <td>晶片綁定</td>
+          <td>UID 綁定</td>
+          <td>密鑰與晶片關聯</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="十三nuitka-打包部署">十三、Nuitka 打包部署
+</h2><p>專案使用 Nuitka 將 Python 應用編譯為獨立的 Windows 可執行文件，無需用戶安裝 Python 環境。</p>
+<h3 id="131-構建命令">13.1 構建命令
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nuitka <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --standalone <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --onefile-no-compression <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --lto<span class="o">=</span>yes <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --show-memory <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --show-progress <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --windows-console-mode<span class="o">=</span>disable <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --enable-plugin<span class="o">=</span>pyqt6 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --enable-plugin<span class="o">=</span>upx <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --output-dir<span class="o">=</span>out <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --include-data-dir<span class="o">=</span>settings/resource<span class="o">=</span>settings/resource <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --include-data-file<span class="o">=</span>settings/config/config.json<span class="o">=</span>settings/config/config.json <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --include-data-file<span class="o">=</span>hpatchlite_tools/hdiffi.exe<span class="o">=</span>hpatchlite_tools/hdiffi.exe <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --include-data-file<span class="o">=</span>hpatchlite_tools/hpatchi.exe<span class="o">=</span>hpatchlite_tools/hpatchi.exe <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --windows-icon-from-ico<span class="o">=</span>settings/resource/images/logo.ico <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  main.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="132-參數說明">13.2 參數說明
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>參數</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>--standalone</code></td>
+          <td>生成獨立可執行文件，不依賴本機 Python</td>
+      </tr>
+      <tr>
+          <td><code>--onefile-no-compression</code></td>
+          <td>單文件輸出，不壓縮（啟動更快）</td>
+      </tr>
+      <tr>
+          <td><code>--lto=yes</code></td>
+          <td>啟用鏈接時優化（Link Time Optimization），減小體積</td>
+      </tr>
+      <tr>
+          <td><code>--show-memory</code></td>
+          <td>顯示內存使用情況</td>
+      </tr>
+      <tr>
+          <td><code>--show-progress</code></td>
+          <td>顯示編譯進度</td>
+      </tr>
+      <tr>
+          <td><code>--windows-console-mode=disable</code></td>
+          <td>隱藏控制台視窗（GUI 應用）</td>
+      </tr>
+      <tr>
+          <td><code>--enable-plugin=pyqt6</code></td>
+          <td>啟用 PyQt6 插件支持</td>
+      </tr>
+      <tr>
+          <td><code>--enable-plugin=upx</code></td>
+          <td>啟用 UPX 壓縮進一步減小體積</td>
+      </tr>
+      <tr>
+          <td><code>--output-dir=out</code></td>
+          <td>輸出目錄</td>
+      </tr>
+      <tr>
+          <td><code>--include-data-dir</code></td>
+          <td>包含資源目錄（圖標、翻譯等）</td>
+      </tr>
+      <tr>
+          <td><code>--include-data-file</code></td>
+          <td>包含單個數據文件（配置、外部工具）</td>
+      </tr>
+      <tr>
+          <td><code>--windows-icon-from-ico</code></td>
+          <td>設置應用圖標</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="133-pyqt6-打包注意事項">13.3 PyQt6 打包注意事項
+</h3><blockquote class="alert alert-warning">
+    <p>PyQt6 應用的 Nuitka 打包有幾個常見陷阱：</p>
+<ol>
+<li><strong>必須使用 <code>--enable-plugin=pyqt6</code></strong>：否則 Nuitka 無法自動發現 PyQt6 的隱式導入和插件依賴（如平台插件 <code>qwindows.dll</code>、圖像格式插件等）</li>
+<li><strong>qfluentwidgets 資源</strong>：qfluentwidgets 的 QRC 資源文件需要通過 <code>--include-data-dir</code> 顯式包含，否則運行時圖標和樣式會丟失</li>
+<li><strong>PyQt6 平台插件</strong>：如果運行時出現 <code>This application failed to start because no Qt platform plugin could be initialized</code>，需要確保 <code>platforms/qwindows.dll</code> 被正確包含，<code>--enable-plugin=pyqt6</code> 通常會自動處理</li>
+<li><strong>UPX 兼容性</strong>：某些 PyQt6 的 DLL 被 UPX 壓縮後可能無法正常加載，如果出現運行時錯誤，嘗試移除 <code>--enable-plugin=upx</code></li>
+</ol></blockquote><h3 id="134-外部工具嵌入">13.4 外部工具嵌入
+</h3><p>HPatchLite 的差分工具（<code>hdiffi.exe</code> / <code>hpatchi.exe</code>）作為外部可執行文件嵌入：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">--include-data-file<span class="o">=</span>hpatchlite_tools/hdiffi.exe<span class="o">=</span>hpatchlite_tools/hdiffi.exe
+</span></span><span class="line"><span class="cl">--include-data-file<span class="o">=</span>hpatchlite_tools/hpatchi.exe<span class="o">=</span>hpatchlite_tools/hpatchi.exe
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>運行時通過 <code>sys._MEIPASS</code>（Nuitka standalone 模式下為 <code>.dist</code> 目錄）定位這些文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_resource_path</span><span class="p">(</span><span class="n">relative_path</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;獲取資源文件的絕對路徑（兼容開發環境和打包後環境）&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;_MEIPASS&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># PyInstaller 打包模式</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_MEIPASS</span><span class="p">,</span> <span class="n">relative_path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;frozen&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Nuitka standalone 模式</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">),</span> <span class="n">relative_path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 開發環境</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="n">relative_path</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="十四配置系統">十四、配置系統
+</h2><p>基於 qfluentwidgets 的 <code>QConfig</code> 框架，支持持久化存儲：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>配置項</th>
+          <th>分組</th>
+          <th>預設值</th>
+          <th>說明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>serialFontSize</code></td>
+          <td>Serial</td>
+          <td>12</td>
+          <td>終端字號</td>
+      </tr>
+      <tr>
+          <td><code>serialFontFamily</code></td>
+          <td>Serial</td>
+          <td>Consolas</td>
+          <td>終端字體</td>
+      </tr>
+      <tr>
+          <td><code>serialDTR</code></td>
+          <td>Serial</td>
+          <td>True</td>
+          <td>DTR 信號</td>
+      </tr>
+      <tr>
+          <td><code>serialRTS</code></td>
+          <td>Serial</td>
+          <td>True</td>
+          <td>RTS 信號</td>
+      </tr>
+      <tr>
+          <td><code>pyocdFirmwarePath</code></td>
+          <td>PyOCD</td>
+          <td>&quot;&quot;</td>
+          <td>固件路徑</td>
+      </tr>
+      <tr>
+          <td><code>pyocdTrustCRC</code></td>
+          <td>PyOCD</td>
+          <td>True</td>
+          <td>信任 CRC</td>
+      </tr>
+      <tr>
+          <td><code>cmPackPath</code></td>
+          <td>PyOCD</td>
+          <td>&quot;&quot;</td>
+          <td>CMSIS Pack 路徑</td>
+      </tr>
+      <tr>
+          <td><code>language</code></td>
+          <td>MainWindow</td>
+          <td>Auto</td>
+          <td>界面語言</td>
+      </tr>
+      <tr>
+          <td><code>dpiScale</code></td>
+          <td>MainWindow</td>
+          <td>Auto</td>
+          <td>DPI 縮放</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="十五與-bootloader-的協作關係">十五、與 Bootloader 的協作關係
+</h2><p>PyIAPToolKit 和 STM32F407 Bootloader 構成了完整的 IAP 系統：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>環節</th>
+          <th>上位機（PyIAPToolKit）</th>
+          <th>設備端（Bootloader）</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>固件打包</td>
+          <td>AES 加密 + Ed25519 簽名 + Header 封裝</td>
+          <td>—</td>
+      </tr>
+      <tr>
+          <td>密鑰派生</td>
+          <td>HKDF（Salt + DevKey + UID）</td>
+          <td>HKDF（Salt + DevKey + UID）</td>
+      </tr>
+      <tr>
+          <td>固件傳輸</td>
+          <td>YMODEM 發送 / PyOCD 燒錄</td>
+          <td>YMODEM 接收 / SWD 寫入</td>
+      </tr>
+      <tr>
+          <td>固件驗證</td>
+          <td>—</td>
+          <td>HMAC → 防回滾 → AES 解密 → 簽名驗證</td>
+      </tr>
+      <tr>
+          <td>分區管理</td>
+          <td>—</td>
+          <td>A/B 雙分區 + 自動回滾</td>
+      </tr>
+      <tr>
+          <td>差分升級</td>
+          <td>bsdiff4 / HPatchLite 生成差分包</td>
+          <td>HPatchLite 應用差分包</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote class="alert alert-tip">
+    <p>上位機和設備端使用<strong>完全相同的密鑰派生演算法</strong>（HKDF），確保派生出的 AES 密鑰一致。DevKey 在設備端存儲在 OTP 中，在上位機端由用戶導入；UID 在設備端從寄存器讀取，在上位機端由用戶輸入或從設備自動獲取。</p></blockquote><hr>
+<h2 id="十六總結">十六、總結
+</h2><p>PyIAPToolKit 的核心亮點：</p>
+<ol>
+<li><strong>完整固件打包流水線</strong>：SHA-256 → AES-256 → HMAC → Ed25519，一站式完成</li>
+<li><strong>設備綁定加密</strong>：HKDF（DynamicSalt + DevKey + UID）確保固件包只能由目標設備解密</li>
+<li><strong>雙傳輸通道</strong>：YMODEM 串口傳輸 + PyOCD SWD 燒錄，覆蓋開發和生產場景</li>
+<li><strong>雙差分引擎</strong>：bsdiff4 + HPatchLite，靈活選擇</li>
+<li><strong>Fluent Design UI</strong>：qfluentwidgets 組件庫，現代化界面體驗</li>
+<li><strong>模組化架構</strong>：10 個獨立功能模組，互不耦合，易於擴展</li>
+<li><strong>可視化對比</strong>：顏色編碼展示固件包各區域，直觀清晰</li>
+</ol>
+<hr>
+<h2 id="參考資料">參考資料
+</h2><ul>
+<li><a class="link" href="https://www.riverbankcomputing.com/static/Docs/PyQt6/"  target="_blank" rel="noopener"
+    >PyQt6 Documentation</a></li>
+<li><a class="link" href="https://qfluentwidgets.com/"  target="_blank" rel="noopener"
+    >qfluentwidgets - Fluent Design for PyQt</a></li>
+<li><a class="link" href="https://tools.ietf.org/html/rfc5869"  target="_blank" rel="noopener"
+    >HKDF (RFC 5869)</a></li>
+<li><a class="link" href="https://ed25519.cr.yp.to/"  target="_blank" rel="noopener"
+    >Ed25519: High-speed high-security signatures</a></li>
+<li><a class="link" href="https://pyocd.io/"  target="_blank" rel="noopener"
+    >PyOCD - Python library for programming and debugging ARM Cortex</a></li>
+<li><a class="link" href="https://github.com/sisong/HPatchLite"  target="_blank" rel="noopener"
+    >HPatchLite - 差分補丁庫</a></li>
+<li><a class="link" href="https://en.wikipedia.org/wiki/YMODEM"  target="_blank" rel="noopener"
+    >YMODEM Protocol</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/Hugo_Web/zh-hk/tags/stm32/">STM32</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/iap/">IAP</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/pyqt6/">PyQt6</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/aes-256/">AES-256</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/ed25519/">Ed25519</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/ymodem/">YMODEM</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/ota/">OTA</a>
+        
+            <a href="/Hugo_Web/zh-hk/tags/%E5%B7%AE%E5%88%86%E5%8D%87%E7%B4%9A/">差分升級</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            上次改過於 Jun 30, 2026 15:25 CST
+        </span>
+    </section></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const mainArticleElement = document.querySelector(".main-article");
+    renderMathInElement(mainArticleElement, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  });
+</script>
+<div class="math-katex"></div>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相關內容</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/Hugo_Web/zh-hk/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%A8%AD%E8%A8%88a/b-%E9%9B%99%E5%88%86%E5%8D%80%E5%8A%A0%E5%AF%86%E7%B0%BD%E5%90%8D%E8%88%87%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%B4%9A/">
+        
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_989a706e6c4dfa57.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post STM32F407 安全 Bootloader 設計：A/B 雙分區、加密簽名與多渠道升級"
+                        
+                        data-hash="md5-fIM15TRcIvLhRDBeZFcjRg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">STM32F407 安全 Bootloader 設計：A/B 雙分區、加密簽名與多渠道升級</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <script
+  src="https://giscus.app/client.js"
+  data-repo="Lingjia007/Hugo_Web"
+  data-repo-id="R_kgDOOH5NOA"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOOH5NOM4Cn-zx"
+  data-mapping="title"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="light"
+  data-lang="zh-CN"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async
+></script>
+<script>
+  function setGiscusTheme(theme) {
+    let giscus = document.querySelector("iframe.giscus-frame");
+    if (giscus) {
+      giscus.contentWindow.postMessage(
+        {
+          giscus: {
+            setConfig: {
+              theme: theme,
+            },
+          },
+        },
+        "https://giscus.app"
+      );
+    }
+  }
+
+  (function () {
+    addEventListener("message", (e) => {
+      if (event.origin !== "https://giscus.app") return;
+      handler();
+    });
+    window.addEventListener("onColorSchemeChange", handler);
+
+    function handler() {
+      if (document.documentElement.dataset.scheme === "light") {
+        setGiscusTheme('light');
+      } else {
+        setGiscusTheme('dark_dimmed');
+      }
+    }
+  })();
+</script>
+    <div class="comment"></div>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 lingsir007
+    </section>
+    
+    <section class="running-time">
+        
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+        本網站已穩定運行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;總計<span id="articleCount">&lt; 3 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 13.92 k ></span>字
+    </section>
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 構建 <br />
+        主題 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 設計
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script> <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
+<script>
+  var pjax = new Pjax({
+    selectors: ["title", ".main-container", ".js-Pjax1", ".js-Pjax2"],
+  });
+</script>
+
+
+<div id="aplayer"></div>
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<script>
+  const staticDir = "http://localhost:1313/Hugo_Web/zh-hk/";
+  const ap = new APlayer({
+    container: document.getElementById("aplayer"),
+    audio: [
+      {
+        name: "Keil Generic Key",
+        artist: "EDGE",
+        url: staticDir + "music/Keil Generic Key-EDGE/song.mp3",
+        cover: staticDir + "music/Keil Generic Key-EDGE/cover.png",
+        lrc: staticDir + "music/Keil Generic Key-EDGE/lyric.lrc",
+      },
+      {
+        name: "查无此字",
+        artist: "林奕匡",
+        url: staticDir + "music/查无此字-林奕匡/song.mp3",
+        cover: staticDir + "music/查无此字-林奕匡/cover.jpg",
+        lrc: staticDir + "music/查无此字-林奕匡/lyric.lrc",
+      },
+      {
+        name: "爱别等",
+        artist: "洪卓立",
+        url: staticDir + "music/爱别等-洪卓立/song.mp3",
+        cover: staticDir + "music/爱别等-洪卓立/cover.jpg",
+        lrc: staticDir + "music/爱别等-洪卓立/lyric.lrc",
+      },
+      {
+        name: "乖乖报到",
+        artist: "MC 张天赋",
+        url: staticDir + "music/乖乖报到-MC 张天赋/song.mp3",
+        cover: staticDir + "music/乖乖报到-MC 张天赋/cover.jpg",
+        lrc: staticDir + "music/乖乖报到-MC 张天赋/lyric.lrc",
+      },
+      {
+        name: "指纹",
+        artist: "胡歌",
+        url: staticDir + "music/指纹-胡歌/song.mp3",
+        cover: staticDir + "music/指纹-胡歌/cover.jpg",
+        lrc: staticDir + "music/指纹-胡歌/lyric.lrc",
+      },
+      {
+        name: "还记得",
+        artist: "周柏豪",
+        url: staticDir + "music/还记得-周柏豪/song.mp3",
+        cover: staticDir + "music/还记得-周柏豪/cover.jpg",
+        lrc: staticDir + "music/还记得-周柏豪/lyric.lrc",
+      },
+      {
+        name: "摄氏零度",
+        artist: "张敬轩",
+        url: staticDir + "music/摄氏零度-张敬轩/song.mp3",
+        cover: staticDir + "music/摄氏零度-张敬轩/cover.jpg",
+        lrc: staticDir + "music/摄氏零度-张敬轩/lyric.lrc",
+      },
+      {
+        name: "下一位前度",
+        artist: "林家谦",
+        url: staticDir + "music/下一位前度-林家谦/song.mp3",
+        cover: staticDir + "music/下一位前度-林家谦/cover.jpg",
+        lrc: staticDir + "music/下一位前度-林家谦/lyric.lrc",
+      },
+      {
+        name: "初初",
+        artist: "古巨基",
+        url: staticDir + "music/初初-古巨基/song.mp3",
+        cover: staticDir + "music/初初-古巨基/cover.jpg",
+        lrc: staticDir + "music/初初-古巨基/lyric.lrc",
+      },
+      {
+        name: "这个故事教训我们",
+        artist: "李克勤",
+        url: staticDir + "music/这个故事教训我们-李克勤/song.mp3",
+        cover: staticDir + "music/这个故事教训我们-李克勤/cover.jpg",
+        lrc: staticDir + "music/这个故事教训我们-李克勤/lyric.lrc",
+      },
+      {
+        name: "最后祝福",
+        artist: "黄宗泽",
+        url: staticDir + "music/最后祝福-黄宗泽/song.mp3",
+        cover: staticDir + "music/最后祝福-黄宗泽/cover.jpg",
+        lrc: staticDir + "music/最后祝福-黄宗泽/lyric.lrc",
+      }
+    ],
+    lrcType: 3,
+    fixed: true
+  });
+</script>
+
+<script>
+  
+  function calculateRunningDays(startDateStr, elementId) {
+    let s1 = new Date(startDateStr.replace(/-/g, "/"));
+    let s2 = new Date();
+    let timeDifference = s2.getTime() - s1.getTime();
+
+    let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+    
+    let dayText = "天"; 
+    let hourText = "小時";
+    let minuteText = "分鐘";
+
+    let result = `<span>< ${days} ${dayText} ${hours} ${hourText} ${minutes} ${minuteText} ></span>`;
+    document.getElementById(elementId).innerHTML = result;
+    }
+
+    document.addEventListener("pjax:complete", () => {
+        calculateRunningDays('2025-3-14', 'runningdays');
+    });
+    calculateRunningDays('2025-3-14', 'runningdays');
+</script>
+
+<script>
+  pjax._handleResponse = pjax.handleResponse;
+  pjax.handleResponse = function (responseText, request, href, options) {
+    if (request.responseText.match("<html")) {
+      if (responseText) {
+        
+        let newDom = new DOMParser().parseFromString(responseText, "text/html");
+        
+        let bodyClass = newDom.body.className;
+        document.body.setAttribute("class", bodyClass);
+      }
+      
+      pjax._handleResponse(responseText, request, href, options);
+    } else {
+      
+    }
+  };
+</script>
+
+<script>
+  
+  function initClock() {
+    
+    var hr = document.getElementById("hr"); 
+    var mn = document.getElementById("mn"); 
+    var sc = document.getElementById("sc"); 
+
+    
+    var date = new Date();
+    var HH = date.getHours();
+    var MM = date.getMinutes();
+    var SS = date.getSeconds();
+
+    
+    var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+    var minuteAngle = MM * 6 + (SS / 60) * 6;
+    var secondAngle = SS * 6;
+
+    
+    hr.style.transition = 'none';
+    mn.style.transition = 'none';
+    sc.style.transition = 'none';
+
+    
+    hr.style.transform = "rotate(0deg)";
+    mn.style.transform = "rotate(0deg)";
+    sc.style.transform = "rotate(0deg)";
+
+    
+    setTimeout(() => {
+      hr.style.transition = '';
+      mn.style.transition = '';
+      sc.style.transition = '';
+
+      
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 0);
+
+    
+    setInterval(function () {
+      var date = new Date();
+      var HH = date.getHours();
+      var MM = date.getMinutes();
+      var SS = date.getSeconds();
+
+      
+      var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+      var minuteAngle = MM * 6 + (SS / 60) * 6;
+      var secondAngle = SS * 6;
+
+      
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 1000);
+  }
+
+  
+  window.onload = function () {
+    initClock();
+  };
+
+  
+  document.addEventListener("pjax:complete", () => {
+    initClock();
+  });
+</script>
+
+<script>
+  document.addEventListener("pjax:complete", () => {
+    
+    window.Stack.init();
+    
+  });
+</script>
+
+<script>
+  async function renderKaTeX() {
+    
+    let katex = document.querySelector(".math-katex");
+    if (!katex) {
+      return;
+    }
+    
+    while (typeof renderMathInElement !== "function") {
+      await delay(500);
+    }
+    
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  }
+
+  
+
+  function delay(time) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, time);
+    });
+  }
+
+  document.addEventListener("pjax:complete", () => {
+    renderKaTeX();
+  });
+</script>
+
+<script src="http://localhost:1313/Hugo_Web/zh-hk/js/topbar.min.js"></script>
+
+<script>
+  
+  topbar.config({
+    barColors: {
+      0: "rgba(255,  255, 255, 1)", 
+      "1.0": "rgba(0, 149, 234,  1)", 
+    },
+  });
+
+  document.addEventListener("pjax:send", () => {
+    
+    topbar.show();
+  });
+
+  document.addEventListener("pjax:complete", () => {
+    
+    topbar.hide();
+  });
+</script>
+
+<script>
+  const cdnPath =
+    "https://cdn.jsdelivr.net/gh/Lingjia007/live2d-widget-v3@main";
+  const config = {
+    
+    path: {
+      homePath: "/",
+      modelPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/my-waifu-tips.json",
+      tipsJsPath: cdnPath + "/waifu-tips.js",
+      live2dCorePath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/js/live2d-sdk.js",
+    },
+    
+    tools: [
+      "hitokoto",
+      "asteroids",
+      "express",
+      "switch-model",
+      "switch-texture",
+      "photo",
+      "info",
+      "quit",
+    ],
+    
+    drag: {
+      enable: true,
+      direction: ["x", 0],
+    },
+    
+    switchType: "order",
+  };
+
+  
+  if (screen.width >= 10) {
+    Promise.all([
+      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(config.path.live2dCorePath, "js"),
+      loadExternalResource(config.path.live2dSdkPath, "js"),
+      loadExternalResource(config.path.tipsJsPath, "js"),
+    ]).then(() => {
+      initWidget({
+        homePath: config.path.homePath,
+        waifuPath: config.path.tipsJsonPath,
+        cdnPath: config.path.modelPath,
+        tools: config.tools,
+        dragEnable: config.drag.enable,
+        dragDirection: config.drag.direction,
+        switchType: config.switchType,
+      });
+    });
+    function waitForElement(selector, callback) {
+      new MutationObserver(function (mutations) {
+        if (document.querySelector(selector)) {
+          callback();
+          this.disconnect();
+        }
+      }).observe(document.documentElement, { childList: true, subtree: true });
+    }
+  }
+
+  
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      let tag;
+      if (type === "css") {
+        tag = document.createElement("link");
+        tag.rel = "stylesheet";
+        tag.href = url;
+      } else if (type === "js") {
+        tag = document.createElement("script");
+        tag.src = url;
+      }
+      if (tag) {
+        tag.onload = () => resolve(url);
+        tag.onerror = () => reject(url);
+        document.head.appendChild(tag);
+      }
+    });
+  }
+</script>
+
+<style>
+  .highlight {
+     
+    max-height: 400px;
+    overflow: hidden;
+  }
+
+  .code-show {
+    max-height: none !important;
+  }
+
+  .code-more-box {
+    width: 100%;
+    padding-top: 78px;
+    background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(rgba(255, 255, 255, 0)),
+      to(#fff)
+    );
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .code-more-btn {
+    display: block;
+    margin: auto;
+    width: 44px;
+    height: 22px;
+    background: #f0f0f5;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding-top: 6px;
+    cursor: pointer;
+  }
+
+  .code-more-img {
+    cursor: pointer !important;
+    display: block;
+    margin: auto;
+    width: 22px;
+    height: 16px;
+  }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach((codeBlock) => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement("div");
+      codeMoreBox.classList.add("code-more-box");
+      
+      let codeMoreBtn = document.createElement("span");
+      codeMoreBtn.classList.add("code-more-btn");
+      codeMoreBtn.addEventListener("click", () => {
+        codeBlock.classList.add("code-show");
+        codeMoreBox.style.display = "none";
+        
+        window.dispatchEvent(new Event("resize"));
+      });
+      
+      let img = document.createElement("img");
+      img.classList.add("code-more-img");
+      img.src = "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/icons/codeMore.png";
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox);
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initCodeMoreBox();
+  });
+  initCodeMoreBox();
+</script>
+
+<div id="particles-js"></div>
+
+<script src="http://localhost:1313/Hugo_Web/zh-hk/background/particles.min.js"></script>
+<script>
+  particlesJS.load(
+    "particles-js",
+    "http:\/\/localhost:1313\/Hugo_Web\/zh-hk\/background/particlesjs-config.json",
+    function () {
+      console.log("particles.js loaded - callback");
+    }
+  );
+</script>
+
+<style>
+  #particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+  }
+</style>
+
+<style>
+  #TableOfContents > ul,
+  ol {
+    ul,
+    ol {
+      display: none;
+    }
+    .open {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  function initTocHide() {
+    
+    let toc = document.querySelector(".widget--toc");
+    if (!toc) {
+      return;
+    }
+    
+    window.addEventListener("scroll", function () {
+      
+      let openUl = document.querySelectorAll(".open");
+      if (openUl.length > 0) {
+        openUl.forEach((ul) => {
+          ul.classList.remove("open");
+        });
+      }
+      
+      let currentLi = document.querySelector(".active-class");
+      if (!currentLi) {
+        return;
+      }
+      
+      if (currentLi.children.length > 1) {
+        currentLi.children[1].classList.add("open");
+      }
+      
+      let ul = currentLi.parentElement;
+      do {
+        ul.classList.add("open");
+        ul = ul.parentElement.parentElement;
+      } while (ul !== undefined && (ul.localName === "ul" || ul.localName === "ol"));
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initTocHide();
+  });
+  initTocHide();
+</script>
+
+<style>
+  @font-face {
+    font-family: "AlibabaPuHuiTi-3-65-Medium";
+    src: url(http://localhost:1313/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+      format("truetype");
+  }
+
+  :root {
+    --base-font-family: "AlibabaPuHuiTi-3-65-Medium";
+    --code-font-family: "AlibabaPuHuiTi-3-65-Medium";
+  }
+</style>
+
+<style>
+  #backTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    z-index: 99;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-image: url("http://localhost:1313/Hugo_Web/zh-hk/icons/backTop.svg");
+  }
+</style>
+
+<script>
+  
+
+  function initScrollTop() {
+    let rightSideBar = document.querySelector(".right-sidebar");
+    if (!rightSideBar) {
+      return;
+    }
+    
+    let btn = document.createElement("div");
+    btn.id = "backTopBtn";
+    btn.onclick = backToTop;
+    rightSideBar.appendChild(btn);
+    
+    window.onscroll = function () {
+      
+      if (
+        document.body.scrollTop > 20 ||
+        document.documentElement.scrollTop > 20
+      ) {
+        btn.style.display = "block";
+      } else {
+        btn.style.display = "none";
+      }
+    };
+  }
+
+  
+
+  function backToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initScrollTop();
+  });
+  initScrollTop();
+</script>
+
+<div class="js-Pjax2">
+  
+  <script>
+    (function() {
+      
+      const verScript = document.createElement('script');
+      verScript.defer = true;
+      verScript.src = 'https://cn.vercount.one/js';
+      document.body.appendChild(verScript);
+
+      
+      function showHideView() {
+        const viewCounts = document.querySelectorAll("#viewCount");
+        if (viewCounts) {
+          const isArticle = !!document.querySelector(".article-page");
+          viewCounts.forEach(ele => {
+            ele.style.display = isArticle ? '' : 'none';
+          });
+        }
+      }
+      
+      showHideView();
+      
+      document.addEventListener('pjax:complete', function() {
+        showHideView();
+      });
+    })();
+  </script>
+</div><div class="js-Pjax1">
+    <script>
+      (function () {
+        var pathName = window.location.pathname;
+        let langFromPath = 'zh-CN';
+        if (pathName.includes('/zh-hk')) {
+            langFromPath = 'zh-HK';
+        } else if (pathName.includes('/en')) {
+            langFromPath = 'en';
+        }
+        
+        window.giscusConfig = {
+            repo: 'Lingjia007\/Hugo_Web',
+            repoId: 'R_kgDOOH5NOA',
+            category: 'Announcements',
+            categoryId: 'DIC_kwDOOH5NOM4Cn-zx',
+            mapping: 'title',
+            strict: '0',
+            reactionsEnabled: '1',
+            emitMetadata: '0',
+            inputPosition: 'top',
+            theme: 'light',
+            lang: langFromPath, 
+            loading: 'lazy'
+        };
+
+        console.log('giscus_language set to:', window.giscusConfig.lang);
+
+        let comment = document.querySelector(".comment");
+        if (!comment) return;
+
+        
+        const placeholder = document.createElement('div');
+        placeholder.className = 'giscus-placeholder';
+        placeholder.style.minHeight = '160px';
+        placeholder.style.backgroundColor = 'transparent';
+        
+        
+        const siteFooter = document.querySelector('.site-footer');
+        if (siteFooter) {
+          siteFooter.parentNode.insertBefore(placeholder, siteFooter);
+        }
+
+        function reloadComments() {
+          
+          placeholder.innerHTML = '';
+          
+          
+          const newScript = document.createElement('script');
+          newScript.src = 'https://giscus.app/client.js';
+          for (let key in window.giscusConfig) {
+            newScript.setAttribute(`data-${key}`, window.giscusConfig[key]);
+          }
+          newScript.setAttribute('crossorigin', 'anonymous');
+          newScript.async = true;
+          
+          placeholder.appendChild(newScript);
+        }
+
+        reloadComments();
+        
+        setTimeout(reloadComments, 700);
+      })();
+    </script>
+  </div>
+
+    </body>
+</html>

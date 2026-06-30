@@ -10,9 +10,10 @@
 <meta property='og:description' content="基于 STM32F407VGT6 的工业级安全 Bootloader 完整设计，涵盖 A/B 双分区无缝升级、AES-256 加密 + Ed25519 签名安全固件包、地址重定位、差分升级、多渠道下载（UART/SD卡/SPI Flash/WiFi OTA）等核心技术详解">
 <meta property='og:url' content='http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/'>
 <meta property='og:site_name' content='lingsir007'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='Bootloader' /><meta property='article:tag' content='IAP' /><meta property='article:tag' content='A/B分区' /><meta property='article:tag' content='固件加密' /><meta property='article:tag' content='Ed25519' /><meta property='article:tag' content='OTA' /><meta property='article:published_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-21T17:02:41&#43;08:00'/>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='Bootloader' /><meta property='article:tag' content='IAP' /><meta property='article:tag' content='A/B分区' /><meta property='article:tag' content='固件加密' /><meta property='article:tag' content='Ed25519' /><meta property='article:tag' content='OTA' /><meta property='article:published_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-23T22:24:35&#43;08:00'/><meta property='og:image' content='http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.png' />
 <meta name="twitter:title" content="STM32F407 安全 Bootloader 设计：A/B 双分区、加密签名与多渠道升级">
-<meta name="twitter:description" content="基于 STM32F407VGT6 的工业级安全 Bootloader 完整设计，涵盖 A/B 双分区无缝升级、AES-256 加密 + Ed25519 签名安全固件包、地址重定位、差分升级、多渠道下载（UART/SD卡/SPI Flash/WiFi OTA）等核心技术详解">
+<meta name="twitter:description" content="基于 STM32F407VGT6 的工业级安全 Bootloader 完整设计，涵盖 A/B 双分区无缝升级、AES-256 加密 + Ed25519 签名安全固件包、地址重定位、差分升级、多渠道下载（UART/SD卡/SPI Flash/WiFi OTA）等核心技术详解"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.png' />
     <link rel="shortcut icon" href="/icons/favicon.ico" />
 
     </head>
@@ -377,8 +378,20 @@
 
 
             <main class="main full-width">
-    <article class="main-article">
+    <article class="has-image main-article">
     <header class="article-header">
+        <div class="article-image">
+            <a href="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/">
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1_hu_f9a80f4bfd0c7f4f.png"
+                        srcset="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1_hu_f9a80f4bfd0c7f4f.png 800w, /Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1_hu_d25729fd9b796b1c.png 1600w"
+                        width="800" 
+                        height="443" 
+                        loading="lazy"
+                        alt="Featured image of post STM32F407 安全 Bootloader 设计：A/B 双分区、加密签名与多渠道升级" />
+                
+            </a>
+        </div>
+    
 
     <div class="article-details">
     
@@ -424,12 +437,12 @@
         <div class="article-lastmod">
                 <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M10 18l5 -5a1.414 1.414 0 0 0 -2 -2l-5 5v2h2z" /></svg>
                 <time>
-                    Jun 21, 2026 17:02 CST
+                    Jun 23, 2026 22:24 CST
                 </time>
             </div><div id="wordCount">
             <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
             <time class="article-wordcount">
-                7116  字
+                7274  字
             </time>
         </div>
 
@@ -446,6 +459,27 @@
     </footer>
     
 
+    
+        <footer class="article-translations">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+            <div>
+                
+                    <a href="http://localhost:1313/Hugo_Web/zh-hk/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%A8%AD%E8%A8%88a/b-%E9%9B%99%E5%88%86%E5%8D%80%E5%8A%A0%E5%AF%86%E7%B0%BD%E5%90%8D%E8%88%87%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%B4%9A/" class="link">繁體中文</a>
+                
+                    <a href="http://localhost:1313/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/" class="link">English</a>
+                
+            </div>
+        </footer>
     
 </div>
 
@@ -544,7 +578,8 @@
       </tr>
   </tbody>
 </table></div>
-<h3 id="链接脚本scatter-file">链接脚本（Scatter File）
+<blockquote class="alert alert-tip">
+    <p>为什么 Bootloader 占用 128KB？因为本项目目前为测试 Demo，未做精简优化——实际上一个精简的 Bootloader 通常只需 32-48KB。当前 128KB 中包含了完整的菜单系统、加密库（AES/Ed25519/HKDF）、HPatch 差分、ESP8266 WiFi/MQTT 等所有功能模块。在量产化时，可通过裁剪不需要的功能，将 Bootloader 缩小至合理大小，从而为 App 释放更多 Flash 空间。</p></blockquote><h3 id="链接脚本scatter-file">链接脚本（Scatter File）
 </h3><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2378,7 +2413,7 @@
 
 
         <span>
-            最后更新于 Jun 21, 2026 17:02 CST
+            最后更新于 Jun 23, 2026 22:24 CST
         </span>
     </section></footer>
 
@@ -2429,13 +2464,13 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.f3b7c87f67491b4fb41fa182ed9961e0_hu_350ea196ff34418e.png" 
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_f8913fdcd1a8711e.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
                         alt="Featured image of post PyIAPToolKit：STM32 IAP 上位机工具套件设计与实现"
                         
-                        data-hash="md5-87fIf2dJG0&#43;0H6GC7Zlh4A==">
+                        data-hash="md5-vOO1Pj1Sm7lmL3XzOtUpuQ==">
                 
             </div>
         
@@ -2536,7 +2571,7 @@
             
                 
             
-        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 4 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 13.47 k ></span>字
+        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 4 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 14.38 k ></span>字
     </section>
     <section class="powerby">
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />

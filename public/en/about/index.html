@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Hugo, the world's fastest framework for building websites">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="This site is built with Hugo static site generator, using the hugo-theme-stack theme. It is deployed automatically to dual platforms through GitHub Actions — pushing to the main branch triggers the build and publish workflow, no manual operation required.\nDeployment Architecture\rTarget URL Branch Notes GitHub Pages https://lingjia007.github.io/Hugo_Web/ master Primary site, uses baseURL from source repo&rsquo;s hugo.yaml Netlify https://lingsir007.netlify.app/ netlify Mirror site, workflow auto-rewrites baseURL for the standalone domain The source repository and publish repository are separated: build artifacts are pushed to the external repository Lingjia007/Hugo_Web on the corresponding branch, then pulled and published automatically by GitHub Pages / Netlify.\n">
 <title>About</title>
 
 <link rel='canonical' href='http://localhost:1313/Hugo_Web/en/about/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="About">
-<meta property='og:description' content="Hugo, the world's fastest framework for building websites">
+<meta property='og:description' content="This site is built with Hugo static site generator, using the hugo-theme-stack theme. It is deployed automatically to dual platforms through GitHub Actions — pushing to the main branch triggers the build and publish workflow, no manual operation required.\nDeployment Architecture\rTarget URL Branch Notes GitHub Pages https://lingjia007.github.io/Hugo_Web/ master Primary site, uses baseURL from source repo&rsquo;s hugo.yaml Netlify https://lingsir007.netlify.app/ netlify Mirror site, workflow auto-rewrites baseURL for the standalone domain The source repository and publish repository are separated: build artifacts are pushed to the external repository Lingjia007/Hugo_Web on the corresponding branch, then pulled and published automatically by GitHub Pages / Netlify.\n">
 <meta property='og:url' content='http://localhost:1313/Hugo_Web/en/about/'>
 <meta property='og:site_name' content='lingsir007'>
-<meta property='og:type' content='article'><meta property='article:section' content='Page' /><meta property='article:published_time' content='2019-02-28T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-03-19T13:41:49&#43;08:00'/>
+<meta property='og:type' content='article'><meta property='article:section' content='Page' /><meta property='article:modified_time' content='2025-03-19T13:41:49&#43;08:00'/>
 <meta name="twitter:title" content="About">
-<meta name="twitter:description" content="Hugo, the world's fastest framework for building websites">
+<meta name="twitter:description" content="This site is built with Hugo static site generator, using the hugo-theme-stack theme. It is deployed automatically to dual platforms through GitHub Actions — pushing to the main branch triggers the build and publish workflow, no manual operation required.\nDeployment Architecture\rTarget URL Branch Notes GitHub Pages https://lingjia007.github.io/Hugo_Web/ master Primary site, uses baseURL from source repo&rsquo;s hugo.yaml Netlify https://lingsir007.netlify.app/ netlify Mirror site, workflow auto-rewrites baseURL for the standalone domain The source repository and publish repository are separated: build artifacts are pushed to the external repository Lingjia007/Hugo_Web on the corresponding branch, then pulled and published automatically by GitHub Pages / Netlify.\n">
     <link rel="shortcut icon" href="/icons/favicon.ico" />
 
     </head>
@@ -270,7 +270,49 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+        
+
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#deployment-architecture">Deployment Architecture</a></li>
+    <li><a href="#workflow-details">Workflow Details</a>
+      <ol>
+        <li><a href="#job-1-deploy-to-gh-pages">Job 1: <code>deploy-to-gh-pages</code></a></li>
+        <li><a href="#job-2-deploy-to-netlify">Job 2: <code>deploy-to-netlify</code></a></li>
+      </ol>
+    </li>
+    <li><a href="#triggers--secrets">Triggers &amp; Secrets</a></li>
+    <li><a href="#local-preview">Local Preview</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="main-article">
@@ -285,53 +327,11 @@
         </h2>
     
         
-        <h3 class="article-subtitle">
-            Hugo, the world&#39;s fastest framework for building websites
-        </h3>
-        
     </div>
 
     
     
     
-    
-    <footer class="article-time">
-        
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
-  <circle cx="18" cy="18" r="4" />
-  <path d="M15 3v4" />
-  <path d="M7 3v4" />
-  <path d="M3 11h16" />
-  <path d="M18 16.496v1.504l1 1" />
-</svg>
-                <time class="article-time--published">Feb 28, 2019</time>
-            </div>
-        <div class="article-lastmod">
-                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M10 18l5 -5a1.414 1.414 0 0 0 -2 -2l-5 5v2h2z" /></svg>
-                <time>
-                    Mar 19, 2025 13:41 CST
-                </time>
-            </div><div id="wordCount">
-            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
-            <time class="article-wordcount">
-                148  words
-            </time>
-        </div>
-
-        
-
-        <div id="viewCount">
-            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
-            <time class="article-time--reading">
-                
-                <span id="vercount_value_page_pv">loading... </span> views
-            </time>
-        </div>
-
-    </footer>
     
 
     
@@ -363,27 +363,120 @@
     <section class="article-content">
     
     
-    <p>Written in Go, Hugo is an open source static site generator available under the <a class="link" href="https://github.com/gohugoio/hugo/blob/master/LICENSE"  target="_blank" rel="noopener"
-    >Apache License 2.0.</a> Hugo supports TOML, YAML and JSON data file types, Markdown and HTML content files and uses shortcodes to add rich content. Other notable features are taxonomies, multilingual mode, image processing, custom output formats, HTML/CSS/JS minification and support for Sass SCSS workflows.</p>
-<p>Hugo makes use of a variety of open source projects including:</p>
-<ul>
-<li><a class="link" href="https://github.com/yuin/goldmark"  target="_blank" rel="noopener"
-    >https://github.com/yuin/goldmark</a></li>
-<li><a class="link" href="https://github.com/alecthomas/chroma"  target="_blank" rel="noopener"
-    >https://github.com/alecthomas/chroma</a></li>
-<li><a class="link" href="https://github.com/muesli/smartcrop"  target="_blank" rel="noopener"
-    >https://github.com/muesli/smartcrop</a></li>
-<li><a class="link" href="https://github.com/spf13/cobra"  target="_blank" rel="noopener"
-    >https://github.com/spf13/cobra</a></li>
-<li><a class="link" href="https://github.com/spf13/viper"  target="_blank" rel="noopener"
-    >https://github.com/spf13/viper</a></li>
+    <p>This site is built with <a class="link" href="https://gohugo.io/"  target="_blank" rel="noopener"
+    >Hugo</a> static site generator, using the <a class="link" href="https://github.com/CaiJimmy/hugo-theme-stack"  target="_blank" rel="noopener"
+    >hugo-theme-stack</a> theme. It is deployed automatically to <strong>dual platforms</strong> through GitHub Actions — pushing to the <code>main</code> branch triggers the build and publish workflow, no manual operation required.</p>
+<h2 id="deployment-architecture">Deployment Architecture
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Target</th>
+          <th>URL</th>
+          <th>Branch</th>
+          <th>Notes</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>GitHub Pages</td>
+          <td><a class="link" href="https://lingjia007.github.io/Hugo_Web/"  target="_blank" rel="noopener"
+    >https://lingjia007.github.io/Hugo_Web/</a></td>
+          <td><code>master</code></td>
+          <td>Primary site, uses baseURL from source repo&rsquo;s <code>hugo.yaml</code></td>
+      </tr>
+      <tr>
+          <td>Netlify</td>
+          <td><a class="link" href="https://lingsir007.netlify.app/"  target="_blank" rel="noopener"
+    >https://lingsir007.netlify.app/</a></td>
+          <td><code>netlify</code></td>
+          <td>Mirror site, workflow auto-rewrites baseURL for the standalone domain</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>The source repository and publish repository are separated: build artifacts are pushed to the external repository <code>Lingjia007/Hugo_Web</code> on the corresponding branch, then pulled and published automatically by GitHub Pages / Netlify.</p>
+<h2 id="workflow-details">Workflow Details
+</h2><p>The workflow is defined in <a class="link" href="https://github.com/Lingjia007/HugoWeb_Source/blob/main/.github/workflows/deploy.yml"  target="_blank" rel="noopener"
+    >.github/workflows/deploy.yml</a> and contains two parallel jobs.</p>
+<h3 id="job-1-deploy-to-gh-pages">Job 1: <code>deploy-to-gh-pages</code>
+</h3><p>Pipeline to GitHub Pages:</p>
+<ol>
+<li><strong>Checkout</strong> — Clone source repo (with submodules, <code>fetch-depth: 0</code> to preserve full Git history for <code>lastmod</code> timestamps)</li>
+<li><strong>Git Configuration</strong> — Disable <code>quotePath</code>, <code>autocrlf</code>; enable <code>safecrlf</code> to avoid CJK path and CRLF issues</li>
+<li><strong>Set up Hugo</strong> — Install latest Hugo via <code>peaceiris/actions-hugo@v2</code></li>
+<li><strong>Build</strong> — <code>hugo -F --cleanDestinationDir</code> to build and clean stale artifacts</li>
+<li><strong>Copy static and assets</strong> — Copy <code>static/</code> and <code>assets/</code> into <code>public/en</code>, <code>public/zh-hk</code> multilingual directories</li>
+<li><strong>Deploy</strong> — Push <code>./public</code> to the <code>master</code> branch of <code>Lingjia007/Hugo_Web</code> via <code>peaceiris/actions-gh-pages@v3</code>, inheriting the HEAD commit message</li>
+</ol>
+<h3 id="job-2-deploy-to-netlify">Job 2: <code>deploy-to-netlify</code>
+</h3><p>Pipeline to the Netlify branch. The difference is that the config must be rewritten before build to adapt the standalone domain:</p>
+<ol>
+<li>
+<p><strong>Checkout main</strong> — Explicitly specify <code>ref: main</code></p>
+</li>
+<li>
+<p><strong>Git Configuration</strong> — Same as above</p>
+</li>
+<li>
+<p><strong>Switch to netlify branch</strong> — <code>git checkout -B netlify</code> to create and switch</p>
+</li>
+<li>
+<p><strong>Modify baseURL</strong> — <code>sed</code> replaces the first line of baseURL in <code>hugo.yaml</code> from the GitHub Pages URL to the Netlify URL:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sed -i <span class="s1">&#39;1s#https://lingjia007.github.io/Hugo_Web/#https://lingsir007.netlify.app/#&#39;</span> hugo.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>Modify Waifu Tips Path</strong> — Strip the <code>Hugo_Web/</code> path prefix from the waifu tips file to avoid subpath errors:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sed -i <span class="s1">&#39;s#Hugo_Web/##g&#39;</span> static/js/my-waifu-tips.json
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>Commit &amp; Push</strong> — Commit config changes as GitHub Actions, force-push to the <code>netlify</code> branch</p>
+</li>
+<li>
+<p><strong>Set up Hugo + Build</strong> — Same as Job 1</p>
+</li>
+<li>
+<p><strong>Deploy</strong> — Push to the <code>netlify</code> branch of <code>Lingjia007/Hugo_Web</code></p>
+</li>
+</ol>
+<h2 id="triggers--secrets">Triggers &amp; Secrets
+</h2><ul>
+<li><strong>Trigger</strong>: <code>push</code> to the <code>main</code> branch</li>
+<li><strong>Authentication</strong>: Uses the repository Secret <code>TOKEN</code> (Personal Access Token), granting write access to the external repository <code>Lingjia007/Hugo_Web</code></li>
+<li><strong>Permissions</strong>: The <code>deploy-to-netlify</code> job declares <code>permissions: contents: write</code> to allow <code>git push</code> operations</li>
 </ul>
-<p>Hugo is ideal for blogs, corporate websites, creative portfolios, online magazines, single page applications or even a website with thousands of pages.</p>
-<p>Hugo is for people who want to hand code their own website without worrying about setting up complicated runtimes, dependencies and databases.</p>
-<p>Websites built with Hugo are extremely fast, secure and can be deployed anywhere including, AWS, GitHub Pages, Heroku, Netlify and any other hosting provider.</p>
-<p>Learn more and contribute on <a class="link" href="https://github.com/gohugoio"  target="_blank" rel="noopener"
-    >GitHub</a>.</p>
-
+<h2 id="local-preview">Local Preview
+</h2><p>Preview locally before committing:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hugo server -D
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>To simulate the GitHub Pages subpath deployment:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hugo server -D --baseURL https://lingjia007.github.io/Hugo_Web/ --appendPort<span class="o">=</span><span class="nb">false</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
 </section>
 
 
@@ -400,7 +493,7 @@
 
 
 
-        <span>CC BY-NC-ND</span>
+        <span>Licensed under CC BY-NC-SA 4.0</span>
     </section>
     <section class="article-lastmod">
         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -531,7 +624,11 @@
             
                 
             
-        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 1 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 0.72 k ></span> words
+                
+            
+                
+            
+        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 3 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 8.11 k ></span> words
     </section>
     <section class="powerby">
         Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />

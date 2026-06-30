@@ -7,13 +7,13 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Sun, 21 Jun 2026 17:02:41 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/tags/bootloader/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 23 Jun 2026 22:24:35 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/tags/bootloader/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>STM32F407 安全 Bootloader 设计：A/B 双分区、加密签名与多渠道升级</title>
         <link>http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/</link>
         <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/</guid>
-        <description>&lt;h2 id=&#34;前言&#34;&gt;前言
+        <description>&lt;img src="http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.png" alt="Featured image of post STM32F407 安全 Bootloader 设计：A/B 双分区、加密签名与多渠道升级" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;在物联网和嵌入式设备领域，固件升级（OTA）是产品生命周期中不可或缺的一环。然而，升级过程中的&lt;strong&gt;断电崩溃、固件篡改、版本回滚&lt;/strong&gt;等问题，往往让开发者头疼不已。本文将详细介绍一个基于 STM32F407VGT6 的安全 Bootloader 项目，它通过 &lt;strong&gt;A/B 双分区&lt;/strong&gt;、&lt;strong&gt;安全固件包&lt;/strong&gt;、&lt;strong&gt;地址重定位&lt;/strong&gt; 等机制，系统性地解决了这些痛点。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;一解决了什么问题&#34;&gt;一、解决了什么问题？
@@ -103,7 +103,8 @@
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;h3 id=&#34;链接脚本scatter-file&#34;&gt;链接脚本（Scatter File）
+&lt;blockquote class=&#34;alert alert-tip&#34;&gt;
+    &lt;p&gt;为什么 Bootloader 占用 128KB？因为本项目目前为测试 Demo，未做精简优化——实际上一个精简的 Bootloader 通常只需 32-48KB。当前 128KB 中包含了完整的菜单系统、加密库（AES/Ed25519/HKDF）、HPatch 差分、ESP8266 WiFi/MQTT 等所有功能模块。在量产化时，可通过裁剪不需要的功能，将 Bootloader 缩小至合理大小，从而为 App 释放更多 Flash 空间。&lt;/p&gt;&lt;/blockquote&gt;&lt;h3 id=&#34;链接脚本scatter-file&#34;&gt;链接脚本（Scatter File）
 &lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
