@@ -635,14 +635,13 @@
   <div class="js-Pjax1">
     <script>
       (function () {
-        var pathName = window.location.pathname;
-        let langFromPath = 'zh-CN';
-        if (pathName.includes('/zh-hk')) {
-            langFromPath = 'zh-HK';
-        } else if (pathName.includes('/en')) {
-            langFromPath = 'en';
-        }
-        // 配置 giscusConfig
+        var giscusLang = 'en';
+        {{- if eq $.Lang "zh-cn" -}}
+          giscusLang = 'zh-CN';
+        {{- else if eq $.Lang "zh-hk" -}}
+          giscusLang = 'zh-HK';
+        {{- end -}}
+
         window.giscusConfig = {
             repo: '{{- .repo -}}',
             repoId: '{{- .repoID -}}',
@@ -654,46 +653,26 @@
             emitMetadata: '0',
             inputPosition: '{{- default "top" .inputPosition -}}',
             theme: '{{- default "light" .lightTheme -}}',
-            lang: langFromPath, // 动态设置语言
+            lang: giscusLang,
             loading: '{{- .loading -}}'
         };
-
-        console.log('giscus_language set to:', window.giscusConfig.lang);
 
         let comment = document.querySelector(".comment");
         if (!comment) return;
 
-        // 创建占位容器
-        const placeholder = document.createElement('div');
-        placeholder.className = 'giscus-placeholder';
-        placeholder.style.minHeight = '160px';
-        placeholder.style.backgroundColor = 'transparent';
-        
-        // 插入到footer之前
-        const siteFooter = document.querySelector('.site-footer');
-        if (siteFooter) {
-          siteFooter.parentNode.insertBefore(placeholder, siteFooter);
-        }
-
         function reloadComments() {
-          // 清空现有内容
-          placeholder.innerHTML = '';
-          
-          // 创建新脚本
+          comment.innerHTML = '';
           const newScript = document.createElement('script');
           newScript.src = 'https://giscus.app/client.js';
           for (let key in window.giscusConfig) {
-            newScript.setAttribute(`data-${key}`, window.giscusConfig[key]);
+              newScript.setAttribute(`data-${key}`, window.giscusConfig[key]);
           }
           newScript.setAttribute('crossorigin', 'anonymous');
           newScript.async = true;
-          
-          placeholder.appendChild(newScript);
+          comment.appendChild(newScript);
         }
 
         reloadComments();
-        
-        setTimeout(reloadComments, 700);
       })();
     </script>
   </div>
