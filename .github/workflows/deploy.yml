@@ -21,7 +21,7 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.safecrlf true
           git config --global core.ignorecase false
-      
+
       - name: Set up Hugo
         uses: peaceiris/actions-hugo@v2
         with:
@@ -30,9 +30,14 @@ jobs:
       - name: Build Hugo site
         run: hugo -F --cleanDestinationDir
 
+      - name: Fix favicon path for GitHub Pages
+        run: |
+          # 将绝对路径 /icons/favicon.ico 替换为 /Hugo_Web/icons/favicon.ico
+          find public -name "*.html" -exec sed -i 's|href="/icons/favicon.ico"|href="/Hugo_Web/icons/favicon.ico"|g' {} +
+
       # 仅在需要特殊处理时保留此步骤
       - name: Copy static and assets (Conditional)
-        if: true  # 默认禁用，需要时设为 true
+        if: true # 默认禁用，需要时设为 true
         run: |
           mkdir -p public/en public/zh-hk
           cp -r static/* public/en/
@@ -97,7 +102,7 @@ jobs:
 
       # 仅在需要特殊处理时保留此步骤
       - name: Copy static and assets (Conditional)
-        if: true  # 默认禁用，需要时设为 true
+        if: true # 默认禁用，需要时设为 true
         run: |
           mkdir -p public/en public/zh-hk
           cp -r static/* public/en/

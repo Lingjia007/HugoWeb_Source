@@ -2,23 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Differential Update on lingsir007</title>
-        <link>http://localhost:3313/Hugo_Web/en/tags/differential-update/</link>
+        <link>http://localhost:1313/Hugo_Web/en/tags/differential-update/</link>
         <description>Recent content in Differential Update on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Tue, 30 Jun 2026 15:49:53 +0800</lastBuildDate><atom:link href="http://localhost:3313/Hugo_Web/en/tags/differential-update/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 30 Jun 2026 23:07:45 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/en/tags/differential-update/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite</title>
-        <link>http://localhost:3313/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/</link>
+        <link>http://localhost:1313/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/</link>
         <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:3313/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/</guid>
-        <description>&lt;img src="http://localhost:3313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png" alt="Featured image of post PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite" /&gt;&lt;h2 id=&#34;foreword&#34;&gt;Foreword
+        <guid>http://localhost:1313/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/</guid>
+        <description>&lt;img src="http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png" alt="Featured image of post PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite" /&gt;&lt;h2 id=&#34;foreword&#34;&gt;Foreword
 &lt;/h2&gt;&lt;p&gt;In the previous post &lt;a class=&#34;link&#34; href=&#34;../stm32f407-secure-bootloader/&#34; &gt;STM32F407 Secure Bootloader Design&lt;/a&gt;, we examined the device-side A/B dual-partition, encryption/signing, and multi-channel upgrade mechanisms in detail. However, a complete IAP system also requires &lt;strong&gt;host-side tools&lt;/strong&gt; to handle firmware packaging, encryption/signing, transmission/flashing, and other steps. This article introduces &lt;strong&gt;PyIAPToolKit&lt;/strong&gt; — an STM32 IAP host tool suite based on PyQt6 + Fluent Design, which serves as the PC-side companion tool for the Bootloader project.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/Lingjia007/PyIAPToolKit/releases/tag/v1.0.0&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Download Release v1.0.0&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
-&lt;hr&gt;
+&lt;blockquote class=&#34;alert alert-note&#34;&gt;
+    &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/Lingjia007/PyIAPToolKit/releases/tag/v1.0.0&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Download Release v1.0.0&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;&lt;hr&gt;
 &lt;h2 id=&#34;project-overview&#34;&gt;Project Overview
 &lt;/h2&gt;&lt;h3 id=&#34;feature-matrix&#34;&gt;Feature Matrix
 &lt;/h3&gt;&lt;table&gt;
