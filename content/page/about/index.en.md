@@ -30,8 +30,14 @@ Pipeline to GitHub Pages:
 2. **Git Configuration** — Disable `quotePath`, `autocrlf`; enable `safecrlf` to avoid CJK path and CRLF issues
 3. **Set up Hugo** — Install latest Hugo via `peaceiris/actions-hugo@v2`
 4. **Build** — `hugo -F --cleanDestinationDir` to build and clean stale artifacts
-5. **Copy static and assets** — Copy `static/` and `assets/` into `public/en`, `public/zh-hk` multilingual directories
-6. **Deploy** — Push `./public` to the `master` branch of `Lingjia007/Hugo_Web` via `peaceiris/actions-gh-pages@v3`, inheriting the HEAD commit message
+5. **Fix favicon path** — Replace `/icons/favicon.ico` with `/Hugo_Web/icons/favicon.ico` in all HTML files under `public/` to adapt for GitHub Pages subpath:
+
+   ```bash
+   find public -name "*.html" -exec sed -i 's|href="/icons/favicon.ico"|href="/Hugo_Web/icons/favicon.ico"|g' {} +
+   ```
+
+6. **Copy static and assets** — Copy `static/` and `assets/` into `public/en`, `public/zh-hk` multilingual directories
+7. **Deploy** — Push `./public` to the `master` branch of `Lingjia007/Hugo_Web` via `peaceiris/actions-gh-pages@v3`, inheriting the HEAD commit message
 
 ### Job 2: `deploy-to-netlify`
 

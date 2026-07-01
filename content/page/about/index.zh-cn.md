@@ -1,10 +1,10 @@
 ---
 title: 关于
 menu:
-    main: 
-        weight: -90
-        params:
-            icon: user
+  main:
+    weight: -90
+    params:
+      icon: user
 ---
 
 本站基于 [Hugo](https://gohugo.io/) 静态站点生成器构建，使用 [hugo-theme-stack](https://github.com/CaiJimmy/hugo-theme-stack) 主题，通过 GitHub Actions 工作流实现**双平台自动部署**——推送到 `main` 分支即触发构建与发布，无需手动操作。
@@ -30,8 +30,14 @@ menu:
 2. **Git Configuration** — 关闭 `quotePath`、`autocrlf`，开启 `safecrlf`，避免中文路径与 CRLF 问题
 3. **Set up Hugo** — 通过 `peaceiris/actions-hugo@v2` 安装最新版 Hugo
 4. **Build** — `hugo -F --cleanDestinationDir` 构建并清空旧产物
-5. **Copy static and assets** — 将 `static/` 与 `assets/` 复制到 `public/en`、`public/zh-hk` 多语言目录
-6. **Deploy** — 通过 `peaceiris/actions-gh-pages@v3` 将 `./public` 推送到 `Lingjia007/Hugo_Web` 的 `master` 分支，提交信息沿用 HEAD commit message
+5. **Fix favicon path** — 将 `public/` 下所有 HTML 文件中的 `/icons/favicon.ico` 替换为 `/Hugo_Web/icons/favicon.ico`，适配 GitHub Pages 子路径：
+
+   ```bash
+   find public -name "*.html" -exec sed -i 's|href="/icons/favicon.ico"|href="/Hugo_Web/icons/favicon.ico"|g' {} +
+   ```
+
+6. **Copy static and assets** — 将 `static/` 与 `assets/` 复制到 `public/en`、`public/zh-hk` 多语言目录
+7. **Deploy** — 通过 `peaceiris/actions-gh-pages@v3` 将 `./public` 推送到 `Lingjia007/Hugo_Web` 的 `master` 分支，提交信息沿用 HEAD commit message
 
 ### Job 2：`deploy-to-netlify`
 

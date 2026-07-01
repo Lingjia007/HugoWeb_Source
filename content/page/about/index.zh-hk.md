@@ -30,8 +30,14 @@ menu:
 2. **Git Configuration** — 關閉 `quotePath`、`autocrlf`，開啟 `safecrlf`，避免中文路徑與 CRLF 問題
 3. **Set up Hugo** — 透過 `peaceiris/actions-hugo@v2` 安裝最新版 Hugo
 4. **Build** — `hugo -F --cleanDestinationDir` 構建並清空舊產物
-5. **Copy static and assets** — 將 `static/` 與 `assets/` 複製到 `public/en`、`public/zh-hk` 多語言目錄
-6. **Deploy** — 透過 `peaceiris/actions-gh-pages@v3` 將 `./public` 推送到 `Lingjia007/Hugo_Web` 的 `master` 分支，提交訊息沿用 HEAD commit message
+5. **Fix favicon path** — 將 `public/` 下所有 HTML 文件中的 `/icons/favicon.ico` 替換為 `/Hugo_Web/icons/favicon.ico`，適配 GitHub Pages 子路徑：
+
+   ```bash
+   find public -name "*.html" -exec sed -i 's|href="/icons/favicon.ico"|href="/Hugo_Web/icons/favicon.ico"|g' {} +
+   ```
+
+6. **Copy static and assets** — 將 `static/` 與 `assets/` 複製到 `public/en`、`public/zh-hk` 多語言目錄
+7. **Deploy** — 透過 `peaceiris/actions-gh-pages@v3` 將 `./public` 推送到 `Lingjia007/Hugo_Web` 的 `master` 分支，提交訊息沿用 HEAD commit message
 
 ### Job 2：`deploy-to-netlify`
 

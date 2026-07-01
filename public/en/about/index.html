@@ -400,12 +400,35 @@
 <h3 id="job-1-deploy-to-gh-pages">Job 1: <code>deploy-to-gh-pages</code>
 </h3><p>Pipeline to GitHub Pages:</p>
 <ol>
-<li><strong>Checkout</strong> — Clone source repo (with submodules, <code>fetch-depth: 0</code> to preserve full Git history for <code>lastmod</code> timestamps)</li>
-<li><strong>Git Configuration</strong> — Disable <code>quotePath</code>, <code>autocrlf</code>; enable <code>safecrlf</code> to avoid CJK path and CRLF issues</li>
-<li><strong>Set up Hugo</strong> — Install latest Hugo via <code>peaceiris/actions-hugo@v2</code></li>
-<li><strong>Build</strong> — <code>hugo -F --cleanDestinationDir</code> to build and clean stale artifacts</li>
-<li><strong>Copy static and assets</strong> — Copy <code>static/</code> and <code>assets/</code> into <code>public/en</code>, <code>public/zh-hk</code> multilingual directories</li>
-<li><strong>Deploy</strong> — Push <code>./public</code> to the <code>master</code> branch of <code>Lingjia007/Hugo_Web</code> via <code>peaceiris/actions-gh-pages@v3</code>, inheriting the HEAD commit message</li>
+<li>
+<p><strong>Checkout</strong> — Clone source repo (with submodules, <code>fetch-depth: 0</code> to preserve full Git history for <code>lastmod</code> timestamps)</p>
+</li>
+<li>
+<p><strong>Git Configuration</strong> — Disable <code>quotePath</code>, <code>autocrlf</code>; enable <code>safecrlf</code> to avoid CJK path and CRLF issues</p>
+</li>
+<li>
+<p><strong>Set up Hugo</strong> — Install latest Hugo via <code>peaceiris/actions-hugo@v2</code></p>
+</li>
+<li>
+<p><strong>Build</strong> — <code>hugo -F --cleanDestinationDir</code> to build and clean stale artifacts</p>
+</li>
+<li>
+<p><strong>Fix favicon path</strong> — Replace <code>/icons/favicon.ico</code> with <code>/Hugo_Web/icons/favicon.ico</code> in all HTML files under <code>public/</code> to adapt for GitHub Pages subpath:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">find public -name <span class="s2">&#34;*.html&#34;</span> -exec sed -i <span class="s1">&#39;s|href=&#34;/icons/favicon.ico&#34;|href=&#34;/Hugo_Web/icons/favicon.ico&#34;|g&#39;</span> <span class="o">{}</span> +
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>Copy static and assets</strong> — Copy <code>static/</code> and <code>assets/</code> into <code>public/en</code>, <code>public/zh-hk</code> multilingual directories</p>
+</li>
+<li>
+<p><strong>Deploy</strong> — Push <code>./public</code> to the <code>master</code> branch of <code>Lingjia007/Hugo_Web</code> via <code>peaceiris/actions-gh-pages@v3</code>, inheriting the HEAD commit message</p>
+</li>
 </ol>
 <h3 id="job-2-deploy-to-netlify">Job 2: <code>deploy-to-netlify</code>
 </h3><p>Pipeline to the Netlify branch. The difference is that the config must be rewritten before build to adapt the standalone domain:</p>
@@ -579,7 +602,7 @@
             
                 
             
-        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 3 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 8.11 k ></span> words
+        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 3 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 8.14 k ></span> words
     </section>
     <section class="powerby">
         Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />

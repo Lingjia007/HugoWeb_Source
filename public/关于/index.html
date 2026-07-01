@@ -400,12 +400,35 @@
 <h3 id="job-1deploy-to-gh-pages">Job 1：<code>deploy-to-gh-pages</code>
 </h3><p>推送到 GitHub Pages 的流程：</p>
 <ol>
-<li><strong>Checkout</strong> — 拉取源仓库（含子模块，<code>fetch-depth: 0</code> 保留完整 Git 历史用于 <code>lastmod</code> 时间戳）</li>
-<li><strong>Git Configuration</strong> — 关闭 <code>quotePath</code>、<code>autocrlf</code>，开启 <code>safecrlf</code>，避免中文路径与 CRLF 问题</li>
-<li><strong>Set up Hugo</strong> — 通过 <code>peaceiris/actions-hugo@v2</code> 安装最新版 Hugo</li>
-<li><strong>Build</strong> — <code>hugo -F --cleanDestinationDir</code> 构建并清空旧产物</li>
-<li><strong>Copy static and assets</strong> — 将 <code>static/</code> 与 <code>assets/</code> 复制到 <code>public/en</code>、<code>public/zh-hk</code> 多语言目录</li>
-<li><strong>Deploy</strong> — 通过 <code>peaceiris/actions-gh-pages@v3</code> 将 <code>./public</code> 推送到 <code>Lingjia007/Hugo_Web</code> 的 <code>master</code> 分支，提交信息沿用 HEAD commit message</li>
+<li>
+<p><strong>Checkout</strong> — 拉取源仓库（含子模块，<code>fetch-depth: 0</code> 保留完整 Git 历史用于 <code>lastmod</code> 时间戳）</p>
+</li>
+<li>
+<p><strong>Git Configuration</strong> — 关闭 <code>quotePath</code>、<code>autocrlf</code>，开启 <code>safecrlf</code>，避免中文路径与 CRLF 问题</p>
+</li>
+<li>
+<p><strong>Set up Hugo</strong> — 通过 <code>peaceiris/actions-hugo@v2</code> 安装最新版 Hugo</p>
+</li>
+<li>
+<p><strong>Build</strong> — <code>hugo -F --cleanDestinationDir</code> 构建并清空旧产物</p>
+</li>
+<li>
+<p><strong>Fix favicon path</strong> — 将 <code>public/</code> 下所有 HTML 文件中的 <code>/icons/favicon.ico</code> 替换为 <code>/Hugo_Web/icons/favicon.ico</code>，适配 GitHub Pages 子路径：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">find public -name <span class="s2">&#34;*.html&#34;</span> -exec sed -i <span class="s1">&#39;s|href=&#34;/icons/favicon.ico&#34;|href=&#34;/Hugo_Web/icons/favicon.ico&#34;|g&#39;</span> <span class="o">{}</span> +
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>Copy static and assets</strong> — 将 <code>static/</code> 与 <code>assets/</code> 复制到 <code>public/en</code>、<code>public/zh-hk</code> 多语言目录</p>
+</li>
+<li>
+<p><strong>Deploy</strong> — 通过 <code>peaceiris/actions-gh-pages@v3</code> 将 <code>./public</code> 推送到 <code>Lingjia007/Hugo_Web</code> 的 <code>master</code> 分支，提交信息沿用 HEAD commit message</p>
+</li>
 </ol>
 <h3 id="job-2deploy-to-netlify">Job 2：<code>deploy-to-netlify</code>
 </h3><p>推送到 Netlify 分支的流程，差异在于构建前需先改写配置以适配独立域名：</p>
@@ -581,7 +604,7 @@
             
                 
             
-        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 4 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 14.39 k ></span>字
+        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 4 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 14.45 k ></span>字
     </section>
     <section class="powerby">
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
