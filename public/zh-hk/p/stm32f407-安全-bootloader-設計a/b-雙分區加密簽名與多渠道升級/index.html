@@ -353,7 +353,20 @@
         <li><a href="#92-完整菜單樹">9.2 完整菜單樹</a></li>
       </ol>
     </li>
-    <li><a href="#十安全鏈路全景">十、安全鏈路全景</a></li>
+    <li><a href="#十安全信任鏈錨點傳播與保證">十、安全信任鏈：錨點、傳播與保證</a>
+      <ol>
+        <li><a href="#101-信任鏈全局架構">10.1 信任鏈全局架構</a></li>
+        <li><a href="#102-信任根硬體錨點">10.2 信任根：硬體錨點</a></li>
+        <li><a href="#103-第一關hmac-sha256-header-認證">10.3 第一關：HMAC-SHA256 Header 認證</a></li>
+        <li><a href="#104-第二關防回滾與硬體相容性">10.4 第二關：防回滾與硬體相容性</a></li>
+        <li><a href="#105-第三關hkdf-設備綁定密鑰派生">10.5 第三關：HKDF 設備綁定密鑰派生</a></li>
+        <li><a href="#106-第四關aes-256-解密與串流處理">10.6 第四關：AES-256 解密與串流處理</a></li>
+        <li><a href="#107-第五關ed25519-數位簽章驗證">10.7 第五關：Ed25519 數位簽章驗證</a></li>
+        <li><a href="#108-第六關sha-256-flash-回讀校驗">10.8 第六關：SHA-256 Flash 回讀校驗</a></li>
+        <li><a href="#109-ab-分區作為安全網">10.9 A/B 分區作為安全網</a></li>
+        <li><a href="#1010-信任鏈的形式化總結">10.10 信任鏈的形式化總結</a></li>
+      </ol>
+    </li>
     <li><a href="#十一源碼深入剖析">十一、源碼深入剖析</a>
       <ol>
         <li><a href="#111-mainc啟動決策主入口">11.1 main.c：啟動決策主入口</a></li>
@@ -442,7 +455,7 @@
             </div><div id="wordCount">
             <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
             <time class="article-wordcount">
-                7274  字
+                10539  字
             </time>
         </div>
 
@@ -1678,25 +1691,561 @@
   </tbody>
 </table></div>
 <hr>
-<h2 id="十安全鏈路全景">十、安全鏈路全景
-</h2><p><strong>固件包構建端：</strong></p>
+<h2 id="十安全信任鏈錨點傳播與保證">十、安全信任鏈：錨點、傳播與保證
+</h2><h3 id="101-信任鏈全局架構">10.1 信任鏈全局架構
+</h3><p>安全 Bootloader 的核心不是某個單一的加密算法，而是一條從<strong>硬體信任根</strong>出發、逐層傳遞的信任鏈。每一環的驗證成功是下一環執行的前提，任何一環失敗則整個流程中止，固件不會被寫入 Flash。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">信任根 (RoT)
+</span></span><span class="line"><span class="cl">  ├── UID (0x1FFF7A10, 出廠固化, 12B)
+</span></span><span class="line"><span class="cl">  └── DevKey (OTP, 一次性寫入, 16B)
+</span></span><span class="line"><span class="cl">       │
+</span></span><span class="line"><span class="cl">       ▼
+</span></span><span class="line"><span class="cl">第一關: HMAC-SHA256 Header 認證
+</span></span><span class="line"><span class="cl">  &#34;這個包是持有 DevKey 的人生成的嗎？&#34;
+</span></span><span class="line"><span class="cl">       │
+</span></span><span class="line"><span class="cl">       ▼
+</span></span><span class="line"><span class="cl">第二關: 硬體相容性 + 安全計數器防回滾
+</span></span><span class="line"><span class="cl">  &#34;這個包是為本硬體準備的嗎？版本沒有降級嗎？&#34;
+</span></span><span class="line"><span class="cl">       │
+</span></span><span class="line"><span class="cl">       ▼
+</span></span><span class="line"><span class="cl">第三關: HKDF 設備綁定密鑰派生
+</span></span><span class="line"><span class="cl">  AES_Key = HKDF(Salt, DevKey, UID)
+</span></span><span class="line"><span class="cl">  &#34;即使 DevKey 洩露，也只有目標設備能派生出正確的 AES 密鑰&#34;
+</span></span><span class="line"><span class="cl">       │
+</span></span><span class="line"><span class="cl">       ▼
+</span></span><span class="line"><span class="cl">第四關: AES-256 解密
+</span></span><span class="line"><span class="cl">  &#34;只有目標設備能還原出明文固件&#34;
+</span></span><span class="line"><span class="cl">       │
+</span></span><span class="line"><span class="cl">       ▼
+</span></span><span class="line"><span class="cl">第五關: Ed25519 數位簽章驗證
+</span></span><span class="line"><span class="cl">  SHA-512(Header‖Salt‖IV‖Ciphertext) → Ed25519 Verify
+</span></span><span class="line"><span class="cl">  &#34;固件內容由私鑰持有者簽發，未被篡改&#34;
+</span></span><span class="line"><span class="cl">       │
+</span></span><span class="line"><span class="cl">       ▼
+</span></span><span class="line"><span class="cl">第六關: SHA-256 Flash 回讀校驗
+</span></span><span class="line"><span class="cl">  &#34;寫入 Flash 的數據與解密輸出完全一致&#34;
+</span></span><span class="line"><span class="cl">       │
+</span></span><span class="line"><span class="cl">       ▼
+</span></span><span class="line"><span class="cl">信任終點: A/B 分區狀態轉換 (TESTING → CONFIRMED)
+</span></span><span class="line"><span class="cl">  &#34;新固件經過運行驗證後才成為正式版本&#34;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="102-信任根硬體錨點">10.2 信任根：硬體錨點
+</h3><p>信任鏈必須有不可偽造的起點。本項目的信任根由兩個硬體原語構成：</p>
+<p><strong>STM32 唯一 ID (UID)</strong></p>
+<ul>
+<li>地址：<code>0x1FFF7A10</code>，12 字節（96 位）</li>
+<li>特性：每顆芯片出廠時由 ST 燒錄，不可修改，不可擦除</li>
+<li>作用：作為 HKDF 的 <code>info</code> 參數，將密鑰派生綁定到特定芯片</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define STM32F4_UID_ADDR 0x1FFF7A10
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="c1">// 讀取方式
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">uid</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="n">STM32F4_UID_ADDR</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>設備密鑰 (DevKey)</strong></p>
+<ul>
+<li>存儲位置：STM32 OTP（One-Time Programmable）區域</li>
+<li>大小：16 字節（128 位）</li>
+<li>特性：OTP 區域只能從 0 寫為 1，一旦寫入不可修改不可擦除</li>
+<li>作用：HMAC-SHA256 認證密鑰 + HKDF 密鑰派生的輸入密鑰材料 (IKM)</li>
+</ul>
+<blockquote class="alert alert-important">
+    <p>DevKey 的 OTP 存儲是信任根的關鍵安全屬性。OTP 的「一次性寫入」語義意味著：生產線上燒錄 DevKey 後，即使攻擊者取得了 JTAG 存取權限，也無法覆蓋或修改 DevKey。這與 Flash 存儲有本質區別——Flash 可以擦除重寫，而 OTP 不行。</p></blockquote><p><strong>信任根的形式化保證</strong>：</p>
+$$\text{RoT} = \{\text{UID}_{\text{chip}}, \text{DevKey}_{\text{OTP}}\}$$<p>其中 $\text{UID}<em>{\text{chip}}$ 滿足不可偽造性（出廠固化），$\text{DevKey}</em>{\text{OTP}}$ 滿足不可修改性（OTP 語義）。</p>
+<h3 id="103-第一關hmac-sha256-header-認證">10.3 第一關：HMAC-SHA256 Header 認證
+</h3><p><strong>目的</strong>：在處理固件包的任何內容之前，首先驗證 Header 的來源可信。</p>
+<p><strong>機制</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">fw_pkg_err_t</span> <span class="nf">fw_pkg_verify_header_hmac</span><span class="p">(</span><span class="k">const</span> <span class="kt">fw_pkg_ctx_t</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                       <span class="k">const</span> <span class="kt">fw_pkg_verify_config_t</span> <span class="o">*</span><span class="n">config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">computed_hmac</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">header_prefix</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// HMAC-SHA256(DevKey, Header[0..31])  ← Header 前 32 字節
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">hmac_sha256</span><span class="p">(</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">devkey</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">devkey_len</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">header_prefix</span><span class="p">,</span> <span class="n">FW_PKG_HEADER_SIZE</span> <span class="o">-</span> <span class="n">FW_PKG_HMAC_SIZE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">computed_hmac</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 與 Header 中嵌入的 HMAC 比對
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nf">memcmp</span><span class="p">(</span><span class="n">computed_hmac</span><span class="p">,</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">header_checksum</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">FW_PKG_ERR_HMAC</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">FW_PKG_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>安全屬性</strong>：</p>
+<ul>
+<li><strong>認證性</strong>：只有持有 DevKey 的打包工具才能生成正確的 HMAC</li>
+<li><strong>選擇性</strong>：HMAC 僅覆蓋 Header，不覆蓋載荷——這是刻意設計，因為載荷的完整性由 Ed25519 簽章保證</li>
+<li><strong>早拒絕</strong>：Header 認證在讀取 Salt/IV/Ciphertext 之前執行，無效包在最小 I/O 後即被拒絕</li>
+</ul>
+<p><strong>為什麼用 HMAC 而非直接用 Ed25519 簽章 Header？</strong></p>
+<p>HMAC-SHA256 計算速度遠快於 Ed25519 簽章驗證（微秒級 vs 毫秒級），作為第一道防線可以在大量無效包的 DoS 場景下快速拒絕。Ed25519 簽章驗證放在最後，對整個包（Header + Salt + IV + Ciphertext）做完整性校驗。</p>
+<h3 id="104-第二關防回滾與硬體相容性">10.4 第二關：防回滾與硬體相容性
+</h3><p><strong>安全計數器 (security_counter)</strong></p>
+<p>每個固件包的 Header 中攜帶一個單調遞增的 <code>security_counter</code>，設備端存儲當前已確認的最大計數器值：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">fw_pkg_err_t</span> <span class="nf">fw_pkg_check_rollback</span><span class="p">(</span><span class="k">const</span> <span class="kt">fw_pkg_ctx_t</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                   <span class="k">const</span> <span class="kt">fw_pkg_verify_config_t</span> <span class="o">*</span><span class="n">config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">security_counter</span> <span class="o">&lt;</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">stored_security_counter</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 檢測到回滾！包中的計數器 &lt; 設備存儲的計數器
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="n">FW_PKG_ERR_ROLLBACK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">FW_PKG_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>防回滾的形式化保證</strong>：</p>
+<p>設設備存儲的計數器為 $c_{\text{stored}}$，固件包中的計數器為 $c_{\text{pkg}}$，則：</p>
+$$c_{\text{pkg}} \geq c_{\text{stored}} \implies \text{允許升級}$$$$c_{\text{pkg}} < c_{\text{stored}} \implies \text{拒絕（回滾攻擊）}$$<p><strong>硬體相容性</strong>：<code>hardware_compat</code> 欄位確保固件包與目標硬體匹配，防止將不相容的固件寫入設備導致功能異常。</p>
+<h3 id="105-第三關hkdf-設備綁定密鑰派生">10.5 第三關：HKDF 設備綁定密鑰派生
+</h3><p>這是整個安全體系最核心的設計——<strong>設備綁定加密</strong>。即使攻擊者截獲了固件包和 DevKey，沒有目標設備的 UID 也無法解密。</p>
+<p><strong>HKDF (HMAC-based Extract-and-Expand Key Derivation Function, RFC 5869)</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AES_Key = HKDF(
+</span></span><span class="line"><span class="cl">    salt     = DynamicSalt,    // 16 字節，每個固件包隨機生成
+</span></span><span class="line"><span class="cl">    IKM      = DevKey,         // 16 字節，存儲在 OTP 中
+</span></span><span class="line"><span class="cl">    info     = UID,            // 12 字節，STM32 唯一 ID
+</span></span><span class="line"><span class="cl">    key_len  = 32 字節         // AES-256 密鑰長度
+</span></span><span class="line"><span class="cl">)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>HKDF 分兩階段工作：</p>
 <ol>
-<li>原始固件 → SHA256（附加到末尾）</li>
-<li>→ AES-256 加密</li>
-<li>→ Ed25519 簽名</li>
-<li>→ <code>.iap.bin</code></li>
+<li><strong>Extract（提取）</strong>：<code>PRK = HMAC-Hash(salt, IKM)</code> — 將 DevKey 的熵提取到偽隨機密鑰 PRK 中</li>
+<li><strong>Expand（擴展）</strong>：<code>OKM = HMAC-Hash(PRK, info ∥ 0x01)</code> — 將 PRK 擴展為指定長度的輸出密鑰，info（即 UID）確保不同設備得到不同的密鑰</li>
 </ol>
-<p><strong>設備端驗證：</strong></p>
-<ol>
-<li><code>.iap.bin</code> → HMAC-SHA256 驗證（DevKey）</li>
-<li>→ 硬件兼容檢查</li>
-<li>→ 防回滾檢查</li>
-<li>→ HKDF 派生 AES 密鑰（Salt + DevKey + UID）</li>
-<li>→ AES 解密 → 寫入 Flash</li>
-<li>→ SHA-512 流式哈希 → Ed25519 簽名驗證</li>
-<li>→ 回讀 Flash SHA-256 校驗</li>
-</ol>
-<p>完整的安全鏈路形成了 <strong>信任鏈</strong>：HMAC 保證包來源可信 → 加密保證內容機密 → 簽名保證完整性 → 防回滾保證版本不可降級 → SHA256 回讀校驗保證 Flash 寫入正確。</p>
+<p><strong>設備綁定的安全性分析</strong>：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>攻擊場景</th>
+          <th>攻擊者擁有</th>
+          <th>能否解密？</th>
+          <th>原因</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>截獲固件包</td>
+          <td>Salt, IV, Ciphertext</td>
+          <td>否</td>
+          <td>沒有 DevKey 和 UID，無法派生 AES_Key</td>
+      </tr>
+      <tr>
+          <td>截獲固件包 + DevKey</td>
+          <td>Salt, IV, Ciphertext, DevKey</td>
+          <td>否</td>
+          <td>沒有 UID，HKDF(info) 輸出不同</td>
+      </tr>
+      <tr>
+          <td>同 DevKey 不同設備</td>
+          <td>Salt, IV, Ciphertext, DevKey, UID_B</td>
+          <td>否</td>
+          <td>UID_B ≠ UID_A，派生的 AES_Key 不同</td>
+      </tr>
+      <tr>
+          <td>目標設備本身</td>
+          <td>Salt, IV, Ciphertext, DevKey, UID</td>
+          <td><strong>是</strong></td>
+          <td>三要素齊全，正確派生 AES_Key</td>
+      </tr>
+  </tbody>
+</table></div>
+<p><strong>DynamicSalt 的作用</strong>：每包隨機生成的 16 字節鹽值，使得即使對同一設備推送相同固件，兩次派生的 AES 密鑰也不同，消除密鑰復用風險。</p>
+<h3 id="106-第四關aes-256-解密與串流處理">10.6 第四關：AES-256 解密與串流處理
+</h3><p>支援三種加密模式，根據 Header 中的 <code>encryption_algo</code> 欄位選擇：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>模式</th>
+          <th>常量</th>
+          <th>特點</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>AES-256-CBC</td>
+          <td><code>FW_PKG_ENC_AES256_CBC</code></td>
+          <td>最常用，PKCS7 填充，需 IV</td>
+      </tr>
+      <tr>
+          <td>AES-256-CTR</td>
+          <td><code>FW_PKG_ENC_AES256_CTR</code></td>
+          <td>串流友好，無需填充</td>
+      </tr>
+      <tr>
+          <td>AES-256-ECB</td>
+          <td><code>FW_PKG_ENC_AES256_ECB</code></td>
+          <td>不推薦，僅用於相容</td>
+      </tr>
+  </tbody>
+</table></div>
+<p><strong>串流解密寫入</strong>：固件包可能遠大於可用 RAM，因此採用 4KB 緩衝區循環處理：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">uint8_t</span> <span class="n">process_buf</span><span class="p">[</span><span class="mi">4096</span><span class="p">]</span> <span class="nf">__attribute__</span><span class="p">((</span><span class="nf">aligned</span><span class="p">(</span><span class="mi">4</span><span class="p">)));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="n">ciphertext_remaining</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">to_read</span> <span class="o">=</span> <span class="nf">MIN</span><span class="p">(</span><span class="n">ciphertext_remaining</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">process_buf</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">process_buf</span><span class="p">,</span> <span class="n">to_read</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bytes_read</span><span class="p">);</span>   <span class="c1">// 讀密文
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">fw_pkg_decrypt_payload</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span> <span class="n">process_buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">,</span>      <span class="c1">// AES 解密
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                           <span class="n">is_final</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">actual_len</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">TARGET_WRITE</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">flash_offset</span><span class="p">,</span> <span class="n">process_buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">);</span> <span class="c1">// 寫 Flash
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">flash_offset</span> <span class="o">+=</span> <span class="n">bytes_read</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ciphertext_remaining</span> <span class="o">-=</span> <span class="n">bytes_read</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>關鍵安全屬性</strong>：AES 密鑰（<code>aes_key[32]</code>）是運行時通過 HKDF 派生的局部變量，函式返回後即從棧上消失，<strong>不持久化存儲</strong>。即使攻擊者隨後取得了設備存取權限，也無法從記憶體中找到 AES 密鑰。</p>
+<h3 id="107-第五關ed25519-數位簽章驗證">10.7 第五關：Ed25519 數位簽章驗證
+</h3><p>Ed25519 是 Bernstein 等人設計的 Curve25519 上的數位簽章方案，提供 128 位安全強度。</p>
+<p><strong>簽章範圍</strong>：Ed25519 簽章覆蓋整個固件包的明文部分：</p>
+$$\text{hash} = \text{SHA-512}(\text{Header} \| \text{Salt} \| \text{IV} \| \text{Ciphertext})$$$$\text{Verify}_{\text{PK}}(\text{signature}, \text{hash}) \stackrel{?}{=} \text{true}$$<p><strong>串流 SHA-512 計算</strong>：由於固件包可能很大，SHA-512 採用串流更新：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">sha512_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sig_state</span><span class="p">);</span>  <span class="c1">// 在讀取 Header 之前初始化
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 每讀入一塊數據，餵入 SHA-512
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">fw_pkg_sha512_feed</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sig_state</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">pending</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pending_len</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 所有數據讀完後，計算最終哈希
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">fw_pkg_sha512_finish</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sig_state</span><span class="p">,</span> <span class="n">pending</span><span class="p">,</span> <span class="n">pending_len</span><span class="p">,</span> <span class="n">total_len</span><span class="p">,</span> <span class="n">hash</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Ed25519 驗證
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">edsign_verify</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">ed25519_pubkey</span><span class="p">,</span> <span class="n">hash</span><span class="p">,</span> <span class="mi">64</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>簽章 vs HMAC 的互補關係</strong>：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>屬性</th>
+          <th>HMAC-SHA256</th>
+          <th>Ed25519</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>密鑰類型</td>
+          <td>對稱密鑰 (DevKey)</td>
+          <td>非對稱密鑰對</td>
+      </tr>
+      <tr>
+          <td>驗證範圍</td>
+          <td>僅 Header</td>
+          <td>Header + Salt + IV + Ciphertext</td>
+      </tr>
+      <tr>
+          <td>驗證速度</td>
+          <td>快（微秒級）</td>
+          <td>慢（毫秒級）</td>
+      </tr>
+      <tr>
+          <td>安全保證</td>
+          <td>來源認證</td>
+          <td>來源認證 + 完整性</td>
+      </tr>
+      <tr>
+          <td>密鑰分發</td>
+          <td>DevKey 預共享</td>
+          <td>公鑰硬編碼，私鑰離線保存</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>HMAC 使用對稱密鑰，意味著持有 DevKey 的人（打包工具和設備）都能生成有效 HMAC。Ed25519 使用非對稱密鑰，<strong>只有持有私鑰的人才能簽章</strong>，設備端僅持有公鑰用於驗證。這確保了即使 DevKey 洩露，攻擊者也無法偽造有效的 Ed25519 簽章。</p>
+<p><strong>公鑰存儲</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="k">const</span> <span class="kt">uint8_t</span> <span class="n">FW_PKG_ED25519_PUBLIC_KEY</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="mh">0xc2</span><span class="p">,</span> <span class="mh">0xe9</span><span class="p">,</span> <span class="mh">0xbf</span><span class="p">,</span> <span class="mh">0x62</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x92</span><span class="p">,</span> <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>公鑰硬編碼在 Bootloader 固件中，作為 Ed25519 驗證的信任錨。對應的私鑰只存在於離線的固件簽章伺服器上，永不部署到設備端。</p>
+<h3 id="108-第六關sha-256-flash-回讀校驗">10.8 第六關：SHA-256 Flash 回讀校驗
+</h3><p>前五關保證了「收到的包是可信的」和「解密出的固件是正確的」，但 Flash 寫入可能因硬體故障導致位翻轉。第六關通過回讀驗證寫入的正確性：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 解密完成後，回讀整個 Flash 區域並計算 SHA-256
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">sha256_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">firmware_size</span><span class="p">;</span> <span class="n">offset</span> <span class="o">+=</span> <span class="n">chunk</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">TARGET_READ</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">process_buf</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bytes_read</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sha256_update</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">,</span> <span class="n">process_buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nf">sha256_final</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">,</span> <span class="n">computed_sha256</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 與固件末尾內嵌的 SHA-256 比對
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span> <span class="p">(</span><span class="nf">memcmp</span><span class="p">(</span><span class="n">computed_sha256</span><span class="p">,</span> <span class="n">stored_sha256</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;  Result: MATCH</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;  Result: MISMATCH!</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>這一關提供 <strong>端到端完整性保證</strong>：從打包工具的 SHA-256 嵌入，到寫入 Flash，再到回讀驗證，構成了完整的數據完整性閉環。</p>
+<h3 id="109-ab-分區作為安全網">10.9 A/B 分區作為安全網
+</h3><p>信任鏈的終點不是「固件寫入成功」，而是「固件運行正常」。A/B 分區提供了運行時驗證的安全網：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">新固件寫入非活動分區
+</span></span><span class="line"><span class="cl">  ├── 狀態設為 TESTING
+</span></span><span class="line"><span class="cl">  ├── boot_attempts = 0
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ▼
+</span></span><span class="line"><span class="cl">啟動新固件
+</span></span><span class="line"><span class="cl">  ├── 運行正常 → App 調用 ab_partition_mark_slot_confirmed()
+</span></span><span class="line"><span class="cl">  │                 狀態轉為 CONFIRMED
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  └── 運行異常
+</span></span><span class="line"><span class="cl">      ├── boot_attempts 遞增
+</span></span><span class="line"><span class="cl">      ├── boot_attempts &gt;= 3 → 自動回滾到舊分區
+</span></span><span class="line"><span class="cl">      └── SP 驗證失敗 → 立即回滾
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>ab_partition_validate_slot()</code> 的雙重檢查：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">ab_err_t</span> <span class="nf">ab_partition_validate_slot</span><span class="p">(</span><span class="kt">ab_slot_t</span> <span class="n">slot</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">sp</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">__IO</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="n">addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">ab_is_valid_sp</span><span class="p">(</span><span class="n">sp</span><span class="p">))</span>           <span class="c1">// 1. 棧指針必須在 SRAM 範圍內
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="n">AB_ERR_SLOT_INVALID_FW</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">reset_handler</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">__IO</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)(</span><span class="n">addr</span> <span class="o">+</span> <span class="mi">4</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">reset_handler</span> <span class="o">&lt;</span> <span class="n">addr</span> <span class="o">||</span>        <span class="c1">// 2. ResetHandler 必須落在本分區地址範圍內
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">reset_handler</span> <span class="o">&gt;</span> <span class="n">end_addr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">AB_ERR_SLOT_INVALID_FW</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">AB_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="1010-信任鏈的形式化總結">10.10 信任鏈的形式化總結
+</h3><p>整個信任鏈可以表示為一個驗證函式的鏈式組合，每個函式的成功是下一個函式執行的前提：</p>
+$$V_{\text{total}} = V_{\text{HMAC}} \circ V_{\text{compat}} \circ V_{\text{rollback}} \circ V_{\text{HKDF}} \circ V_{\text{AES}} \circ V_{\text{Ed25519}} \circ V_{\text{SHA256}} \circ V_{\text{A/B}}$$<p>其中每個 $V_i$ 的輸出為 ${\text{PASS}, \text{FAIL}}$，且：</p>
+$$V_{\text{total}} = \text{PASS} \iff \forall i, V_i = \text{PASS}$$<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>驗證環節</th>
+          <th>安全屬性</th>
+          <th>攻擊防護</th>
+          <th>信任根依賴</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>HMAC-SHA256</td>
+          <td>來源認證</td>
+          <td>偽造 Header</td>
+          <td>DevKey</td>
+      </tr>
+      <tr>
+          <td>硬體相容</td>
+          <td>正確性</td>
+          <td>錯誤硬體刷寫</td>
+          <td>無（明文比對）</td>
+      </tr>
+      <tr>
+          <td>安全計數器</td>
+          <td>版本單調性</td>
+          <td>回滾攻擊</td>
+          <td>stored_counter</td>
+      </tr>
+      <tr>
+          <td>HKDF</td>
+          <td>設備綁定</td>
+          <td>跨設備解密</td>
+          <td>DevKey + UID</td>
+      </tr>
+      <tr>
+          <td>AES-256</td>
+          <td>機密性</td>
+          <td>固件竊取</td>
+          <td>HKDF 派生密鑰</td>
+      </tr>
+      <tr>
+          <td>Ed25519</td>
+          <td>完整性 + 認證</td>
+          <td>內容篡改</td>
+          <td>Ed25519 公鑰</td>
+      </tr>
+      <tr>
+          <td>SHA-256 回讀</td>
+          <td>寫入完整性</td>
+          <td>Flash 位翻轉</td>
+          <td>無（回讀比對）</td>
+      </tr>
+      <tr>
+          <td>A/B 分區</td>
+          <td>可用性</td>
+          <td>變磚攻擊</td>
+          <td>SP + ResetHandler</td>
+      </tr>
+  </tbody>
+</table></div>
 <hr>
 <h2 id="十一源碼深入剖析">十一、源碼深入剖析
 </h2><h3 id="111-mainc啟動決策主入口">11.1 main.c：啟動決策主入口
@@ -2535,7 +3084,7 @@
             
                 
             
-        本網站已穩定運行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;總計<span id="articleCount">&lt; 4 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 19.17 k ></span>字
+        本網站已穩定運行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;總計<span id="articleCount">&lt; 4 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 23.86 k ></span>字
     </section>
     <section class="powerby">
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 構建 <br />

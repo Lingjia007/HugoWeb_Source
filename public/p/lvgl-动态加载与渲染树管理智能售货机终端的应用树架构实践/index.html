@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="基于 ArtInChip + LVGL v8 + RT-Thread 的智能售货机终端，深入剖析应用树（layout_node）如何管理 LVGL 渲染树，涵盖组合模式双树映射、Wrap 桥接机制、策略驱动的 Flex/Grid 布局、控件工厂动态创建、事件驱动热更新、静态骨架到动态组件的替换流程等核心技术详解">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="基于 ArtInChip + LVGL v9 + RT-Thread 的智能售货机终端，深入剖析应用树（layout_node）如何管理 LVGL 渲染树，涵盖组合模式双树映射、Wrap 桥接机制、策略驱动的 Flex/Grid 布局、控件工厂动态创建、事件驱动热更新、静态骨架到动态组件的替换流程等核心技术详解">
 <title>LVGL 动态加载与渲染树管理：智能售货机终端的应用树架构实践</title>
 
 <link rel='canonical' href='http://localhost:1313/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="LVGL 动态加载与渲染树管理：智能售货机终端的应用树架构实践">
-<meta property='og:description' content="基于 ArtInChip + LVGL v8 + RT-Thread 的智能售货机终端，深入剖析应用树（layout_node）如何管理 LVGL 渲染树，涵盖组合模式双树映射、Wrap 桥接机制、策略驱动的 Flex/Grid 布局、控件工厂动态创建、事件驱动热更新、静态骨架到动态组件的替换流程等核心技术详解">
+<meta property='og:description' content="基于 ArtInChip + LVGL v9 + RT-Thread 的智能售货机终端，深入剖析应用树（layout_node）如何管理 LVGL 渲染树，涵盖组合模式双树映射、Wrap 桥接机制、策略驱动的 Flex/Grid 布局、控件工厂动态创建、事件驱动热更新、静态骨架到动态组件的替换流程等核心技术详解">
 <meta property='og:url' content='http://localhost:1313/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/'>
 <meta property='og:site_name' content='lingsir007'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='售货机' /><meta property='article:tag' content='嵌入式UI' /><meta property='article:tag' content='设计模式' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T20:49:06&#43;08:00'/>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='售货机' /><meta property='article:tag' content='嵌入式UI' /><meta property='article:tag' content='设计模式' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T21:42:26&#43;08:00'/><meta property='og:image' content='http://localhost:1313/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
 <meta name="twitter:title" content="LVGL 动态加载与渲染树管理：智能售货机终端的应用树架构实践">
-<meta name="twitter:description" content="基于 ArtInChip + LVGL v8 + RT-Thread 的智能售货机终端，深入剖析应用树（layout_node）如何管理 LVGL 渲染树，涵盖组合模式双树映射、Wrap 桥接机制、策略驱动的 Flex/Grid 布局、控件工厂动态创建、事件驱动热更新、静态骨架到动态组件的替换流程等核心技术详解">
+<meta name="twitter:description" content="基于 ArtInChip + LVGL v9 + RT-Thread 的智能售货机终端，深入剖析应用树（layout_node）如何管理 LVGL 渲染树，涵盖组合模式双树映射、Wrap 桥接机制、策略驱动的 Flex/Grid 布局、控件工厂动态创建、事件驱动热更新、静态骨架到动态组件的替换流程等核心技术详解"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='http://localhost:1313/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
     <link rel="shortcut icon" href="/icons/favicon.ico" />
 
     </head>
@@ -391,8 +392,20 @@
 
 
             <main class="main full-width">
-    <article class="main-article">
+    <article class="has-image main-article">
     <header class="article-header">
+        <div class="article-image">
+            <a href="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/">
+                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal_hu_9fb179408923df1d.png"
+                        srcset="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal_hu_9fb179408923df1d.png 800w, /Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal_hu_c1e903136d18411.png 1600w"
+                        width="800" 
+                        height="415" 
+                        loading="lazy"
+                        alt="Featured image of post LVGL 动态加载与渲染树管理：智能售货机终端的应用树架构实践" />
+                
+            </a>
+        </div>
+    
 
     <div class="article-details">
     
@@ -412,7 +425,7 @@
     
         
         <h3 class="article-subtitle">
-            基于 ArtInChip &#43; LVGL v8 &#43; RT-Thread 的智能售货机终端，深入剖析应用树（layout_node）如何管理 LVGL 渲染树，涵盖组合模式双树映射、Wrap 桥接机制、策略驱动的 Flex/Grid 布局、控件工厂动态创建、事件驱动热更新、静态骨架到动态组件的替换流程等核心技术详解
+            基于 ArtInChip &#43; LVGL v9 &#43; RT-Thread 的智能售货机终端，深入剖析应用树（layout_node）如何管理 LVGL 渲染树，涵盖组合模式双树映射、Wrap 桥接机制、策略驱动的 Flex/Grid 布局、控件工厂动态创建、事件驱动热更新、静态骨架到动态组件的替换流程等核心技术详解
         </h3>
         
     </div>
@@ -438,7 +451,7 @@
         <div class="article-lastmod">
                 <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M10 18l5 -5a1.414 1.414 0 0 0 -2 -2l-5 5v2h2z" /></svg>
                 <time>
-                    Jul 02, 2026 20:49 CST
+                    Jul 02, 2026 21:42 CST
                 </time>
             </div><div id="wordCount">
             <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
@@ -491,7 +504,7 @@
     
     <h2 id="前言">前言
 </h2><p>LVGL 作为嵌入式领域最活跃的图形库，其核心是一个树形的<strong>渲染树</strong>（<code>lv_obj_t</code> 对象树），所有可见控件都是这棵树的节点。但在实际业务中，直接操作渲染树面临诸多问题：<strong>静态布局无法动态更新</strong>、<strong>控件生命周期难以统一管理</strong>、<strong>组件间耦合紧密</strong>。</p>
-<p>本文以一个基于 <strong>ArtInChip + LVGL v8 + RT-Thread</strong> 的智能售货机终端为实践载体，深入剖析如何在 LVGL 渲染树之上构建一层<strong>应用树</strong>（<code>layout_node</code> 框架），通过组合模式、工厂模式、策略模式和发布-订阅模式的协同，实现 UI 的动态加载、热更新和生命周期管理。</p>
+<p>本文以一个基于 <strong>ArtInChip + LVGL v9 + RT-Thread</strong> 的智能售货机终端为实践载体，深入剖析如何在 LVGL 渲染树之上构建一层<strong>应用树</strong>（<code>layout_node</code> 框架），通过组合模式、工厂模式、策略模式和发布-订阅模式的协同，实现 UI 的动态加载、热更新和生命周期管理。</p>
 <hr>
 <h2 id="一双树架构渲染树-vs-应用树">一、双树架构：渲染树 vs 应用树
 </h2><h3 id="11-问题背景">1.1 问题背景
@@ -1897,7 +1910,7 @@
 
 
         <span>
-            最后更新于 Jul 02, 2026 20:49 CST
+            最后更新于 Jul 02, 2026 21:42 CST
         </span>
     </section></footer>
 
@@ -1948,7 +1961,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_f8913fdcd1a8711e.png" 
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9.bce3b53e3d529bb9662f75f33ad529b9_hu_f8913fdcd1a8711e.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -1972,7 +1985,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_989a706e6c4dfa57.png" 
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346.7c8335e5345c22f2e144305e64572346_hu_989a706e6c4dfa57.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -2032,7 +2045,7 @@
             
                 
             
-        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 5 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 21.05 k ></span>字
+        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 5 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 24.36 k ></span>字
     </section>
     <section class="powerby">
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />

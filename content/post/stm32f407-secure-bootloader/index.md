@@ -489,26 +489,328 @@ Bootloader 提供了功能丰富的交互式菜单，通过 UART4 访问。所�
 
 ---
 
-## 十、安全链路全景
+## 十、安全信任链：锚点、传播与保证
 
-**固件包构建端：**
+### 10.1 信任链全局架构
 
-1. 原始固件 → SHA256（附加到末尾）
-2. → AES-256 加密
-3. → Ed25519 签名
-4. → `.iap.bin`
+安全 Bootloader 的核心不是某个单一的加密算法，而是一条从**硬件信任根**出发、逐层传递的信任链。每一环的验证成功是下一环执行的前提，任何一环失败则整个流程中止，固件不会被写入 Flash。
 
-**设备端验证：**
+```
+信任根 (RoT)
+  ├── UID (0x1FFF7A10, 出厂固化, 12B)
+  └── DevKey (OTP, 一次性写入, 16B)
+       │
+       ▼
+第一关: HMAC-SHA256 Header 认证
+  "这个包是持有 DevKey 的人生成的吗？"
+       │
+       ▼
+第二关: 硬件兼容性 + 安全计数器防回滚
+  "这个包是为本硬件准备的吗？版本没有降级吗？"
+       │
+       ▼
+第三关: HKDF 设备绑定密钥派生
+  AES_Key = HKDF(Salt, DevKey, UID)
+  "即使 DevKey 泄露，也只有目标设备能派生出正确的 AES 密钥"
+       │
+       ▼
+第四关: AES-256 解密
+  "只有目标设备能还原出明文固件"
+       │
+       ▼
+第五关: Ed25519 数字签名验证
+  SHA-512(Header‖Salt‖IV‖Ciphertext) → Ed25519 Verify
+  "固件内容由私钥持有者签发，未被篡改"
+       │
+       ▼
+第六关: SHA-256 Flash 回读校验
+  "写入 Flash 的数据与解密输出完全一致"
+       │
+       ▼
+信任终点: A/B 分区状态转换 (TESTING → CONFIRMED)
+  "新固件经过运行验证后才成为正式版本"
+```
 
-1. `.iap.bin` → HMAC-SHA256 验证（DevKey）
-2. → 硬件兼容检查
-3. → 防回滚检查
-4. → HKDF 派生 AES 密钥（Salt + DevKey + UID）
-5. → AES 解密 → 写入 Flash
-6. → SHA-512 流式哈希 → Ed25519 签名验证
-7. → 回读 Flash SHA-256 校验
+### 10.2 信任根：硬件锚点
 
-完整的安全链路形成了 **信任链**：HMAC 保证包来源可信 → 加密保证内容机密 → 签名保证完整性 → 防回滚保证版本不可降级 → SHA256 回读校验保证 Flash 写入正确。
+信任链必须有不可伪造的起点。本项目的信任根由两个硬件原语构成：
+
+**STM32 唯一 ID (UID)**
+
+- 地址：`0x1FFF7A10`，12 字节（96 位）
+- 特性：每颗芯片出厂时由 ST 烧录，不可修改，不可擦除
+- 作用：作为 HKDF 的 `info` 参数，将密钥派生绑定到特定芯片
+
+```c
+#define STM32F4_UID_ADDR 0x1FFF7A10
+// 读取方式
+const uint8_t *uid = (const uint8_t *)STM32F4_UID_ADDR;
+```
+
+**设备密钥 (DevKey)**
+
+- 存储位置：STM32 OTP（One-Time Programmable）区域
+- 大小：16 字节（128 位）
+- 特性：OTP 区域只能从 0 写为 1，一旦写入不可修改不可擦除
+- 作用：HMAC-SHA256 认证密钥 + HKDF 密钥派生的输入密钥材料 (IKM)
+
+> [!IMPORTANT]
+> DevKey 的 OTP 存储是信任根的关键安全属性。OTP 的"一次性写入"语义意味着：生产线上烧录 DevKey 后，即使攻击者获得了 JTAG 访问权限，也无法覆盖或修改 DevKey。这与 Flash 存储有本质区别——Flash 可以擦除重写，而 OTP 不行。
+
+**信任根的形式化保证**：
+
+$$\text{RoT} = \{\text{UID}_{\text{chip}}, \text{DevKey}_{\text{OTP}}\}$$
+
+其中 $\text{UID}_{\text{chip}}$ 满足不可伪造性（出厂固化），$\text{DevKey}_{\text{OTP}}$ 满足不可修改性（OTP 语义）。
+
+### 10.3 第一关：HMAC-SHA256 Header 认证
+
+**目的**：在处理固件包的任何内容之前，首先验证 Header 的来源可信。
+
+**机制**：
+
+```c
+fw_pkg_err_t fw_pkg_verify_header_hmac(const fw_pkg_ctx_t *ctx,
+                                       const fw_pkg_verify_config_t *config)
+{
+    uint8_t computed_hmac[32];
+    const uint8_t *header_prefix = (const uint8_t *)&ctx->header;
+
+    // HMAC-SHA256(DevKey, Header[0..31])  ← Header 前 32 字节
+    hmac_sha256(config->devkey, config->devkey_len,
+                header_prefix, FW_PKG_HEADER_SIZE - FW_PKG_HMAC_SIZE,
+                computed_hmac);
+
+    // 与 Header 中嵌入的 HMAC 比对
+    if (memcmp(computed_hmac, ctx->header.header_checksum, 32) != 0)
+        return FW_PKG_ERR_HMAC;
+
+    return FW_PKG_OK;
+}
+```
+
+**安全属性**：
+
+- **认证性**：只有持有 DevKey 的打包工具才能生成正确的 HMAC
+- **选择性**：HMAC 仅覆盖 Header，不覆盖载荷——这是刻意设计，因为载荷的完整性由 Ed25519 签名保证
+- **早拒绝**：Header 认证在读取 Salt/IV/Ciphertext 之前执行，无效包在最小 I/O 后即被拒绝
+
+**为什么用 HMAC 而非直接用 Ed25519 签名 Header？**
+
+HMAC-SHA256 计算速度远快于 Ed25519 签名验证（微秒级 vs 毫秒级），作为第一道防线可以在大量无效包的 DoS 场景下快速拒绝。Ed25519 签名验证放在最后，对整个包（Header + Salt + IV + Ciphertext）做完整性校验。
+
+### 10.4 第二关：防回滚与硬件兼容性
+
+**安全计数器 (security_counter)**
+
+每个固件包的 Header 中携带一个单调递增的 `security_counter`，设备端存储当前已确认的最大计数器值：
+
+```c
+fw_pkg_err_t fw_pkg_check_rollback(const fw_pkg_ctx_t *ctx,
+                                   const fw_pkg_verify_config_t *config)
+{
+    if (ctx->header.security_counter < config->stored_security_counter)
+    {
+        // 检测到回滚！包中的计数器 < 设备存储的计数器
+        return FW_PKG_ERR_ROLLBACK;
+    }
+    return FW_PKG_OK;
+}
+```
+
+**防回滚的形式化保证**：
+
+设设备存储的计数器为 $c_{\text{stored}}$，固件包中的计数器为 $c_{\text{pkg}}$，则：
+
+$$c_{\text{pkg}} \geq c_{\text{stored}} \implies \text{允许升级}$$
+$$c_{\text{pkg}} < c_{\text{stored}} \implies \text{拒绝（回滚攻击）}$$
+
+**硬件兼容性**：`hardware_compat` 字段确保固件包与目标硬件匹配，防止将不兼容的固件写入设备导致功能异常。
+
+### 10.5 第三关：HKDF 设备绑定密钥派生
+
+这是整个安全体系最核心的设计——**设备绑定加密**。即使攻击者截获了固件包和 DevKey，没有目标设备的 UID 也无法解密。
+
+**HKDF (HMAC-based Extract-and-Expand Key Derivation Function, RFC 5869)**
+
+```
+AES_Key = HKDF(
+    salt     = DynamicSalt,    // 16 字节，每个固件包随机生成
+    IKM      = DevKey,         // 16 字节，存储在 OTP 中
+    info     = UID,            // 12 字节，STM32 唯一 ID
+    key_len  = 32 字节         // AES-256 密钥长度
+)
+```
+
+HKDF 分两阶段工作：
+
+1. **Extract（提取）**：`PRK = HMAC-Hash(salt, IKM)` — 将 DevKey 的熵提取到伪随机密钥 PRK 中
+2. **Expand（扩展）**：`OKM = HMAC-Hash(PRK, info ∥ 0x01)` — 将 PRK 扩展为指定长度的输出密钥，info（即 UID）确保不同设备得到不同的密钥
+
+**设备绑定的安全性分析**：
+
+| 攻击场景 | 攻击者拥有 | 能否解密？ | 原因 |
+|----------|-----------|-----------|------|
+| 截获固件包 | Salt, IV, Ciphertext | 否 | 没有 DevKey 和 UID，无法派生 AES_Key |
+| 截获固件包 + DevKey | Salt, IV, Ciphertext, DevKey | 否 | 没有 UID，HKDF(info) 输出不同 |
+| 同 DevKey 不同设备 | Salt, IV, Ciphertext, DevKey, UID_B | 否 | UID_B ≠ UID_A，派生的 AES_Key 不同 |
+| 目标设备本身 | Salt, IV, Ciphertext, DevKey, UID | **是** | 三要素齐全，正确派生 AES_Key |
+
+**DynamicSalt 的作用**：每包随机生成的 16 字节盐值，使得即使对同一设备推送相同固件，两次派生的 AES 密钥也不同，消除密钥复用风险。
+
+### 10.6 第四关：AES-256 解密与流式处理
+
+支持三种加密模式，根据 Header 中的 `encryption_algo` 字段选择：
+
+| 模式 | 常量 | 特点 |
+|------|------|------|
+| AES-256-CBC | `FW_PKG_ENC_AES256_CBC` | 最常用，PKCS7 填充，需 IV |
+| AES-256-CTR | `FW_PKG_ENC_AES256_CTR` | 流式友好，无需填充 |
+| AES-256-ECB | `FW_PKG_ENC_AES256_ECB` | 不推荐，仅用于兼容 |
+
+**流式解密写入**：固件包可能远大于可用 RAM，因此采用 4KB 缓冲区循环处理：
+
+```c
+static uint8_t process_buf[4096] __attribute__((aligned(4)));
+
+while (ciphertext_remaining > 0) {
+    uint32_t to_read = MIN(ciphertext_remaining, sizeof(process_buf));
+    SOURCE_READ(source, process_buf, to_read, &bytes_read);   // 读密文
+    fw_pkg_decrypt_payload(&ctx, process_buf, bytes_read,      // AES 解密
+                           is_final, &actual_len);
+    TARGET_WRITE(target, flash_offset, process_buf, bytes_read); // 写 Flash
+    flash_offset += bytes_read;
+    ciphertext_remaining -= bytes_read;
+}
+```
+
+**关键安全属性**：AES 密钥（`aes_key[32]`）是运行时通过 HKDF 派生的局部变量，函数返回后即从栈上消失，**不持久化存储**。即使攻击者随后获得了设备访问权限，也无法从内存中找到 AES 密钥。
+
+### 10.7 第五关：Ed25519 数字签名验证
+
+Ed25519 是 Bernstein 等人设计的 Curve25519 上的数字签名方案，提供 128 位安全强度。
+
+**签名范围**：Ed25519 签名覆盖整个固件包的明文部分：
+
+$$\text{hash} = \text{SHA-512}(\text{Header} \| \text{Salt} \| \text{IV} \| \text{Ciphertext})$$
+$$\text{Verify}_{\text{PK}}(\text{signature}, \text{hash}) \stackrel{?}{=} \text{true}$$
+
+**流式 SHA-512 计算**：由于固件包可能很大，SHA-512 采用流式更新：
+
+```c
+sha512_init(&sig_state);  // 在读取 Header 之前初始化
+
+// 每读入一块数据，喂入 SHA-512
+fw_pkg_sha512_feed(&sig_state, data, len, pending, &pending_len);
+
+// 所有数据读完后，计算最终哈希
+fw_pkg_sha512_finish(&sig_state, pending, pending_len, total_len, hash);
+
+// Ed25519 验证
+edsign_verify(signature, ed25519_pubkey, hash, 64);
+```
+
+**签名 vs HMAC 的互补关系**：
+
+| 属性 | HMAC-SHA256 | Ed25519 |
+|------|-------------|---------|
+| 密钥类型 | 对称密钥 (DevKey) | 非对称密钥对 |
+| 验证范围 | 仅 Header | Header + Salt + IV + Ciphertext |
+| 验证速度 | 快（微秒级） | 慢（毫秒级） |
+| 安全保证 | 来源认证 | 来源认证 + 完整性 |
+| 密钥分发 | DevKey 预共享 | 公钥硬编码，私钥离线保存 |
+
+HMAC 使用对称密钥，意味着持有 DevKey 的人（打包工具和设备）都能生成有效 HMAC。Ed25519 使用非对称密钥，**只有持有私钥的人才能签名**，设备端仅持有公钥用于验证。这确保了即使 DevKey 泄露，攻击者也无法伪造有效的 Ed25519 签名。
+
+**公钥存储**：
+
+```c
+static const uint8_t FW_PKG_ED25519_PUBLIC_KEY[32] = {
+    0xc2, 0xe9, 0xbf, 0x62, 0x02, 0x92, ...
+};
+```
+
+公钥硬编码在 Bootloader 固件中，作为 Ed25519 验证的信任锚。对应的私钥只存在于离线的固件签名服务器上，永不部署到设备端。
+
+### 10.8 第六关：SHA-256 Flash 回读校验
+
+前五关保证了"收到的包是可信的"和"解密出的固件是正确的"，但 Flash 写入可能因硬件故障导致位翻转。第六关通过回读验证写入的正确性：
+
+```c
+// 解密完成后，回读整个 Flash 区域并计算 SHA-256
+sha256_init(&sha256_ctx);
+for (offset = 0; offset < firmware_size; offset += chunk) {
+    TARGET_READ(target, offset, process_buf, chunk, &bytes_read);
+    sha256_update(&sha256_ctx, process_buf, bytes_read);
+}
+sha256_final(&sha256_ctx, computed_sha256);
+
+// 与固件末尾内嵌的 SHA-256 比对
+if (memcmp(computed_sha256, stored_sha256, 32) == 0)
+    printf("  Result: MATCH\r\n");
+else
+    printf("  Result: MISMATCH!\r\n");
+```
+
+这一关提供 **端到端完整性保证**：从打包工具的 SHA-256 嵌入，到写入 Flash，再到回读验证，构成了完整的数据完整性闭环。
+
+### 10.9 A/B 分区作为安全网
+
+信任链的终点不是"固件写入成功"，而是"固件运行正常"。A/B 分区提供了运行时验证的安全网：
+
+```
+新固件写入非活动分区
+  ├── 状态设为 TESTING
+  ├── boot_attempts = 0
+  │
+  ▼
+启动新固件
+  ├── 运行正常 → App 调用 ab_partition_mark_slot_confirmed()
+  │                 状态转为 CONFIRMED
+  │
+  └── 运行异常
+      ├── boot_attempts 递增
+      ├── boot_attempts >= 3 → 自动回滚到旧分区
+      └── SP 验证失败 → 立即回滚
+```
+
+`ab_partition_validate_slot()` 的双重检查：
+
+```c
+ab_err_t ab_partition_validate_slot(ab_slot_t slot) {
+    uint32_t sp = *(__IO uint32_t *)addr;
+    if (!ab_is_valid_sp(sp))           // 1. 栈指针必须在 SRAM 范围内
+        return AB_ERR_SLOT_INVALID_FW;
+
+    uint32_t reset_handler = *(__IO uint32_t *)(addr + 4);
+    if (reset_handler < addr ||        // 2. ResetHandler 必须落在本分区地址范围内
+        reset_handler > end_addr)
+        return AB_ERR_SLOT_INVALID_FW;
+
+    return AB_OK;
+}
+```
+
+### 10.10 信任链的形式化总结
+
+整个信任链可以表示为一个验证函数的链式组合，每个函数的成功是下一个函数执行的前提：
+
+$$V_{\text{total}} = V_{\text{HMAC}} \circ V_{\text{compat}} \circ V_{\text{rollback}} \circ V_{\text{HKDF}} \circ V_{\text{AES}} \circ V_{\text{Ed25519}} \circ V_{\text{SHA256}} \circ V_{\text{A/B}}$$
+
+其中每个 $V_i$ 的输出为 $\{\text{PASS}, \text{FAIL}\}$，且：
+
+$$V_{\text{total}} = \text{PASS} \iff \forall i, V_i = \text{PASS}$$
+
+| 验证环节 | 安全属性 | 攻击防护 | 信任根依赖 |
+|----------|----------|----------|------------|
+| HMAC-SHA256 | 来源认证 | 伪造 Header | DevKey |
+| 硬件兼容 | 正确性 | 错误硬件刷写 | 无（明文比对） |
+| 安全计数器 | 版本单调性 | 回滚攻击 | stored_counter |
+| HKDF | 设备绑定 | 跨设备解密 | DevKey + UID |
+| AES-256 | 机密性 | 固件窃取 | HKDF 派生密钥 |
+| Ed25519 | 完整性 + 认证 | 内容篡改 | Ed25519 公钥 |
+| SHA-256 回读 | 写入完整性 | Flash 位翻转 | 无（回读比对） |
+| A/B 分区 | 可用性 | 变砖攻击 | SP + ResetHandler |
 
 ---
 

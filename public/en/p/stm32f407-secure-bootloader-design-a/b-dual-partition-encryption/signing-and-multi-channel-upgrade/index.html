@@ -353,20 +353,25 @@
         <li><a href="#92-complete-menu-tree">9.2 Complete Menu Tree</a></li>
       </ol>
     </li>
-    <li><a href="#10-security-chain-overview">10. Security Chain Overview</a></li>
+    <li><a href="#10-security-trust-chain-anchor-propagation-and-guarantees">10. Security Trust Chain: Anchor, Propagation, and Guarantees</a>
+      <ol>
+        <li><a href="#101-trust-chain-global-architecture">10.1 Trust Chain Global Architecture</a></li>
+        <li><a href="#102-root-of-trust-hardware-anchor">10.2 Root of Trust: Hardware Anchor</a></li>
+        <li><a href="#103-gate-1-hmac-sha256-header-authentication">10.3 Gate 1: HMAC-SHA256 Header Authentication</a></li>
+        <li><a href="#104-gate-2-anti-rollback-and-hardware-compatibility">10.4 Gate 2: Anti-Rollback and Hardware Compatibility</a></li>
+        <li><a href="#105-gate-3-hkdf-device-bound-key-derivation">10.5 Gate 3: HKDF Device-Bound Key Derivation</a></li>
+        <li><a href="#106-gate-4-aes-256-decryption-and-streaming">10.6 Gate 4: AES-256 Decryption and Streaming</a></li>
+        <li><a href="#107-gate-5-ed25519-digital-signature-verification">10.7 Gate 5: Ed25519 Digital Signature Verification</a></li>
+        <li><a href="#108-gate-6-sha-256-flash-read-back-verification">10.8 Gate 6: SHA-256 Flash Read-Back Verification</a></li>
+        <li><a href="#109-ab-partition-as-safety-net">10.9 A/B Partition as Safety Net</a></li>
+        <li><a href="#1010-formal-summary-of-trust-chain">10.10 Formal Summary of Trust Chain</a></li>
+      </ol>
+    </li>
     <li><a href="#11-source-code-deep-dive">11. Source Code Deep Dive</a>
       <ol>
         <li><a href="#111-mainc-boot-decision-entry-point">11.1 main.c: Boot Decision Entry Point</a></li>
-        <li><a href="#112-bootloader_corec-download-engine">11.2 bootloader_core.c: Download Engine</a></li>
-        <li><a href="#113-firmware_packagec-secure-firmware-package-engine">11.3 firmware_package.c: Secure Firmware Package Engine</a></li>
-        <li><a href="#114-ab_partitionc-ab-partition-management">11.4 ab_partition.c: A/B Partition Management</a></li>
-        <li><a href="#115-service_hpatchc-differential-upgrade-implementation">11.5 service_hpatch.c: Differential Upgrade Implementation</a></li>
-        <li><a href="#116-esp8266_ota_apic-wifi-ota-wrapper">11.6 esp8266_ota_api.c: WiFi OTA Wrapper</a></li>
-        <li><a href="#117-overall-layered-architecture">11.7 Overall Layered Architecture</a></li>
       </ol>
     </li>
-    <li><a href="#12-summary">12. Summary</a></li>
-    <li><a href="#references">References</a></li>
   </ol>
 </nav>
         </div>
@@ -442,7 +447,7 @@
             </div><div id="wordCount">
             <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
             <time class="article-wordcount">
-                4507  words
+                4860  words
             </time>
         </div>
 
@@ -1678,25 +1683,561 @@
   </tbody>
 </table></div>
 <hr>
-<h2 id="10-security-chain-overview">10. Security Chain Overview
-</h2><p><strong>Firmware package build side:</strong></p>
+<h2 id="10-security-trust-chain-anchor-propagation-and-guarantees">10. Security Trust Chain: Anchor, Propagation, and Guarantees
+</h2><h3 id="101-trust-chain-global-architecture">10.1 Trust Chain Global Architecture
+</h3><p>The core of the secure Bootloader is not any single cryptographic algorithm, but a trust chain that starts from a <strong>hardware root of trust</strong> and propagates layer by layer. The success of each verification gate is a prerequisite for the next gate to execute; failure at any gate aborts the entire process, and no firmware is written to Flash.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">Root</span> <span class="nx">of</span> <span class="nf">Trust</span> <span class="p">(</span><span class="nx">RoT</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="err">├──</span> <span class="nf">UID</span> <span class="p">(</span><span class="mh">0x1FFF7A10</span><span class="p">,</span> <span class="nx">factory</span><span class="o">-</span><span class="nx">fixed</span><span class="p">,</span> <span class="mi">12</span><span class="nx">B</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="err">└──</span> <span class="nf">DevKey</span> <span class="p">(</span><span class="nx">OTP</span><span class="p">,</span> <span class="nx">one</span><span class="o">-</span><span class="nx">time</span> <span class="nx">write</span><span class="p">,</span> <span class="mi">16</span><span class="nx">B</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">       <span class="err">│</span>
+</span></span><span class="line"><span class="cl">       <span class="err">▼</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Gate</span> <span class="mi">1</span><span class="p">:</span> <span class="nx">HMAC</span><span class="o">-</span><span class="nx">SHA256</span> <span class="nx">Header</span> <span class="nx">Authentication</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;Was this package generated by someone holding DevKey?&#34;</span>
+</span></span><span class="line"><span class="cl">       <span class="err">│</span>
+</span></span><span class="line"><span class="cl">       <span class="err">▼</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Gate</span> <span class="mi">2</span><span class="p">:</span> <span class="nx">Hardware</span> <span class="nx">Compatibility</span> <span class="o">+</span> <span class="nx">Security</span> <span class="nx">Counter</span> <span class="nx">Anti</span><span class="o">-</span><span class="nx">Rollback</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;Was this package built for this hardware? Is the version not downgraded?&#34;</span>
+</span></span><span class="line"><span class="cl">       <span class="err">│</span>
+</span></span><span class="line"><span class="cl">       <span class="err">▼</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Gate</span> <span class="mi">3</span><span class="p">:</span> <span class="nx">HKDF</span> <span class="nx">Device</span><span class="o">-</span><span class="nx">Bound</span> <span class="nx">Key</span> <span class="nx">Derivation</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">AES_Key</span> <span class="p">=</span> <span class="nf">HKDF</span><span class="p">(</span><span class="nx">Salt</span><span class="p">,</span> <span class="nx">DevKey</span><span class="p">,</span> <span class="nx">UID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;Even if DevKey is leaked, only the target device can derive the correct AES key&#34;</span>
+</span></span><span class="line"><span class="cl">       <span class="err">│</span>
+</span></span><span class="line"><span class="cl">       <span class="err">▼</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Gate</span> <span class="mi">4</span><span class="p">:</span> <span class="nx">AES</span><span class="o">-</span><span class="mi">256</span> <span class="nx">Decryption</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;Only the target device can recover the plaintext firmware&#34;</span>
+</span></span><span class="line"><span class="cl">       <span class="err">│</span>
+</span></span><span class="line"><span class="cl">       <span class="err">▼</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Gate</span> <span class="mi">5</span><span class="p">:</span> <span class="nx">Ed25519</span> <span class="nx">Digital</span> <span class="nx">Signature</span> <span class="nx">Verification</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">SHA</span><span class="o">-</span><span class="mi">512</span><span class="p">(</span><span class="nx">Header</span><span class="err">‖</span><span class="nx">Salt</span><span class="err">‖</span><span class="nx">IV</span><span class="err">‖</span><span class="nx">Ciphertext</span><span class="p">)</span> <span class="err">→</span> <span class="nx">Ed25519</span> <span class="nx">Verify</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;Firmware content was signed by the private key holder, not tampered with&#34;</span>
+</span></span><span class="line"><span class="cl">       <span class="err">│</span>
+</span></span><span class="line"><span class="cl">       <span class="err">▼</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Gate</span> <span class="mi">6</span><span class="p">:</span> <span class="nx">SHA</span><span class="o">-</span><span class="mi">256</span> <span class="nx">Flash</span> <span class="nx">Read</span><span class="o">-</span><span class="nx">Back</span> <span class="nx">Verification</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;Data written to Flash is identical to the decryption output&#34;</span>
+</span></span><span class="line"><span class="cl">       <span class="err">│</span>
+</span></span><span class="line"><span class="cl">       <span class="err">▼</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Trust</span> <span class="nx">Endpoint</span><span class="p">:</span> <span class="nx">A</span><span class="o">/</span><span class="nx">B</span> <span class="nx">Partition</span> <span class="nx">State</span> <span class="nf">Transition</span> <span class="p">(</span><span class="nx">TESTING</span> <span class="err">→</span> <span class="nx">CONFIRMED</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="s">&#34;New firmware only becomes the official version after runtime validation&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="102-root-of-trust-hardware-anchor">10.2 Root of Trust: Hardware Anchor
+</h3><p>The trust chain must have an unforgeorable starting point. The root of trust in this project consists of two hardware primitives:</p>
+<p><strong>STM32 Unique ID (UID)</strong></p>
+<ul>
+<li>Address: <code>0x1FFF7A10</code>, 12 bytes (96 bits)</li>
+<li>Properties: Burned by ST at the factory for each chip, immutable, non-erasable</li>
+<li>Role: Serves as the <code>info</code> parameter for HKDF, binding key derivation to a specific chip</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define STM32F4_UID_ADDR 0x1FFF7A10
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="c1">// Read method
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">uid</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="n">STM32F4_UID_ADDR</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Device Key (DevKey)</strong></p>
+<ul>
+<li>Storage location: STM32 OTP (One-Time Programmable) region</li>
+<li>Size: 16 bytes (128 bits)</li>
+<li>Properties: OTP region can only transition from 0 to 1; once written, it cannot be modified or erased</li>
+<li>Role: HMAC-SHA256 authentication key + HKDF input keying material (IKM)</li>
+</ul>
+<blockquote class="alert alert-important">
+    <p>DevKey&rsquo;s OTP storage is the critical security property of the root of trust. The &ldquo;one-time write&rdquo; semantics of OTP mean that after DevKey is burned on the production line, even if an attacker gains JTAG access, they cannot overwrite or modify DevKey. This is fundamentally different from Flash storage — Flash can be erased and rewritten, but OTP cannot.</p></blockquote><p><strong>Formal guarantee of the root of trust</strong>:</p>
+$$\text{RoT} = \{\text{UID}_{\text{chip}}, \text{DevKey}_{\text{OTP}}\}$$<p>where $\text{UID}<em>{\text{chip}}$ satisfies unforgeability (factory-fixed), and $\text{DevKey}</em>{\text{OTP}}$ satisfies immutability (OTP semantics).</p>
+<h3 id="103-gate-1-hmac-sha256-header-authentication">10.3 Gate 1: HMAC-SHA256 Header Authentication
+</h3><p><strong>Purpose</strong>: Before processing any content of the firmware package, first verify that the Header&rsquo;s source is trustworthy.</p>
+<p><strong>Mechanism</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">fw_pkg_err_t</span> <span class="nf">fw_pkg_verify_header_hmac</span><span class="p">(</span><span class="k">const</span> <span class="kt">fw_pkg_ctx_t</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                       <span class="k">const</span> <span class="kt">fw_pkg_verify_config_t</span> <span class="o">*</span><span class="n">config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">computed_hmac</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">header_prefix</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// HMAC-SHA256(DevKey, Header[0..31])  ← First 32 bytes of Header
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">hmac_sha256</span><span class="p">(</span><span class="n">config</span><span class="o">-&gt;</span><span class="n">devkey</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">devkey_len</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">header_prefix</span><span class="p">,</span> <span class="n">FW_PKG_HEADER_SIZE</span> <span class="o">-</span> <span class="n">FW_PKG_HMAC_SIZE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">computed_hmac</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Compare with HMAC embedded in Header
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nf">memcmp</span><span class="p">(</span><span class="n">computed_hmac</span><span class="p">,</span> <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">header_checksum</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">FW_PKG_ERR_HMAC</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">FW_PKG_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Security properties</strong>:</p>
+<ul>
+<li><strong>Authentication</strong>: Only the packaging tool holding DevKey can generate a correct HMAC</li>
+<li><strong>Selectivity</strong>: The HMAC covers only the Header, not the payload — this is by design, because payload integrity is guaranteed by the Ed25519 signature</li>
+<li><strong>Early rejection</strong>: Header authentication is executed before reading Salt/IV/Ciphertext; invalid packages are rejected with minimal I/O</li>
+</ul>
+<p><strong>Why HMAC instead of directly using Ed25519 to sign the Header?</strong></p>
+<p>HMAC-SHA256 computation is far faster than Ed25519 signature verification (microseconds vs milliseconds). As the first line of defense, it can quickly reject packages in DoS scenarios with large volumes of invalid inputs. Ed25519 signature verification is placed last, performing integrity verification over the entire package (Header + Salt + IV + Ciphertext).</p>
+<h3 id="104-gate-2-anti-rollback-and-hardware-compatibility">10.4 Gate 2: Anti-Rollback and Hardware Compatibility
+</h3><p><strong>Security Counter (security_counter)</strong></p>
+<p>Each firmware package&rsquo;s Header carries a monotonically increasing <code>security_counter</code>, and the device stores the current maximum confirmed counter value:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">fw_pkg_err_t</span> <span class="nf">fw_pkg_check_rollback</span><span class="p">(</span><span class="k">const</span> <span class="kt">fw_pkg_ctx_t</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                   <span class="k">const</span> <span class="kt">fw_pkg_verify_config_t</span> <span class="o">*</span><span class="n">config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">security_counter</span> <span class="o">&lt;</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">stored_security_counter</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Rollback detected! Package counter &lt; device stored counter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="n">FW_PKG_ERR_ROLLBACK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">FW_PKG_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Formal guarantee of anti-rollback</strong>:</p>
+<p>Let the device-stored counter be $c_{\text{stored}}$ and the firmware package counter be $c_{\text{pkg}}$, then:</p>
+$$c_{\text{pkg}} \geq c_{\text{stored}} \implies \text{allow upgrade}$$$$c_{\text{pkg}} < c_{\text{stored}} \implies \text{reject (rollback attack)}$$<p><strong>Hardware compatibility</strong>: The <code>hardware_compat</code> field ensures the firmware package matches the target hardware, preventing incompatible firmware from being written to the device and causing malfunctions.</p>
+<h3 id="105-gate-3-hkdf-device-bound-key-derivation">10.5 Gate 3: HKDF Device-Bound Key Derivation
+</h3><p>This is the most critical design of the entire security system — <strong>device-bound encryption</strong>. Even if an attacker intercepts both the firmware package and DevKey, without the target device&rsquo;s UID they cannot decrypt.</p>
+<p><strong>HKDF (HMAC-based Extract-and-Expand Key Derivation Function, RFC 5869)</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AES_Key = HKDF(
+</span></span><span class="line"><span class="cl">    salt     = DynamicSalt,    // 16 bytes, randomly generated per firmware package
+</span></span><span class="line"><span class="cl">    IKM      = DevKey,         // 16 bytes, stored in OTP
+</span></span><span class="line"><span class="cl">    info     = UID,            // 12 bytes, STM32 unique ID
+</span></span><span class="line"><span class="cl">    key_len  = 32 bytes        // AES-256 key length
+</span></span><span class="line"><span class="cl">)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>HKDF operates in two phases:</p>
 <ol>
-<li>Original firmware → SHA256 (appended to end)</li>
-<li>→ AES-256 encryption</li>
-<li>→ Ed25519 signature</li>
-<li>→ <code>.iap.bin</code></li>
+<li><strong>Extract</strong>: <code>PRK = HMAC-Hash(salt, IKM)</code> — extracts the entropy of DevKey into a pseudorandom key PRK</li>
+<li><strong>Expand</strong>: <code>OKM = HMAC-Hash(PRK, info ∥ 0x01)</code> — expands PRK into an output key of the specified length; info (i.e., UID) ensures different devices derive different keys</li>
 </ol>
-<p><strong>Device-side verification:</strong></p>
-<ol>
-<li><code>.iap.bin</code> → HMAC-SHA256 verification (DevKey)</li>
-<li>→ Hardware compatibility check</li>
-<li>→ Anti-rollback check</li>
-<li>→ HKDF derive AES key (Salt + DevKey + UID)</li>
-<li>→ AES decrypt → write to Flash</li>
-<li>→ SHA-512 streaming hash → Ed25519 signature verification</li>
-<li>→ Read back Flash SHA-256 check</li>
-</ol>
-<p>The complete security chain forms a <strong>chain of trust</strong>: HMAC ensures package source is trusted → encryption ensures content confidentiality → signature ensures integrity → anti-rollback ensures version cannot be downgraded → SHA256 read-back check ensures Flash write correctness.</p>
+<p><strong>Security analysis of device binding</strong>:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Attack Scenario</th>
+          <th>Attacker Possesses</th>
+          <th>Can Decrypt?</th>
+          <th>Reason</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Intercepted firmware package</td>
+          <td>Salt, IV, Ciphertext</td>
+          <td>No</td>
+          <td>Without DevKey and UID, cannot derive AES_Key</td>
+      </tr>
+      <tr>
+          <td>Intercepted firmware package + DevKey</td>
+          <td>Salt, IV, Ciphertext, DevKey</td>
+          <td>No</td>
+          <td>Without UID, HKDF(info) output differs</td>
+      </tr>
+      <tr>
+          <td>Same DevKey, different device</td>
+          <td>Salt, IV, Ciphertext, DevKey, UID_B</td>
+          <td>No</td>
+          <td>UID_B ≠ UID_A, derived AES_Key differs</td>
+      </tr>
+      <tr>
+          <td>Target device itself</td>
+          <td>Salt, IV, Ciphertext, DevKey, UID</td>
+          <td><strong>Yes</strong></td>
+          <td>All three elements present, correctly derives AES_Key</td>
+      </tr>
+  </tbody>
+</table></div>
+<p><strong>Role of DynamicSalt</strong>: A 16-byte salt randomly generated per package ensures that even when pushing the same firmware to the same device, two AES key derivations produce different keys, eliminating key reuse risk.</p>
+<h3 id="106-gate-4-aes-256-decryption-and-streaming">10.6 Gate 4: AES-256 Decryption and Streaming
+</h3><p>Three encryption modes are supported, selected based on the <code>encryption_algo</code> field in the Header:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Mode</th>
+          <th>Constant</th>
+          <th>Characteristics</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>AES-256-CBC</td>
+          <td><code>FW_PKG_ENC_AES256_CBC</code></td>
+          <td>Most common, PKCS7 padding, requires IV</td>
+      </tr>
+      <tr>
+          <td>AES-256-CTR</td>
+          <td><code>FW_PKG_ENC_AES256_CTR</code></td>
+          <td>Streaming-friendly, no padding needed</td>
+      </tr>
+      <tr>
+          <td>AES-256-ECB</td>
+          <td><code>FW_PKG_ENC_AES256_ECB</code></td>
+          <td>Not recommended, for compatibility only</td>
+      </tr>
+  </tbody>
+</table></div>
+<p><strong>Streaming decrypt-write</strong>: The firmware package may be far larger than available RAM, so a 4KB buffer is used in a loop:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">uint8_t</span> <span class="n">process_buf</span><span class="p">[</span><span class="mi">4096</span><span class="p">]</span> <span class="nf">__attribute__</span><span class="p">((</span><span class="nf">aligned</span><span class="p">(</span><span class="mi">4</span><span class="p">)));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="n">ciphertext_remaining</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">to_read</span> <span class="o">=</span> <span class="nf">MIN</span><span class="p">(</span><span class="n">ciphertext_remaining</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">process_buf</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">process_buf</span><span class="p">,</span> <span class="n">to_read</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bytes_read</span><span class="p">);</span>   <span class="c1">// Read ciphertext
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">fw_pkg_decrypt_payload</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span> <span class="n">process_buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">,</span>      <span class="c1">// AES decrypt
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                           <span class="n">is_final</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">actual_len</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">TARGET_WRITE</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">flash_offset</span><span class="p">,</span> <span class="n">process_buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">);</span> <span class="c1">// Write Flash
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">flash_offset</span> <span class="o">+=</span> <span class="n">bytes_read</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ciphertext_remaining</span> <span class="o">-=</span> <span class="n">bytes_read</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Critical security property</strong>: The AES key (<code>aes_key[32]</code>) is a local variable derived at runtime via HKDF; after the function returns, it disappears from the stack and is <strong>never persisted</strong>. Even if an attacker subsequently gains device access, they cannot find the AES key in memory.</p>
+<h3 id="107-gate-5-ed25519-digital-signature-verification">10.7 Gate 5: Ed25519 Digital Signature Verification
+</h3><p>Ed25519 is a digital signature scheme designed by Bernstein et al. on Curve25519, providing 128-bit security strength.</p>
+<p><strong>Signature scope</strong>: The Ed25519 signature covers the entire plaintext portion of the firmware package:</p>
+$$\text{hash} = \text{SHA-512}(\text{Header} \| \text{Salt} \| \text{IV} \| \text{Ciphertext})$$$$\text{Verify}_{\text{PK}}(\text{signature}, \text{hash}) \stackrel{?}{=} \text{true}$$<p><strong>Streaming SHA-512 computation</strong>: Since the firmware package may be large, SHA-512 uses streaming updates:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">sha512_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sig_state</span><span class="p">);</span>  <span class="c1">// Initialize before reading Header
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Feed each data chunk into SHA-512
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">fw_pkg_sha512_feed</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sig_state</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">pending</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pending_len</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// After all data is read, compute final hash
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">fw_pkg_sha512_finish</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sig_state</span><span class="p">,</span> <span class="n">pending</span><span class="p">,</span> <span class="n">pending_len</span><span class="p">,</span> <span class="n">total_len</span><span class="p">,</span> <span class="n">hash</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Ed25519 verification
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">edsign_verify</span><span class="p">(</span><span class="n">signature</span><span class="p">,</span> <span class="n">ed25519_pubkey</span><span class="p">,</span> <span class="n">hash</span><span class="p">,</span> <span class="mi">64</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Complementary relationship between Signature and HMAC</strong>:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Property</th>
+          <th>HMAC-SHA256</th>
+          <th>Ed25519</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Key type</td>
+          <td>Symmetric key (DevKey)</td>
+          <td>Asymmetric key pair</td>
+      </tr>
+      <tr>
+          <td>Verification scope</td>
+          <td>Header only</td>
+          <td>Header + Salt + IV + Ciphertext</td>
+      </tr>
+      <tr>
+          <td>Verification speed</td>
+          <td>Fast (microseconds)</td>
+          <td>Slow (milliseconds)</td>
+      </tr>
+      <tr>
+          <td>Security guarantee</td>
+          <td>Source authentication</td>
+          <td>Source authentication + integrity</td>
+      </tr>
+      <tr>
+          <td>Key distribution</td>
+          <td>DevKey pre-shared</td>
+          <td>Public key hardcoded, private key stored offline</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>HMAC uses a symmetric key, meaning anyone holding DevKey (the packaging tool and the device) can generate a valid HMAC. Ed25519 uses an asymmetric key — <strong>only the holder of the private key can sign</strong> — while the device holds only the public key for verification. This ensures that even if DevKey is leaked, an attacker cannot forge a valid Ed25519 signature.</p>
+<p><strong>Public key storage</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="k">const</span> <span class="kt">uint8_t</span> <span class="n">FW_PKG_ED25519_PUBLIC_KEY</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="mh">0xc2</span><span class="p">,</span> <span class="mh">0xe9</span><span class="p">,</span> <span class="mh">0xbf</span><span class="p">,</span> <span class="mh">0x62</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x92</span><span class="p">,</span> <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The public key is hardcoded in the Bootloader firmware, serving as the trust anchor for Ed25519 verification. The corresponding private key exists only on the offline firmware signing server and is never deployed to the device.</p>
+<h3 id="108-gate-6-sha-256-flash-read-back-verification">10.8 Gate 6: SHA-256 Flash Read-Back Verification
+</h3><p>The first five gates guarantee &ldquo;the received package is trusted&rdquo; and &ldquo;the decrypted firmware is correct&rdquo;, but Flash writes may experience bit flips due to hardware faults. Gate 6 verifies write correctness through read-back:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// After decryption, read back the entire Flash region and compute SHA-256
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">sha256_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">firmware_size</span><span class="p">;</span> <span class="n">offset</span> <span class="o">+=</span> <span class="n">chunk</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">TARGET_READ</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">process_buf</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bytes_read</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sha256_update</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">,</span> <span class="n">process_buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nf">sha256_final</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">,</span> <span class="n">computed_sha256</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Compare with SHA-256 embedded at firmware end
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span> <span class="p">(</span><span class="nf">memcmp</span><span class="p">(</span><span class="n">computed_sha256</span><span class="p">,</span> <span class="n">stored_sha256</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;  Result: MATCH</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;  Result: MISMATCH!</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This gate provides <strong>end-to-end integrity assurance</strong>: from the packaging tool&rsquo;s SHA-256 embedding, to Flash writing, to read-back verification, it forms a complete data integrity closed loop.</p>
+<h3 id="109-ab-partition-as-safety-net">10.9 A/B Partition as Safety Net
+</h3><p>The endpoint of the trust chain is not &ldquo;firmware written successfully&rdquo;, but &ldquo;firmware runs correctly&rdquo;. The A/B partition provides a safety net for runtime validation:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">New firmware written to inactive partition
+</span></span><span class="line"><span class="cl">  ├── State set to TESTING
+</span></span><span class="line"><span class="cl">  ├── boot_attempts = 0
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ▼
+</span></span><span class="line"><span class="cl">Boot new firmware
+</span></span><span class="line"><span class="cl">  ├── Runs normally → App calls ab_partition_mark_slot_confirmed()
+</span></span><span class="line"><span class="cl">  │                     State transitions to CONFIRMED
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  └── Runs abnormally
+</span></span><span class="line"><span class="cl">      ├── boot_attempts incremented
+</span></span><span class="line"><span class="cl">      ├── boot_attempts &gt;= 3 → auto-rollback to old partition
+</span></span><span class="line"><span class="cl">      └── SP validation fails → immediate rollback
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Dual checks in <code>ab_partition_validate_slot()</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">ab_err_t</span> <span class="nf">ab_partition_validate_slot</span><span class="p">(</span><span class="kt">ab_slot_t</span> <span class="n">slot</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">sp</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">__IO</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="n">addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">ab_is_valid_sp</span><span class="p">(</span><span class="n">sp</span><span class="p">))</span>           <span class="c1">// 1. Stack pointer must be within SRAM range
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="n">AB_ERR_SLOT_INVALID_FW</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">reset_handler</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">__IO</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)(</span><span class="n">addr</span> <span class="o">+</span> <span class="mi">4</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">reset_handler</span> <span class="o">&lt;</span> <span class="n">addr</span> <span class="o">||</span>        <span class="c1">// 2. ResetHandler must fall within this partition&#39;s address range
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">reset_handler</span> <span class="o">&gt;</span> <span class="n">end_addr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">AB_ERR_SLOT_INVALID_FW</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">AB_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="1010-formal-summary-of-trust-chain">10.10 Formal Summary of Trust Chain
+</h3><p>The entire trust chain can be expressed as a chained composition of verification functions, where each function&rsquo;s success is a prerequisite for the next function&rsquo;s execution:</p>
+$$V_{\text{total}} = V_{\text{HMAC}} \circ V_{\text{compat}} \circ V_{\text{rollback}} \circ V_{\text{HKDF}} \circ V_{\text{AES}} \circ V_{\text{Ed25519}} \circ V_{\text{SHA256}} \circ V_{\text{A/B}}$$<p>where each $V_i$ outputs ${\text{PASS}, \text{FAIL}}$, and:</p>
+$$V_{\text{total}} = \text{PASS} \iff \forall i, V_i = \text{PASS}$$<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Verification Gate</th>
+          <th>Security Property</th>
+          <th>Attack Mitigation</th>
+          <th>Root of Trust Dependency</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>HMAC-SHA256</td>
+          <td>Source authentication</td>
+          <td>Forged Header</td>
+          <td>DevKey</td>
+      </tr>
+      <tr>
+          <td>Hardware compatibility</td>
+          <td>Correctness</td>
+          <td>Wrong hardware flash</td>
+          <td>None (plaintext comparison)</td>
+      </tr>
+      <tr>
+          <td>Security counter</td>
+          <td>Version monotonicity</td>
+          <td>Rollback attack</td>
+          <td>stored_counter</td>
+      </tr>
+      <tr>
+          <td>HKDF</td>
+          <td>Device binding</td>
+          <td>Cross-device decryption</td>
+          <td>DevKey + UID</td>
+      </tr>
+      <tr>
+          <td>AES-256</td>
+          <td>Confidentiality</td>
+          <td>Firmware theft</td>
+          <td>HKDF-derived key</td>
+      </tr>
+      <tr>
+          <td>Ed25519</td>
+          <td>Integrity + authentication</td>
+          <td>Content tampering</td>
+          <td>Ed25519 public key</td>
+      </tr>
+      <tr>
+          <td>SHA-256 read-back</td>
+          <td>Write integrity</td>
+          <td>Flash bit flip</td>
+          <td>None (read-back comparison)</td>
+      </tr>
+      <tr>
+          <td>A/B partition</td>
+          <td>Availability</td>
+          <td>Bricking attack</td>
+          <td>SP + ResetHandler</td>
+      </tr>
+  </tbody>
+</table></div>
 <hr>
 <h2 id="11-source-code-deep-dive">11. Source Code Deep Dive
 </h2><h3 id="111-mainc-boot-decision-entry-point">11.1 main.c: Boot Decision Entry Point
@@ -1724,33 +2265,6 @@
 </span><span class="lnt">19
 </span><span class="lnt">20
 </span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
@@ -1773,600 +2287,10 @@
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">ab_partition_init</span><span class="p">();</span>          <span class="c1">// Read A/B metadata
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// ===== A/B partition boot check =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">ab_slot_t</span> <span class="n">active</span> <span class="o">=</span> <span class="nf">ab_partition_get_active_slot</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">ab_slot_state_t</span> <span class="n">state</span> <span class="o">=</span> <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">slots</span><span class="p">[</span><span class="n">active</span><span class="p">].</span><span class="n">state</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="n">AB_SLOT_TESTING</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">ab_partition_validate_slot</span><span class="p">(</span><span class="n">active</span><span class="p">))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nf">ab_partition_rollback</span><span class="p">();</span>        <span class="c1">// Firmware invalid, rollback
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">slots</span><span class="p">[</span><span class="n">active</span><span class="p">].</span><span class="n">boot_attempts</span> <span class="o">&gt;=</span> <span class="n">AB_MAX_BOOT_RETRIES</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nf">ab_partition_rollback</span><span class="p">();</span>        <span class="c1">// Exceeded 3 attempts, rollback
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nf">ab_partition_increment_boot_attempts</span><span class="p">(</span><span class="n">active</span><span class="p">);</span>  <span class="c1">// Increment attempt count
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== SD card mount =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nf">SD_Detect</span><span class="p">()</span> <span class="o">==</span> <span class="n">SD_PRESENT</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">f_mount</span><span class="p">(</span><span class="o">&amp;</span><span class="n">SDFatFS</span><span class="p">,</span> <span class="n">SDPath</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== Menu entry check =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">Serial_PutString</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\r\n</span><span class="s">Press &#39;M&#39; to enter Bootloader menu (1.5s timeout)...</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">WaitForSerialCommand</span><span class="p">(</span><span class="mi">1500</span><span class="p">)</span> <span class="o">==</span> <span class="sc">&#39;M&#39;</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">Main_Menu</span><span class="p">();</span>             <span class="c1">// Enter interactive menu
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">update_flag</span> <span class="o">==</span> <span class="n">UPDATE_FLAG_MAGIC</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">Main_Menu</span><span class="p">();</span>             <span class="c1">// App requests update
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">bootloader_request_jump</span><span class="p">(</span><span class="n">active</span><span class="p">);</span>  <span class="c1">// Auto jump to App
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">ab_slot_t</span> <span class="n">active</span> <span class="o">=</span> <span class="n">ab_pa</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><blockquote class="alert alert-note">
-    <p>The soft-reset fast jump is placed <strong>before</strong> <code>HAL_Init()</code>, meaning all peripherals are uninitialized at this point, but <code>bootloader_execute_jump()</code> only operates on core registers (MSP, VTOR), not relying on any peripherals, so it is safe. This design minimizes App boot latency.</p></blockquote><h3 id="112-bootloader_corec-download-engine">11.2 bootloader_core.c: Download Engine
-</h3><p><code>bootloader_download()</code> is the core of normal download, implementing source-to-target data transfer via the Transport abstraction layer:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">bootloader_download</span><span class="p">(</span><span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">source</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">target</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">buf</span><span class="p">[</span><span class="n">DOWNLOAD_BUF_SIZE</span><span class="p">];</span>  <span class="c1">// 4096-byte buffer
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">total_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">bytes_read</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// 1. Open source transport
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="nf">TRANSPORT_SOURCE_OPEN</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">total_size</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">TRANSPORT_STATUS_OK</span><span class="p">)</span> <span class="k">return</span> <span class="n">BL_ERR_OPEN_SRC</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// 2. Open target transport
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">ret</span> <span class="o">=</span> <span class="nf">TRANSPORT_TARGET_OPEN</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">total_size</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">TRANSPORT_STATUS_OK</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">TRANSPORT_SOURCE_CLOSE</span><span class="p">(</span><span class="n">source</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">BL_ERR_OPEN_DST</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// 3. Loop read → write
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">do</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">ret</span> <span class="o">=</span> <span class="nf">TRANSPORT_SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">bytes_read</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">TRANSPORT_STATUS_OK</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">bytes_read</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="n">ret</span> <span class="o">=</span> <span class="nf">TRANSPORT_TARGET_WRITE</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">TRANSPORT_STATUS_OK</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="n">offset</span> <span class="o">+=</span> <span class="n">bytes_read</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">bytes_read</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// 4. Close transport
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">TRANSPORT_TARGET_CLOSE</span><span class="p">(</span><span class="n">target</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">TRANSPORT_SOURCE_CLOSE</span><span class="p">(</span><span class="n">source</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="n">TRANSPORT_STATUS_OK</span><span class="p">)</span> <span class="o">?</span> <span class="nl">BL_OK</span> <span class="p">:</span> <span class="nf">transport_status_to_bootloader</span><span class="p">(</span><span class="n">ret</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
 </div>
-</div><p><code>bootloader_secure_download()</code> adds a complete security verification chain on top of normal download:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">bootloader_secure_download</span><span class="p">(</span><span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">source</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                                <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">target</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                                <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                                <span class="k">const</span> <span class="kt">fw_pkg_verify_config_t</span> <span class="o">*</span><span class="n">config</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                                <span class="kt">fw_pkg_ctx_t</span> <span class="o">*</span><span class="n">result</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// Call firmware package processing engine to complete:
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// HMAC verify → anti-rollback → HKDF key derivation → AES decrypt → Ed25519 signature verify
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="nf">fw_pkg_process_ex</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">result</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">FW_PKG_OK</span><span class="p">)</span> <span class="k">return</span> <span class="nf">fw_pkg_err_to_bootloader</span><span class="p">(</span><span class="n">ret</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">BL_OK</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="113-firmware_packagec-secure-firmware-package-engine">11.3 firmware_package.c: Secure Firmware Package Engine
-</h3><p>This is the most critical file of the security system (1107 lines), the complete flow of <code>fw_pkg_process_ex()</code>:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span><span class="lnt">67
-</span><span class="lnt">68
-</span><span class="lnt">69
-</span><span class="lnt">70
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">fw_pkg_process_ex</span><span class="p">(</span><span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">source</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                       <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">target</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                       <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                       <span class="k">const</span> <span class="kt">fw_pkg_verify_config_t</span> <span class="o">*</span><span class="n">config</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                       <span class="kt">fw_pkg_ctx_t</span> <span class="o">*</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">fw_pkg_header_t</span> <span class="n">header</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">salt</span><span class="p">[</span><span class="n">SALT_SIZE</span><span class="p">],</span> <span class="n">iv</span><span class="p">[</span><span class="n">IV_SIZE</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">signature</span><span class="p">[</span><span class="n">SIGNATURE_SIZE</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">aes_ctx_t</span> <span class="n">aes_ctx</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">sha512_ctx_t</span> <span class="n">sha512_ctx</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">sha256_ctx_t</span> <span class="n">sha256_ctx</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 1. Read and parse Header =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">header</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">header</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">fw_pkg_parse_header</span><span class="p">(</span><span class="o">&amp;</span><span class="n">header</span><span class="p">);</span>  <span class="c1">// Verify Magic + Version
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 2. HMAC-SHA256 verify Header =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">fw_pkg_verify_header_hmac</span><span class="p">(</span><span class="o">&amp;</span><span class="n">header</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">devkey</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 3. Hardware compatibility check =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">hardware_compat</span> <span class="o">!=</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">hardware_id</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">FW_PKG_ERR_HW_INCOMPAT</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 4. Anti-rollback check =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">fw_pkg_check_rollback</span><span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">security_counter</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">min_security_counter</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 5. Read DynamicSalt + IV =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">salt</span><span class="p">,</span> <span class="n">SALT_SIZE</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">iv</span><span class="p">,</span> <span class="n">IV_SIZE</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 6. HKDF key derivation =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span> <span class="n">aes_key</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">fw_pkg_derive_aes_key</span><span class="p">(</span><span class="n">salt</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">devkey</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">uid</span><span class="p">,</span> <span class="n">aes_key</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 7. Initialize AES decryption =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">fw_pkg_decrypt_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">aes_ctx</span><span class="p">,</span> <span class="n">header</span><span class="p">.</span><span class="n">encryption_algo</span><span class="p">,</span> <span class="n">aes_key</span><span class="p">,</span> <span class="n">iv</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 8. Open target, loop decrypt and write =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">TARGET_OPEN</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">ciphertext_size</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">remaining</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="kt">uint32_t</span> <span class="n">chunk</span> <span class="o">=</span> <span class="nf">MIN</span><span class="p">(</span><span class="n">remaining</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bytes_read</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">fw_pkg_decrypt_payload</span><span class="p">(</span><span class="o">&amp;</span><span class="n">aes_ctx</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">,</span> <span class="n">is_last</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">TARGET_WRITE</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">bytes_read</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="n">offset</span> <span class="o">+=</span> <span class="n">bytes_read</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="n">remaining</span> <span class="o">-=</span> <span class="n">bytes_read</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 9. Read and verify Ed25519 signature =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">SOURCE_READ</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">SIGNATURE_SIZE</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">fw_pkg_verify_signature</span><span class="p">(</span><span class="o">&amp;</span><span class="n">header</span><span class="p">,</span> <span class="n">salt</span><span class="p">,</span> <span class="n">iv</span><span class="p">,</span> <span class="n">ciphertext</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                            <span class="n">ciphertext_size</span><span class="p">,</span> <span class="n">signature</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">ed25519_pubkey</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 10. Read back Flash SHA-256 check =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sha256_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">firmware_size</span><span class="p">;</span> <span class="n">offset</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">TARGET_READ</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">chunk</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">sha256_update</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">chunk</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">sha256_final</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sha256_ctx</span><span class="p">,</span> <span class="n">computed_hash</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// Compare with SHA-256 embedded at firmware end
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// ===== 11. Fill result context =====
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">fw_version</span> <span class="o">=</span> <span class="n">header</span><span class="p">.</span><span class="n">firmware_version</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">ctx</span><span class="o">-&gt;</span><span class="n">security_counter</span> <span class="o">=</span> <span class="n">header</span><span class="p">.</span><span class="n">security_counter</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">sha256</span><span class="p">,</span> <span class="n">computed_hash</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">FW_PKG_OK</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote class="alert alert-important">
-    <p>HKDF key derivation is the key to device-bound encryption. Of the three inputs to <code>fw_pkg_derive_aes_key()</code>, <code>DynamicSalt</code> is randomly generated per package, <code>DevKey</code> is stored in OTP and different per device, and <code>UID</code> is the chip&rsquo;s factory-unique ID. The combination of all three ensures: even if the firmware package is intercepted, it cannot be decrypted on other devices.</p></blockquote><h3 id="114-ab_partitionc-ab-partition-management">11.4 ab_partition.c: A/B Partition Management
-</h3><p>The metadata append-write strategy is the essence of A/B partition management:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Metadata instance alignment: 128-byte aligned, up to 512 instances
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define METADATA_INSTANCE_ALIGN  128
-</span></span></span><span class="line"><span class="cl"><span class="cp">#define METADATA_MAX_INSTANCES   (METADATA_SIZE / METADATA_INSTANCE_ALIGN)
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
-</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">ab_write_metadata_raw</span><span class="p">(</span><span class="k">const</span> <span class="kt">ab_metadata_t</span> <span class="o">*</span><span class="n">meta</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">METADATA_START_ADDR</span> <span class="o">+</span> <span class="n">g_ab_current_instance</span> <span class="o">*</span> <span class="n">METADATA_INSTANCE_ALIGN</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// Check if can write directly (Flash only allows 1→0)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nf">can_write_at</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">meta</span><span class="p">)))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">ab_flash_write_words</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="p">(</span><span class="k">const</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="n">meta</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                             <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">meta</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="n">g_ab_current_instance</span><span class="o">++</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="c1">// Cannot append write, perform compaction
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">ab_compact_and_write</span><span class="p">(</span><span class="n">meta</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>The rollback logic ensures the device can always boot:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">ab_partition_rollback</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">ab_slot_t</span> <span class="n">current</span> <span class="o">=</span> <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">active_slot</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">ab_slot_t</span> <span class="n">fallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">current</span> <span class="o">==</span> <span class="n">AB_SLOT_A</span><span class="p">)</span> <span class="o">?</span> <span class="nl">AB_SLOT_B</span> <span class="p">:</span> <span class="n">AB_SLOT_A</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// Mark current slot as invalid
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">slots</span><span class="p">[</span><span class="n">current</span><span class="p">].</span><span class="n">state</span> <span class="o">=</span> <span class="n">AB_SLOT_INVALID</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// Verify fallback slot has valid firmware
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">ab_partition_validate_slot</span><span class="p">(</span><span class="n">fallback</span><span class="p">))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">AB_ERR_NO_VALID_SLOT</span><span class="p">;</span>  <span class="c1">// Both slots invalid!
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// Switch to fallback slot
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">active_slot</span> <span class="o">=</span> <span class="n">fallback</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">slots</span><span class="p">[</span><span class="n">fallback</span><span class="p">].</span><span class="n">state</span> <span class="o">=</span> <span class="n">AB_SLOT_CONFIRMED</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">g_ab_metadata</span><span class="p">.</span><span class="n">slots</span><span class="p">[</span><span class="n">fallback</span><span class="p">].</span><span class="n">boot_attempts</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">ab_partition_metadata_flush</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">AB_OK</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote class="alert alert-warning">
-    <p>If both slots are invalid (<code>ab_partition_rollback</code> returns <code>AB_ERR_NO_VALID_SLOT</code>), the device cannot auto-boot and can only stay in the Bootloader menu waiting for manual firmware flashing. This is the last line of defense for A/B partitioning — the device won&rsquo;t brick, but requires manual intervention.</p></blockquote><h3 id="115-service_hpatchc-differential-upgrade-implementation">11.5 service_hpatch.c: Differential Upgrade Implementation
-</h3><p>Differential upgrade uses HPatch Lite + tuz compression, with controlled memory usage:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Statically allocated buffers (compile-time fixed)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">uint8_t</span> <span class="n">tuz_dict_and_cache</span><span class="p">[</span><span class="n">HPATCH_DICT_SIZE</span> <span class="o">+</span> <span class="n">HPATCH_CACHE_SIZE</span><span class="p">];</span>  <span class="c1">// 4KB + 16KB
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">uint8_t</span> <span class="n">stream_diff_buf</span><span class="p">[</span><span class="n">HPATCH_STREAM_BUF_SIZE</span><span class="p">];</span>                   <span class="c1">// 8KB
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">uint8_t</span> <span class="n">patch_temp_buf</span><span class="p">[</span><span class="n">HPATCH_CACHE_SIZE</span><span class="p">];</span>                         <span class="c1">// 16KB
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">hpatch_upgrade</span><span class="p">(</span><span class="kt">hpatch_config_t</span> <span class="o">*</span><span class="n">config</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 1. Open diff file, old firmware, create output file
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">diff_file</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">diff_path</span><span class="p">,</span> <span class="s">&#34;rb&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old_file</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">old_path</span><span class="p">,</span> <span class="s">&#34;rb&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">out_file</span><span class="p">,</span> <span class="n">config</span><span class="o">-&gt;</span><span class="n">out_path</span><span class="p">,</span> <span class="s">&#34;wb&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// 2. Parse diff file header
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">hpatch_lite_open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">listener</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">new_size</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">compress_type</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// 3. If using tuz compression, initialize decompression stream
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">compress_type</span> <span class="o">==</span> <span class="n">hpi_compress_tuz</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">tuz_TStream_open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tuz_stream_obj</span><span class="p">,</span> <span class="n">tuz_dict_and_cache</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                         <span class="n">dict_size</span><span class="p">,</span> <span class="n">tuz_fs_read_code</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="c1">// Replace read callback with streaming decompression
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">listener</span><span class="p">.</span><span class="n">read_diff</span> <span class="o">=</span> <span class="n">stream_read_diff</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// 4. Apply differential patch
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">hpatch_lite_patch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">listener</span><span class="p">,</span> <span class="n">new_size</span><span class="p">,</span> <span class="n">patch_temp_buf</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// 5. Cleanup
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">close</span><span class="p">(</span><span class="o">&amp;</span><span class="n">diff_file</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">close</span><span class="p">(</span><span class="o">&amp;</span><span class="n">old_file</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">fs_instance</span><span class="o">-&gt;</span><span class="nf">close</span><span class="p">(</span><span class="o">&amp;</span><span class="n">out_file</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote class="alert alert-tip">
-    <p>Typical effect of differential upgrade: assuming old firmware is 384KB, new firmware is 386KB, the differential file might only be 5-20KB. In bandwidth-constrained scenarios (like NB-IoT, LoRa), differential upgrade can significantly reduce transfer time and data costs.</p></blockquote><h3 id="116-esp8266_ota_apic-wifi-ota-wrapper">11.6 esp8266_ota_api.c: WiFi OTA Wrapper
-</h3><p>WiFi OTA is a thin wrapper over the OneNET IoT platform:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">onenet_ota_ctx_t</span> <span class="n">g_ota_ctx</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">esp8266_ota_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// Inject three dependencies: WiFi module, RTC (for MQTT auth timestamp), MQTT client
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">onenet_ota_ctx_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">g_ota_ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">g_esp8266_wifi</span><span class="p">.</span><span class="n">base</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="o">&amp;</span><span class="n">g_rtc</span><span class="p">.</span><span class="n">base</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">g_esp8266_mqtt</span><span class="p">.</span><span class="n">base</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">esp8266_ota_download</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">onenet_ota_process_upgrade</span><span class="p">(</span><span class="o">&amp;</span><span class="n">g_ota_ctx</span><span class="p">);</span>  <span class="c1">// MQTT receive → HTTP download → write to target
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>Supports three download targets:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">esp8266_ota_set_target_internal_flash</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>  <span class="c1">// Write directly to internal Flash
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">esp8266_ota_set_target_sd_card</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>          <span class="c1">// Save to SD card
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">esp8266_ota_set_target_spi_flash</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>         <span class="c1">// Save to SPI Flash
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="117-overall-layered-architecture">11.7 Overall Layered Architecture
-</h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Layer</th>
-          <th>Module</th>
-          <th>Description</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><strong>Application Layer</strong></td>
-          <td>Menu</td>
-          <td>Interactive menu, 4600+ lines</td>
-      </tr>
-      <tr>
-          <td><strong>Core Layer</strong></td>
-          <td>Bootloader Core</td>
-          <td>Download/jump/secure download</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>├ firmware_package</td>
-          <td>Package parsing/HMAC/AES/Ed25519</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>└ ab_partition</td>
-          <td>A/B partition/rollback/metadata management</td>
-      </tr>
-      <tr>
-          <td><strong>Service Layer</strong></td>
-          <td>Service Layer</td>
-          <td>Functional services</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>├ service_hpatch</td>
-          <td>Differential upgrade</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>├ esp8266_ota_api</td>
-          <td>WiFi OTA (OneNET)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>└ service_aes_decrypt / service_ed25519_verify</td>
-          <td>Encryption-decryption/signature verification</td>
-      </tr>
-      <tr>
-          <td><strong>Abstraction Layer</strong></td>
-          <td>Platform Transport</td>
-          <td>Transport abstraction</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>├ Source</td>
-          <td>FatFS / LittleFS / Ymodem / HTTP</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>└ Target</td>
-          <td>Internal Flash / FatFS / LittleFS</td>
-      </tr>
-      <tr>
-          <td><strong>Hardware Layer</strong></td>
-          <td>HAL</td>
-          <td>STM32F407: Flash/RNG/SPI/UART/SDIO/RTC</td>
-      </tr>
-  </tbody>
-</table></div>
-<hr>
-<h2 id="12-summary">12. Summary
-</h2><p>This project is a feature-complete industrial-grade secure Bootloader, with core highlights:</p>
-<ol>
-<li><strong>A/B Dual Partition</strong>: seamless upgrade + auto-rollback, device never bricks</li>
-<li><strong>Complete Security System</strong>: HMAC authentication + AES-256 encryption + Ed25519 signature + anti-rollback + device-bound key</li>
-<li><strong>Address Relocation + Dual Target Compilation</strong>: only one source needed, simplifying build process</li>
-<li><strong>Transport Abstraction</strong>: download logic fully decoupled from storage media, easy to extend</li>
-<li><strong>Multi-Channel Upgrade</strong>: UART / SD card / SPI Flash / WiFi OTA, covering various scenarios</li>
-<li><strong>Differential Upgrade</strong>: HPatch + tuz reduces data transfer volume</li>
-<li><strong>Interactive Menu</strong>: feature-rich, convenient for debugging and production use</li>
-</ol>
-<hr>
-<h2 id="references">References
-</h2><ul>
-<li><a class="link" href="https://www.st.com/resource/en/reference_manual/dm00031020.pdf"  target="_blank" rel="noopener"
-    >STM32F4xx Reference Manual</a></li>
-<li><a class="link" href="https://ed25519.cr.yp.to/"  target="_blank" rel="noopener"
-    >Ed25519: High-speed high-security signatures</a></li>
-<li><a class="link" href="https://tools.ietf.org/html/rfc5869"  target="_blank" rel="noopener"
-    >HKDF (RFC 5869)</a></li>
-<li><a class="link" href="https://github.com/sisong/HPatchLite"  target="_blank" rel="noopener"
-    >HPatchLite - Differential Patch Library</a></li>
-<li><a class="link" href="https://github.com/littlefs-project/littlefs"  target="_blank" rel="noopener"
-    >LittleFS - Embedded File System</a></li>
-</ul>
-
 </section>
 
 
@@ -2535,7 +2459,7 @@
             
                 
             
-        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 4 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 11.21 k ></span> words
+        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 4 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 12.36 k ></span> words
     </section>
     <section class="powerby">
         Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
