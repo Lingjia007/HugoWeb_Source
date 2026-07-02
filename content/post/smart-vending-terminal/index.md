@@ -35,6 +35,8 @@ scr->container_main_1 = lv_obj_create(scr->container_main);
 // ...固定数量、固定数据、无法运行时增删
 ```
 
+![AiUIBuilder 静态 UI 骨架](uibuilder.png)
+
 业务需求要求**运行时动态增删控件**（商品数量可变、购物车项动态添加、横幅可配置替换），直接操作渲染树会导致：
 
 - 对象生命周期分散在各回调中，容易泄漏

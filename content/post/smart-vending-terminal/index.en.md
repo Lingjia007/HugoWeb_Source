@@ -35,6 +35,8 @@ scr->container_main_1 = lv_obj_create(scr->container_main);
 // ...fixed quantity, fixed data, no runtime add/remove
 ```
 
+![AiUIBuilder Static UI Skeleton](uibuilder.png)
+
 Business requirements demand **runtime dynamic addition and removal of widgets** (variable product counts, dynamically added cart items, configurable banner replacements). Directly manipulating the render tree leads to:
 
 - Object lifecycles scattered across callbacks, prone to leaks

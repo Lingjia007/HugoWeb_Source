@@ -1,0 +1,2590 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Using the GCC linker script for STM32F407VGT6 as a real-world example, this post provides an in-depth analysis of GNU LD's MEMORY command, SECTIONS allocation, VMA/LMA address model, the cooperation between startup code and linker scripts, CCMRAM usage, TLS support, and other core technologies">
+<title>GNU LD Linker Script in Depth: Dissecting Embedded Memory Layout and Section Relocation via an STM32F407 Example</title>
+
+<link rel='canonical' href='http://localhost:1313/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/'>
+
+<link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="GNU LD Linker Script in Depth: Dissecting Embedded Memory Layout and Section Relocation via an STM32F407 Example">
+<meta property='og:description' content="Using the GCC linker script for STM32F407VGT6 as a real-world example, this post provides an in-depth analysis of GNU LD's MEMORY command, SECTIONS allocation, VMA/LMA address model, the cooperation between startup code and linker scripts, CCMRAM usage, TLS support, and other core technologies">
+<meta property='og:url' content='http://localhost:1313/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/'>
+<meta property='og:site_name' content='lingsir007'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='Linker-Script' /><meta property='article:tag' content='GNU-LD' /><meta property='article:tag' content='GCC' /><meta property='article:tag' content='Embedded' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T22:48:31&#43;08:00'/>
+<meta name="twitter:title" content="GNU LD Linker Script in Depth: Dissecting Embedded Memory Layout and Section Relocation via an STM32F407 Example">
+<meta name="twitter:description" content="Using the GCC linker script for STM32F407VGT6 as a real-world example, this post provides an in-depth analysis of GNU LD's MEMORY command, SECTIONS allocation, VMA/LMA address model, the cooperation between startup code and linker scripts, CCMRAM usage, TLS support, and other core technologies">
+    <link rel="shortcut icon" href="/icons/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/Hugo_Web/en/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/Hugo_Web/img/avatar_hu_6974417c8ac44e16.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤔</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/Hugo_Web/en">lingsir007</a></h1>
+            <h2 class="site-description">welcome to my website</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/Lingjia007?tab=repositories'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/Hugo_Web/en/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/en/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/en/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/en/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/en/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/" >简体中文</option>
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/zh-hk/" >繁體中文</option>
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/en/" selected>English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+        
+
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#1-example-project-background">1. Example Project Background</a></li>
+    <li><a href="#2-overall-structure-of-a-linker-script">2. Overall Structure of a Linker Script</a></li>
+    <li><a href="#3-entry-program-entry-point">3. ENTRY: Program Entry Point</a></li>
+    <li><a href="#4-memory-memory-region-declarations">4. MEMORY: Memory Region Declarations</a>
+      <ol>
+        <li><a href="#41-syntax">4.1 Syntax</a></li>
+        <li><a href="#42-attribute-letters">4.2 Attribute Letters</a></li>
+        <li><a href="#43-special-characteristics-of-ccmram">4.3 Special Characteristics of CCMRAM</a></li>
+        <li><a href="#44-address-space-layout-diagram">4.4 Address Space Layout Diagram</a></li>
+      </ol>
+    </li>
+    <li><a href="#5-vma-and-lma-understanding-the-dual-address-model">5. VMA and LMA: Understanding the Dual Address Model</a>
+      <ol>
+        <li><a href="#51-why-do-we-need-two-addresses">5.1 Why Do We Need Two Addresses?</a></li>
+        <li><a href="#52-at-syntax">5.2 AT&gt; Syntax</a></li>
+        <li><a href="#53-formal-representation">5.3 Formal Representation</a></li>
+      </ol>
+    </li>
+    <li><a href="#6-stack-and-heap-link-time-checking">6. Stack and Heap: Link-Time Checking</a>
+      <ol>
+        <li><a href="#61-stack-growth-direction">6.1 Stack Growth Direction</a></li>
+        <li><a href="#62-minimum-stack-checking">6.2 Minimum Stack Checking</a></li>
+      </ol>
+    </li>
+    <li><a href="#7-sections-section-allocation-in-detail">7. SECTIONS: Section Allocation in Detail</a>
+      <ol>
+        <li><a href="#71-interrupt-vector-table-isr_vector">7.1 Interrupt Vector Table (.isr_vector)</a></li>
+        <li><a href="#72-code-section-text">7.2 Code Section (.text)</a></li>
+        <li><a href="#73-read-only-data-section-rodata">7.3 Read-Only Data Section (.rodata)</a></li>
+        <li><a href="#74-c-related-sections">7.4 C++ Related Sections</a></li>
+        <li><a href="#75-ccmram-section">7.5 CCMRAM Section</a></li>
+        <li><a href="#76-initialized-data-section-data">7.6 Initialized Data Section (.data)</a></li>
+        <li><a href="#77-tls-thread-local-storage-section">7.7 TLS (Thread-Local Storage) Section</a></li>
+        <li><a href="#78-bss-section-bss">7.8 BSS Section (.bss)</a></li>
+        <li><a href="#79-discard-section">7.9 DISCARD Section</a></li>
+      </ol>
+    </li>
+    <li><a href="#8-align-and-address-alignment">8. ALIGN and Address Alignment</a></li>
+    <li><a href="#9-provide-and-symbol-visibility">9. PROVIDE and Symbol Visibility</a></li>
+    <li><a href="#10-keep-and-gc-sections">10. KEEP and &ndash;gc-sections</a></li>
+    <li><a href="#11-cooperation-between-startup-code-and-linker-script">11. Cooperation Between Startup Code and Linker Script</a>
+      <ol>
+        <li><a href="#111-complete-startup-flow">11.1 Complete Startup Flow</a></li>
+        <li><a href="#112-c-constructor-invocation">11.2 C++ Constructor Invocation</a></li>
+      </ol>
+    </li>
+    <li><a href="#12-practical-use-of-custom-sections">12. Practical Use of Custom Sections</a>
+      <ol>
+        <li><a href="#121-placing-variables-in-ccmram">12.1 Placing Variables in CCMRAM</a></li>
+        <li><a href="#122-placing-functions-in-ram-for-execution">12.2 Placing Functions in RAM for Execution</a></li>
+        <li><a href="#123-noinit-region">12.3 NoInit Region</a></li>
+      </ol>
+    </li>
+    <li><a href="#13-common-issues-and-debugging">13. Common Issues and Debugging</a>
+      <ol>
+        <li><a href="#131-region-overflowed">13.1 region overflowed</a></li>
+        <li><a href="#132-multiple-definition-error">13.2 Multiple Definition Error</a></li>
+        <li><a href="#133-incorrect-data-copy">13.3 Incorrect .data Copy</a></li>
+        <li><a href="#134-viewing-section-layout">13.4 Viewing Section Layout</a></li>
+      </ol>
+    </li>
+    <li><a href="#14-summary">14. Summary</a></li>
+    <li><a href="#references">References</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/Hugo_Web/en/categories/embedded/" >
+                Embedded
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/">GNU LD Linker Script in Depth: Dissecting Embedded Memory Layout and Section Relocation via an STM32F407 Example</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            Using the GCC linker script for STM32F407VGT6 as a real-world example, this post provides an in-depth analysis of GNU LD&#39;s MEMORY command, SECTIONS allocation, VMA/LMA address model, the cooperation between startup code and linker scripts, CCMRAM usage, TLS support, and other core technologies
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 02, 2026</time>
+            </div>
+        <div class="article-lastmod">
+                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M10 18l5 -5a1.414 1.414 0 0 0 -2 -2l-5 5v2h2z" /></svg>
+                <time>
+                    Jul 02, 2026 22:48 CST
+                </time>
+            </div><div id="wordCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
+            <time class="article-wordcount">
+                3276  words
+            </time>
+        </div>
+
+        
+
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                
+                <span id="vercount_value_page_pv">loading... </span> views
+            </time>
+        </div>
+
+    </footer>
+    
+
+    
+        <footer class="article-translations">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+            <div>
+                
+                    <a href="http://localhost:1313/Hugo_Web/p/gnu-ld-%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E8%AF%A6%E8%A7%A3%E4%BB%8E-stm32f407-%E5%AE%9E%E4%BE%8B%E5%89%96%E6%9E%90%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E6%AE%B5%E9%87%8D%E5%AE%9A%E4%BD%8D/" class="link">简体中文</a>
+                
+                    <a href="http://localhost:1313/Hugo_Web/zh-hk/p/gnu-ld-%E9%8F%88%E7%B5%90%E8%85%B3%E6%9C%AC%E8%A9%B3%E8%A7%A3%E5%BE%9E-stm32f407-%E5%AF%A6%E4%BE%8B%E5%89%96%E6%9E%90%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%A8%98%E6%86%B6%E9%AB%94%E4%BD%88%E5%B1%80%E8%88%87%E6%AE%B5%E9%87%8D%E5%AE%9A%E4%BD%8D/" class="link">繁體中文</a>
+                
+            </div>
+        </footer>
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="introduction">Introduction
+</h2><p>A linker script (<code>.ld</code>) is one of the most overlooked yet critical files in embedded development. It tells the linker where the program&rsquo;s code and data should be placed in memory, the arrangement order of each section, and which data needs to be copied from Flash to RAM at startup.</p>
+<p>This article uses a real project&rsquo;s STM32F407VGT6 linker script as an example, walking through every syntactic element of a GNU LD linker script line by line, and providing an in-depth explanation of the VMA/LMA address model and the cooperation mechanism between startup code and the linker script.</p>
+<hr>
+<h2 id="1-example-project-background">1. Example Project Background
+</h2><p>This example comes from a TensorFlow Lite Micro edge AI inference project running on <strong>STM32F407VGT6</strong>, built with CMake + Ninja + GCC Arm Embedded cross-compiler.</p>
+<p>Chip resources:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Resource</th>
+          <th>Size</th>
+          <th>Start Address</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Flash</td>
+          <td>1024 KB</td>
+          <td><code>0x08000000</code></td>
+      </tr>
+      <tr>
+          <td>SRAM</td>
+          <td>112 KB</td>
+          <td><code>0x20000000</code></td>
+      </tr>
+      <tr>
+          <td>CCMRAM</td>
+          <td>64 KB</td>
+          <td><code>0x10000000</code></td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="2-overall-structure-of-a-linker-script">2. Overall Structure of a Linker Script
+</h2><p>A typical GNU LD linker script consists of three major parts:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ENTRY(...)         &lt;- Entry point definition
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">MEMORY { ... }     &lt;- Memory region declarations
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">SECTIONS { ... }   &lt;- Section allocation rules
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s examine each one.</p>
+<hr>
+<h2 id="3-entry-program-entry-point">3. ENTRY: Program Entry Point
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ENTRY(Reset_Handler)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>ENTRY</code> command tells the linker that the program&rsquo;s entry symbol is <code>Reset_Handler</code>. This value is written into the ELF file&rsquo;s entry point field, allowing debuggers and simulators to know where execution begins.</p>
+<p><strong>In bare-metal embedded systems</strong>, what truly determines the execution start point is the stack pointer and Reset Handler in the interrupt vector table (<code>.isr_vector</code> section), which are placed at the very beginning of Flash (<code>0x08000000</code>). After power-on, the CPU begins fetching instructions from there. <code>ENTRY</code> primarily affects ELF metadata and the debugging experience.</p>
+<hr>
+<h2 id="4-memory-memory-region-declarations">4. MEMORY: Memory Region Declarations
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">MEMORY
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 112K
+</span></span><span class="line"><span class="cl">CCMRAM (xrw)   : ORIGIN = 0x10000000, LENGTH = 64K
+</span></span><span class="line"><span class="cl">FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 1024K
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="41-syntax">4.1 Syntax
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;name&gt; (&lt;attributes&gt;) : ORIGIN = &lt;start address&gt;, LENGTH = &lt;size&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="42-attribute-letters">4.2 Attribute Letters
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Attribute</th>
+          <th>Meaning</th>
+          <th>Sections that can be placed</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>r</code></td>
+          <td>Read</td>
+          <td>Read-only data (.rodata)</td>
+      </tr>
+      <tr>
+          <td><code>w</code></td>
+          <td>Write</td>
+          <td>Writable data (.data, .bss)</td>
+      </tr>
+      <tr>
+          <td><code>x</code></td>
+          <td>eXecute</td>
+          <td>Executable code (.text)</td>
+      </tr>
+      <tr>
+          <td><code>a</code></td>
+          <td>Alloc</td>
+          <td>Allocatable (default for all sections)</td>
+      </tr>
+      <tr>
+          <td><code>i</code></td>
+          <td>Init</td>
+          <td>Initialized sections</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>In this example:</p>
+<ul>
+<li><strong>FLASH (rx)</strong>: Read-only + executable, stores code and constants</li>
+<li><strong>RAM (xrw)</strong>: Readable + writable + executable, stores initialized data and BSS</li>
+<li><strong>CCMRAM (xrw)</strong>: Core Coupled Memory, directly coupled to the CPU core, zero-wait-state access</li>
+</ul>
+<h3 id="43-special-characteristics-of-ccmram">4.3 Special Characteristics of CCMRAM
+</h3><p>The CCMRAM on STM32F407 is a 64KB SRAM <strong>accessible only by the CPU</strong>; the DMA controller cannot access it. Setting its attribute to <code>xrw</code> allows code to be placed in CCMRAM for execution (performance-sensitive algorithms benefit from zero-wait states), but note that DMA cannot reach this memory.</p>
+<h3 id="44-address-space-layout-diagram">4.4 Address Space Layout Diagram
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Address Range</th>
+          <th>Region</th>
+          <th>Contents</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>0x00000000</code></td>
+          <td>Code Region</td>
+          <td>Aliased to Flash via SYSBOOT</td>
+      </tr>
+      <tr>
+          <td><code>0x08000000</code> - <code>0x080FFFFF</code></td>
+          <td><strong>FLASH (1024 KB)</strong></td>
+          <td><code>.isr_vector</code> → <code>.text</code> → <code>.rodata</code> → <code>.data (LMA)</code> → <code>.ccmram (LMA)</code></td>
+      </tr>
+      <tr>
+          <td><code>0x10000000</code> - <code>0x1000FFFF</code></td>
+          <td><strong>CCMRAM (64 KB)</strong></td>
+          <td><code>.ccmram (VMA)</code> — Copied from Flash at startup</td>
+      </tr>
+      <tr>
+          <td><code>0x20000000</code> - <code>0x2001BFFF</code></td>
+          <td><strong>RAM (112 KB)</strong></td>
+          <td><code>.data (VMA)</code> → <code>.bss</code> → Heap → Stack (stack grows from high to low addresses)</td>
+      </tr>
+  </tbody>
+</table></div>
+<p><strong>LMA vs VMA Copy Relationships</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Flash (LMA)                 RAM/CCMRAM (VMA)
+</span></span><span class="line"><span class="cl">|-- .data init values  ----&gt; .data runtime location (copy)
+</span></span><span class="line"><span class="cl">|-- .ccmram init values ----&gt; .ccmram runtime location (copy)
+</span></span><span class="line"><span class="cl">|
+</span></span><span class="line"><span class="cl">.bss                        ----&gt; Zeroed at startup (no copy)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="5-vma-and-lma-understanding-the-dual-address-model">5. VMA and LMA: Understanding the Dual Address Model
+</h2><p>This is the most core concept of linker scripts.</p>
+<ul>
+<li><strong>VMA (Virtual Memory Address)</strong>: The address at runtime. The address used by the CPU during execution.</li>
+<li><strong>LMA (Load Memory Address)</strong>: The address where the program is loaded (flashed). The actual storage location in Flash.</li>
+</ul>
+<h3 id="51-why-do-we-need-two-addresses">5.1 Why Do We Need Two Addresses?
+</h3><p>For <code>.text</code> and <code>.rodata</code>, VMA = LMA; they execute in Flash and do not need to be moved.</p>
+<p>But for <code>.data</code> (initialized global variables), the situation is different:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">global_counter</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>  <span class="c1">// Initialized global variable
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <strong>initial value 42</strong> of this variable must be stored in Flash (non-volatile), but at <strong>runtime</strong> the variable must reside in RAM (readable and writable). Therefore:</p>
+<ul>
+<li><strong>LMA</strong> = address in Flash (where the initial value 42 is stored)</li>
+<li><strong>VMA</strong> = address in RAM (where <code>global_counter</code> is read/written at runtime)</li>
+</ul>
+<p>The startup code&rsquo;s responsibility is to copy the <code>.data</code> section from LMA to VMA before <code>main()</code>.</p>
+<h3 id="52-at-syntax">5.2 AT&gt; Syntax
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.data :
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    ...
+</span></span><span class="line"><span class="cl">} &gt;RAM AT&gt; FLASH
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>&gt;RAM</code>: specifies VMA region as RAM</li>
+<li><code>AT&gt; FLASH</code>: specifies LMA region as Flash</li>
+</ul>
+<p>If <code>AT&gt;</code> is omitted, then LMA = VMA, and the section is both stored and runs in the same region.</p>
+<h3 id="53-formal-representation">5.3 Formal Representation
+</h3><p>For section $S$:</p>
+$$\text{VMA}(S) = \text{Addr}(S \text{ in target region})$$$$\text{LMA}(S) = \text{Addr}(S \text{ in load region})$$<p>Runtime invariant:</p>
+$$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(x)] \text{ (after startup copy completes)}$$<hr>
+<h2 id="6-stack-and-heap-link-time-checking">6. Stack and Heap: Link-Time Checking
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">_estack = ORIGIN(RAM) + LENGTH(RAM);    /* End of RAM */
+</span></span><span class="line"><span class="cl">_sstack = _estack - _Min_Stack_Size;
+</span></span><span class="line"><span class="cl">_Min_Heap_Size = 0x800;      /* 2 KB */
+</span></span><span class="line"><span class="cl">_Min_Stack_Size = 0x800;     /* 2 KB */
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="61-stack-growth-direction">6.1 Stack Growth Direction
+</h3><p>The ARM Cortex-M stack is <strong>Full Descending</strong>:</p>
+<ul>
+<li>Stack pointer initial value = highest RAM address (<code>_estack</code>)</li>
+<li>On each PUSH, SP decrements by 4 first, then writes</li>
+<li>On each POP, reads SP first, then increments by 4</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">RAM high address ← _estack (SP initial value)
+</span></span><span class="line"><span class="cl">              │ Stack │  ↓ grows toward low addresses
+</span></span><span class="line"><span class="cl">              │       │
+</span></span><span class="line"><span class="cl">              │ Heap  │  ↑ grows toward high addresses
+</span></span><span class="line"><span class="cl">RAM low address ← _sdata
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="62-minimum-stack-checking">6.2 Minimum Stack Checking
+</h3><p>The <code>._user_heap_stack</code> section ensures at link time that there is enough space in RAM:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">._user_heap_stack (NOLOAD) :
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    . = ALIGN(8);
+</span></span><span class="line"><span class="cl">    PROVIDE ( end = . );
+</span></span><span class="line"><span class="cl">    PROVIDE ( _end = . );
+</span></span><span class="line"><span class="cl">    . = . + _Min_Heap_Size;    /* Reserve 2KB heap */
+</span></span><span class="line"><span class="cl">    . = . + _Min_Stack_Size;   /* Reserve 2KB stack */
+</span></span><span class="line"><span class="cl">    . = ALIGN(8);
+</span></span><span class="line"><span class="cl">} &gt;RAM
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If <code>.bss</code> + heap + stack exceeds RAM capacity, the linker will report an error:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">region RAM overflowed by 1234 bytes
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote class="alert alert-tip">
+    <p><code>_Min_Stack_Size = 0x800</code> (2KB) is typically a <strong>minimum value</strong>; actual stack usage depends on call depth and local variable sizes. For scenarios using an RTOS or nested interrupts, 4KB or larger may be needed. Runtime stack overflow detection can be implemented using the <code>__stack_limit</code> symbol or the MPU.</p></blockquote><hr>
+<h2 id="7-sections-section-allocation-in-detail">7. SECTIONS: Section Allocation in Detail
+</h2><h3 id="71-interrupt-vector-table-isr_vector">7.1 Interrupt Vector Table (.isr_vector)
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.isr_vector :
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    . = ALIGN(4);
+</span></span><span class="line"><span class="cl">    KEEP(*(.isr_vector))    /* Force retain, not optimized away by --gc-sections */
+</span></span><span class="line"><span class="cl">    . = ALIGN(4);
+</span></span><span class="line"><span class="cl">} &gt;FLASH
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Why must it be placed at the very beginning of Flash?</strong></p>
+<p>After power-on, the STM32 CPU begins fetching instructions from <code>0x00000000</code>. Address <code>0x00000000</code> is mapped (aliased) to the Flash start address <code>0x08000000</code> via SYSBOOT configuration. The CPU first reads:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Offset</th>
+          <th>Content</th>
+          <th>Meaning</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>0x00</td>
+          <td>Initial SP</td>
+          <td>Main stack pointer initial value</td>
+      </tr>
+      <tr>
+          <td>0x04</td>
+          <td>ResetHandler</td>
+          <td>Reset vector, jumps to startup code</td>
+      </tr>
+      <tr>
+          <td>0x08</td>
+          <td>NMIHandler</td>
+          <td>Non-maskable interrupt</td>
+      </tr>
+      <tr>
+          <td>0x0C</td>
+          <td>HardFaultHandler</td>
+          <td>Hard fault</td>
+      </tr>
+      <tr>
+          <td>&hellip;</td>
+          <td>&hellip;</td>
+          <td>Other interrupts/exceptions</td>
+      </tr>
+  </tbody>
+</table></div>
+<p><strong>Purpose of <code>KEEP</code></strong>: The <code>--gc-sections</code> optimization removes unreferenced sections, but entries in <code>.isr_vector</code> have no explicit references (the CPU hardware jumps to them automatically). <code>KEEP</code> prevents them from being optimized away.</p>
+<h3 id="72-code-section-text">7.2 Code Section (.text)
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.text :
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    . = ALIGN(4);
+</span></span><span class="line"><span class="cl">    *(.text)           /* All .text sections */
+</span></span><span class="line"><span class="cl">    *(.text*)          /* .text.* named sections */
+</span></span><span class="line"><span class="cl">    *(.glue_7)         /* ARM → Thumb stub code */
+</span></span><span class="line"><span class="cl">    *(.glue_7t)        /* Thumb → ARM stub code */
+</span></span><span class="line"><span class="cl">    *(.eh_frame)       /* Exception handling frames (C++) */
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    KEEP (*(.init))    /* Constructor initialization */
+</span></span><span class="line"><span class="cl">    KEEP (*(.fini))    /* Destructor cleanup */
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    . = ALIGN(4);
+</span></span><span class="line"><span class="cl">    _etext = .;        /* Code section end symbol */
+</span></span><span class="line"><span class="cl">} &gt;FLASH
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong><code>.glue_7</code> / <code>.glue_7t</code></strong>: Stub (veneer) code for switching between ARM and Thumb instruction sets. Cortex-M4 only supports Thumb-2, but these sections may still be generated by the generic ARM toolchain.</p>
+<p><strong><code>_etext</code></strong>: An exported symbol marking the end of the code section. The startup code uses it to determine the starting position of the <code>.data</code> section in Flash (<code>_sidata = LOADADDR(.data)</code> is more precise).</p>
+<h3 id="73-read-only-data-section-rodata">7.3 Read-Only Data Section (.rodata)
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">.</span><span class="n">rodata</span> <span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="o">.</span> <span class="o">=</span> <span class="n">ALIGN</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="p">(</span><span class="o">.</span><span class="n">rodata</span><span class="p">)</span>         <span class="o">/*</span> <span class="k">const</span> <span class="n">global</span> <span class="n">variables</span><span class="p">,</span> <span class="n">string</span> <span class="n">literals</span> <span class="o">*/</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="p">(</span><span class="o">.</span><span class="n">rodata</span><span class="o">*</span><span class="p">)</span>        <span class="o">/*</span> <span class="o">.</span><span class="n">rodata</span><span class="o">.*</span> <span class="n">named</span> <span class="n">sections</span> <span class="o">*/</span>
+</span></span><span class="line"><span class="cl">    <span class="o">.</span> <span class="o">=</span> <span class="n">ALIGN</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="o">&gt;</span><span class="n">FLASH</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>.rodata</code> stores <code>const</code> global variables, string literals, and similar data. In embedded systems, this data stays in Flash and does not consume RAM.</p>
+<p><strong>A common pitfall</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">msg</span> <span class="o">=</span> <span class="s">&#34;hello&#34;</span><span class="p">;</span>   <span class="c1">// &#34;hello&#34; is in .rodata, the msg pointer is in .data
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">const</span> <span class="kt">char</span> <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;hello&#34;</span><span class="p">;</span>  <span class="c1">// Everything is in .rodata, more optimal
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="74-c-related-sections">7.4 C++ Related Sections
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.ARM.extab (READONLY) : { ... } &gt;FLASH
+</span></span><span class="line"><span class="cl">.ARM (READONLY) : { ... } &gt;FLASH
+</span></span><span class="line"><span class="cl">.preinit_array (READONLY) : { ... } &gt;FLASH
+</span></span><span class="line"><span class="cl">.init_array (READONLY) : { ... } &gt;FLASH
+</span></span><span class="line"><span class="cl">.fini_array (READONLY) : { ... } &gt;FLASH
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Section</th>
+          <th>Purpose</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>.ARM.extab</code> / <code>.ARM</code></td>
+          <td>C++ exception handling unwind tables</td>
+      </tr>
+      <tr>
+          <td><code>.preinit_array</code></td>
+          <td>Earliest initialization function pointer array</td>
+      </tr>
+      <tr>
+          <td><code>.init_array</code></td>
+          <td>C++ global constructor function pointer array</td>
+      </tr>
+      <tr>
+          <td><code>.fini_array</code></td>
+          <td>C++ global destructor function pointer array</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>The <code>READONLY</code> keyword is a GCC 11+ feature that tells the linker these sections are not writable. It must be removed when using GCC 10 or earlier.</p>
+<p><strong>Pure C projects</strong>: If there is no C++ code, these sections are typically empty. However, <code>KEEP</code> ensures they are not mistakenly deleted even with <code>--gc-sections</code>.</p>
+<h3 id="75-ccmram-section">7.5 CCMRAM Section
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">_siccmram = LOADADDR(.ccmram);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">.ccmram :
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    . = ALIGN(4);
+</span></span><span class="line"><span class="cl">    _sccmram = .;
+</span></span><span class="line"><span class="cl">    *(.ccmram)
+</span></span><span class="line"><span class="cl">    *(.ccmram*)
+</span></span><span class="line"><span class="cl">    . = ALIGN(4);
+</span></span><span class="line"><span class="cl">    _eccmram = .;
+</span></span><span class="line"><span class="cl">} &gt;CCMRAM AT&gt; FLASH
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>&gt;CCMRAM</code>: VMA is in the CCMRAM region</li>
+<li><code>AT&gt; FLASH</code>: LMA is in Flash (initial values are stored in Flash)</li>
+<li><code>_siccmram</code>: LMA start address; the startup code uses this to copy data from Flash to CCMRAM</li>
+</ul>
+<p><strong>Usage</strong>: In C code, use <code>__attribute__</code> to place variables into CCMRAM:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.ccmram&#34;</span><span class="p">)))</span> <span class="kt">int</span> <span class="n">fast_buffer</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote class="alert alert-warning">
+    <p>The startup code must explicitly handle the CCMRAM copy. The default <code>startup_*.s</code> generated by STM32CubeMX may not include CCMRAM copy logic; it needs to be added manually.</p></blockquote><h3 id="76-initialized-data-section-data">7.6 Initialized Data Section (.data)
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">_sidata = LOADADDR(.data);   /* Start address of .data in Flash */
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">.data :
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    . = ALIGN(4);
+</span></span><span class="line"><span class="cl">    _sdata = .;               /* VMA start */
+</span></span><span class="line"><span class="cl">    *(.data)
+</span></span><span class="line"><span class="cl">    *(.data*)
+</span></span><span class="line"><span class="cl">    *(.RamFunc)               /* Functions executed in RAM */
+</span></span><span class="line"><span class="cl">    *(.RamFunc*)
+</span></span><span class="line"><span class="cl">    . = ALIGN(4);
+</span></span><span class="line"><span class="cl">} &gt;RAM AT&gt; FLASH
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Exported symbols</strong>:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Symbol</th>
+          <th>Meaning</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>_sidata</code></td>
+          <td>LMA start of <code>.data</code> (in Flash)</td>
+      </tr>
+      <tr>
+          <td><code>_sdata</code></td>
+          <td>VMA start of <code>.data</code> (in RAM)</td>
+      </tr>
+      <tr>
+          <td><code>_edata</code></td>
+          <td>VMA end of <code>.data</code> (defined at the end of the .tdata section)</td>
+      </tr>
+  </tbody>
+</table></div>
+<p><strong>Startup copy pseudocode</strong>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Logic in startup_stm32f407xx.s
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">uint32_t</span> <span class="o">*</span><span class="n">src</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">_sidata</span><span class="p">;</span>        <span class="c1">// Source address in Flash
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">uint32_t</span> <span class="o">*</span><span class="n">dst</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">_sdata</span><span class="p">;</span>         <span class="c1">// Destination address in RAM
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">while</span> <span class="p">(</span><span class="n">dst</span> <span class="o">&lt;</span> <span class="o">&amp;</span><span class="n">_edata</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">dst</span><span class="o">++</span> <span class="o">=</span> <span class="o">*</span><span class="n">src</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong><code>.RamFunc</code> section</strong>: In some scenarios, functions need to be copied to RAM for execution (e.g., when Flash erase/programming makes it impossible to fetch instructions from the same Flash bank). Mark them with <code>__attribute__((section(&quot;.RamFunc&quot;)))</code>.</p>
+<h3 id="77-tls-thread-local-storage-section">7.7 TLS (Thread-Local Storage) Section
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.tdata : ALIGN(4)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    *(.tdata .tdata.* .gnu.linkonce.td.*)
+</span></span><span class="line"><span class="cl">    . = ALIGN(4);
+</span></span><span class="line"><span class="cl">    _edata = .;
+</span></span><span class="line"><span class="cl">    PROVIDE(__data_end = .);
+</span></span><span class="line"><span class="cl">    PROVIDE(__tdata_end = .);
+</span></span><span class="line"><span class="cl">} &gt;RAM AT&gt; FLASH
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">PROVIDE( __tdata_start = ADDR(.tdata) );
+</span></span><span class="line"><span class="cl">PROVIDE( __tdata_size = __tdata_end - __tdata_start );
+</span></span><span class="line"><span class="cl">PROVIDE( __tdata_source = LOADADDR(.tdata) );
+</span></span><span class="line"><span class="cl">PROVIDE( __tdata_source_end = LOADADDR(.tdata) + SIZEOF(.tdata) );
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">.tbss (NOLOAD) : ALIGN(4)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    _sbss = .;
+</span></span><span class="line"><span class="cl">    __bss_start__ = _sbss;
+</span></span><span class="line"><span class="cl">    *(.tbss .tbss.*)
+</span></span><span class="line"><span class="cl">    . = ALIGN(4);
+</span></span><span class="line"><span class="cl">    PROVIDE( __tbss_end = . );
+</span></span><span class="line"><span class="cl">} &gt;RAM
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>TLS is the underlying support for C11 <code>_Thread_local</code> / GCC <code>__thread</code>. It is rarely used in bare-metal embedded systems, but when using an RTOS, each thread may need its own copy of certain variables.</p>
+<p><strong>Exported symbols</strong>:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Symbol</th>
+          <th>Meaning</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>__tdata_start</code> / <code>__tdata_end</code></td>
+          <td>VMA range of <code>.tdata</code></td>
+      </tr>
+      <tr>
+          <td><code>__tdata_source</code> / <code>__tdata_source_end</code></td>
+          <td>LMA range of <code>.tdata</code></td>
+      </tr>
+      <tr>
+          <td><code>__tls_size</code></td>
+          <td>Total TLS size</td>
+      </tr>
+      <tr>
+          <td><code>__tls_align</code></td>
+          <td>TLS alignment requirement</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="78-bss-section-bss">7.8 BSS Section (.bss)
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.bss (NOLOAD) : ALIGN(4)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    *(.bss)
+</span></span><span class="line"><span class="cl">    *(.bss*)
+</span></span><span class="line"><span class="cl">    *(COMMON)
+</span></span><span class="line"><span class="cl">    . = ALIGN(4);
+</span></span><span class="line"><span class="cl">    _ebss = .;
+</span></span><span class="line"><span class="cl">    __bss_end__ = _ebss;
+</span></span><span class="line"><span class="cl">    PROVIDE( __bss_end = .);
+</span></span><span class="line"><span class="cl">} &gt;RAM
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong><code>(NOLOAD)</code></strong>: This section generates no output content; it only allocates address space. The BSS section stores uninitialized global/static variables, which are zeroed by the startup code at runtime:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Startup code zeros BSS
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">uint32_t</span> <span class="o">*</span><span class="n">dst</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">_sbss</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="n">dst</span> <span class="o">&lt;</span> <span class="o">&amp;</span><span class="n">_ebss</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">dst</span><span class="o">++</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong><code>(COMMON)</code></strong>: Uninitialized global variables in C (tentative definitions) are placed in the COMMON section before linking, and merged into <code>.bss</code> at link time.</p>
+<h3 id="79-discard-section">7.9 DISCARD Section
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/DISCARD/ :
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    libc.a:* ( * )
+</span></span><span class="line"><span class="cl">    libm.a:* ( * )
+</span></span><span class="line"><span class="cl">    libgcc.a:* ( * )
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Discards certain content from the standard libraries. In deep embedded contexts (newlib-nano, nosys), this avoids linking unneeded library code and reduces firmware size.</p>
+<hr>
+<h2 id="8-align-and-address-alignment">8. ALIGN and Address Alignment
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">. = ALIGN(4);
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>.</code> is the <strong>location counter</strong>, representing the current output offset</li>
+<li><code>ALIGN(4)</code> aligns the location counter up to a 4-byte boundary</li>
+<li>ARM Cortex-M requires all accesses to be aligned to their natural boundary (32-bit to 4 bytes, 64-bit to 8 bytes)</li>
+</ul>
+<p><strong>Why does .isr_vector need ALIGN(4)?</strong></p>
+<p>Each entry in the interrupt vector table is 4 bytes (a 32-bit address) and must be 4-byte aligned; otherwise, the CPU will fault on instruction fetch.</p>
+<hr>
+<h2 id="9-provide-and-symbol-visibility">9. PROVIDE and Symbol Visibility
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">PROVIDE( __bss_end = . );
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>PROVIDE</code> defines a <strong>weak symbol</strong>: it takes effect only when no other definition of the same symbol exists in the program. If the C code defines <code>__bss_end</code>, the linker uses the C code&rsquo;s definition and ignores the <code>PROVIDE</code>.</p>
+<p><strong>Difference from direct assignment</strong>:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Syntax</th>
+          <th>Behavior</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>_sbss = .;</code></td>
+          <td>Forced definition; if the program also has a definition, a multiple definition error is reported</td>
+      </tr>
+      <tr>
+          <td><code>PROVIDE(_sbss = .);</code></td>
+          <td>Only provided when undefined; allows the program to override</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="10-keep-and-gc-sections">10. KEEP and &ndash;gc-sections
+</h2><p><code>--gc-sections</code> (<code>-ffunction-sections -fdata-sections</code> + <code>-Wl,--gc-sections</code>) is a key optimization for slimming embedded firmware: the compiler generates independent sections for each function and data object, and the linker removes unreferenced sections.</p>
+<p><strong>Problem</strong>: The interrupt vector table, constructor/destructor arrays, etc. have no explicit references and would be mistakenly removed.</p>
+<p><strong>Solution</strong>: <code>KEEP()</code> tells the linker &ldquo;retain this section, even if it appears unreferenced.&rdquo;</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">KEEP(*(.isr_vector))    /* Vector table: CPU hardware jumps, no software reference */
+</span></span><span class="line"><span class="cl">KEEP (*(.init))         /* C++ initialization */
+</span></span><span class="line"><span class="cl">KEEP (*(.fini))         /* C++ cleanup */
+</span></span><span class="line"><span class="cl">KEEP (*(SORT(.init_array.*)))  /* Constructor function pointer array */
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="11-cooperation-between-startup-code-and-linker-script">11. Cooperation Between Startup Code and Linker Script
+</h2><p>The linker script defines symbols; the startup code (<code>startup_stm32f407xx.s</code>) uses these symbols to perform initialization. The two must strictly cooperate:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">┌──────────────────────┐        ┌──────────────────────┐
+</span></span><span class="line"><span class="cl">│     Linker Script (.ld)│        │  Startup Code (.s)   │
+</span></span><span class="line"><span class="cl">│                      │        │                      │
+</span></span><span class="line"><span class="cl">│  _estack             │───────→│  Initial SP value    │
+</span></span><span class="line"><span class="cl">│  _sidata             │───────→│  .data Flash source  │
+</span></span><span class="line"><span class="cl">│  _sdata, _edata     │───────→│  .data RAM range     │
+</span></span><span class="line"><span class="cl">│  _sbss, _ebss       │───────→│  .bss RAM range      │
+</span></span><span class="line"><span class="cl">│  _siccmram           │───────→│  .ccmram Flash src   │
+</span></span><span class="line"><span class="cl">│  _sccmram, _eccmram  │───────→│  .ccmram CCMRAM range│
+</span></span><span class="line"><span class="cl">└──────────────────────┘        └──────────────────────┘
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="111-complete-startup-flow">11.1 Complete Startup Flow
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-asm" data-lang="asm"><span class="line"><span class="cl"><span class="nl">Reset_Handler:</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/* 1. Set stack pointer (linker script _estack) */</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">ldr</span>  <span class="no">sp</span><span class="p">,</span> <span class="err">=</span><span class="no">_estack</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/* 2. Copy .data from Flash to RAM */</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">ldr</span>  <span class="no">r0</span><span class="p">,</span> <span class="err">=</span><span class="no">_sdata</span>      <span class="cm">/* dst start */</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">ldr</span>  <span class="no">r1</span><span class="p">,</span> <span class="err">=</span><span class="no">_edata</span>      <span class="cm">/* dst end */</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">ldr</span>  <span class="no">r2</span><span class="p">,</span> <span class="err">=</span><span class="no">_sidata</span>     <span class="cm">/* src start (LMA) */</span>
+</span></span><span class="line"><span class="cl"><span class="nl">CopyData:</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">cmp</span>  <span class="no">r0</span><span class="p">,</span> <span class="no">r1</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">ittt</span> <span class="no">lt</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">ldrlt</span> <span class="no">r3</span><span class="p">,</span> <span class="p">[</span><span class="no">r2</span><span class="p">],</span> <span class="c1">#4
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">strlt</span> <span class="no">r3</span><span class="p">,</span> <span class="p">[</span><span class="no">r0</span><span class="p">],</span> <span class="c1">#4
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">blt</span>  <span class="no">CopyData</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/* 3. Zero .bss */</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">ldr</span>  <span class="no">r0</span><span class="p">,</span> <span class="err">=</span><span class="no">_sbss</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">ldr</span>  <span class="no">r1</span><span class="p">,</span> <span class="err">=</span><span class="no">_ebss</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">movs</span> <span class="no">r2</span><span class="p">,</span> <span class="c1">#0
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nl">ClearBSS:</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">cmp</span>  <span class="no">r0</span><span class="p">,</span> <span class="no">r1</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">itt</span>  <span class="no">lt</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">strlt</span> <span class="no">r2</span><span class="p">,</span> <span class="p">[</span><span class="no">r0</span><span class="p">],</span> <span class="c1">#4
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">blt</span>  <span class="no">ClearBSS</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/* 4. Call SystemInit() */</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">bl</span>   <span class="no">SystemInit</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/* 5. Call __libc_init_array() (C++ constructors) */</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">bl</span>   <span class="no">__libc_init_array</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/* 6. Call main() */</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">bl</span>   <span class="no">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/* 7. main should not return; if it does, infinite loop */</span>
+</span></span><span class="line"><span class="cl"><span class="nl">LoopForever:</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">b</span>    <span class="no">LoopForever</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="112-c-constructor-invocation">11.2 C++ Constructor Invocation
+</h3><p><code>__libc_init_array()</code> iterates over the function pointers in the <code>.init_array</code> section and calls each one. This section is guaranteed to exist and be in the correct order by <code>KEEP (*(SORT(.init_array.*)))</code> in the linker script (<code>SORT</code> ensures sorting by priority).</p>
+<hr>
+<h2 id="12-practical-use-of-custom-sections">12. Practical Use of Custom Sections
+</h2><h3 id="121-placing-variables-in-ccmram">12.1 Placing Variables in CCMRAM
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// The .ccmram section is already defined in the linker script
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.ccmram&#34;</span><span class="p">)))</span> <span class="kt">int</span> <span class="n">ai_tensor_buf</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>  <span class="c1">// AI inference tensor buffer
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Placing AI inference tensor buffers in CCMRAM provides zero-wait-state access, improving inference speed.</p>
+<h3 id="122-placing-functions-in-ram-for-execution">12.2 Placing Functions in RAM for Execution
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// The .RamFunc section is already defined in the linker script
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.RamFunc&#34;</span><span class="p">)))</span> <span class="kt">void</span> <span class="nf">flash_erase_and_write</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>On STM32F407, Flash cannot be fetched from the same bank during erase/programming. Placing Flash operation functions in RAM avoids this issue.</p>
+<h3 id="123-noinit-region">12.3 NoInit Region
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Variables not initialized by startup code (retain values after soft reset)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.bss.NoInit&#34;</span><span class="p">)))</span> <span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="n">update_flag</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>When a Bootloader and App communicate via soft reset, <code>NoInit</code> variables are not zeroed by the startup code and can pass state across resets.</p>
+<hr>
+<h2 id="13-common-issues-and-debugging">13. Common Issues and Debugging
+</h2><h3 id="131-region-overflowed">13.1 region overflowed
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">region RAM overflowed by 1234 bytes
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Cause: <code>.data</code> + <code>.bss</code> + heap + stack exceeds RAM capacity.</p>
+<p>Investigation:</p>
+<ol>
+<li>Check section sizes in the <code>.map</code> file</li>
+<li>Check if large arrays are mistakenly placed in RAM (consider using Flash or external SRAM instead)</li>
+<li>Increase <code>_Min_Stack_Size</code> or optimize code</li>
+</ol>
+<h3 id="132-multiple-definition-error">13.2 Multiple Definition Error
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zed" data-lang="zed"><span class="line"><span class="cl"><span class="n">multiple</span><span class="w"> </span><span class="kt">definition</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="err">`</span><span class="n">_sbss</span><span class="err">&#39;</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Using <code>_sbss = .;</code> in the linker script is a strong definition; if the C code also declares a symbol with the same name, there is a conflict. Use <code>PROVIDE(_sbss = .)</code> instead, or rename the C symbol.</p>
+<h3 id="133-incorrect-data-copy">13.3 Incorrect .data Copy
+</h3><p>Symptom: Global variable initial values are not as expected.</p>
+<p>Investigation:</p>
+<ol>
+<li>Verify the values of <code>_sidata</code> and <code>_sdata</code>: <code>objdump -t firmware.elf | grep -E '_s(data|idata)'</code></li>
+<li>Confirm the startup code copy logic covers the full range from <code>.data</code> to <code>.tdata</code></li>
+<li>Check if CCMRAM copy was missed</li>
+</ol>
+<h3 id="134-viewing-section-layout">13.4 Viewing Section Layout
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># View VMA and LMA of each section</span>
+</span></span><span class="line"><span class="cl">arm-none-eabi-objdump -h firmware.elf
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># View complete memory map</span>
+</span></span><span class="line"><span class="cl">arm-none-eabi-objdump -t firmware.elf <span class="p">|</span> sort
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># View section size summary</span>
+</span></span><span class="line"><span class="cl">arm-none-eabi-size firmware.elf
+</span></span><span class="line"><span class="cl">   text    data     bss     dec     hex filename
+</span></span><span class="line"><span class="cl">  <span class="m">45678</span>    <span class="m">1234</span>    <span class="m">8900</span>   <span class="m">55812</span>    d9e4 firmware.elf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In the <code>size</code> output:</p>
+<ul>
+<li><code>text</code>: .text + .rodata (Flash usage)</li>
+<li><code>data</code>: .data (Flash stores initial values + RAM runtime usage)</li>
+<li><code>bss</code>: .bss (RAM only)</li>
+<li>Total Flash usage = text + data</li>
+<li>Total RAM usage = data + bss</li>
+</ul>
+<hr>
+<h2 id="14-summary">14. Summary
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Concept</th>
+          <th>Key Understanding</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>MEMORY</td>
+          <td>Declares the chip&rsquo;s physical memory regions and attributes</td>
+      </tr>
+      <tr>
+          <td>SECTIONS</td>
+          <td>Specifies the arrangement order and placement of each section</td>
+      </tr>
+      <tr>
+          <td>VMA / LMA</td>
+          <td>Runtime address vs load-time address; .data must be copied</td>
+      </tr>
+      <tr>
+          <td>&gt;RAM AT&gt; FLASH</td>
+          <td>VMA in RAM, LMA in Flash</td>
+      </tr>
+      <tr>
+          <td>ALIGN</td>
+          <td>Ensures hardware-required address alignment</td>
+      </tr>
+      <tr>
+          <td>KEEP</td>
+          <td>Prevents &ndash;gc-sections from mistakenly removing critical sections</td>
+      </tr>
+      <tr>
+          <td>PROVIDE</td>
+          <td>Weak symbol definition, allows program to override</td>
+      </tr>
+      <tr>
+          <td>_s*/_e* symbols</td>
+          <td>Boundary addresses exported for use by startup code</td>
+      </tr>
+      <tr>
+          <td>.bss (NOLOAD)</td>
+          <td>Generates no output, only allocates addresses; zeroed at startup</td>
+      </tr>
+      <tr>
+          <td>/DISCARD/</td>
+          <td>Discards unneeded standard library content</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>A linker script is not a &ldquo;set it and forget it&rdquo; black box; it is the bridge connecting hardware memory topology, compiler output, and startup code. Understanding it empowers you to navigate memory optimization, multi-partition bootloaders, custom sections, and other advanced scenarios with ease.</p>
+<hr>
+<h2 id="references">References
+</h2><ul>
+<li><a class="link" href="https://sourceware.org/binutils/docs/ld/Scripts.html"  target="_blank" rel="noopener"
+    >GNU LD Manual - Linker Scripts</a></li>
+<li><a class="link" href="https://www.st.com/resource/en/reference_manual/dm00031020.pdf"  target="_blank" rel="noopener"
+    >STM32F4xx Reference Manual - Memory Map</a></li>
+<li><a class="link" href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html"  target="_blank" rel="noopener"
+    >GCC Attribute Documentation</a></li>
+<li><a class="link" href="https://developer.arm.com/documentation/ddi0343/latest/"  target="_blank" rel="noopener"
+    >ARM Cortex-M4 Technical Reference Manual</a></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/Hugo_Web/en/tags/stm32/">STM32</a>
+        
+            <a href="/Hugo_Web/en/tags/linker-script/">Linker-Script</a>
+        
+            <a href="/Hugo_Web/en/tags/gnu-ld/">GNU-LD</a>
+        
+            <a href="/Hugo_Web/en/tags/gcc/">GCC</a>
+        
+            <a href="/Hugo_Web/en/tags/embedded/">Embedded</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on Jul 02, 2026 22:48 CST
+        </span>
+    </section></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const mainArticleElement = document.querySelector(".main-article");
+    renderMathInElement(mainArticleElement, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  });
+</script>
+<div class="math-katex"></div>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">Related content</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/">
+        
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_f8913fdcd1a8711e.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite"
+                        
+                        data-hash="md5-vOO1Pj1Sm7lmL3XzOtUpuQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/">
+        
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_989a706e6c4dfa57.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post STM32F407 Secure Bootloader Design: A/B Dual Partition, Encryption/Signing, and Multi-Channel Upgrade"
+                        
+                        data-hash="md5-fIM15TRcIvLhRDBeZFcjRg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">STM32F407 Secure Bootloader Design: A/B Dual Partition, Encryption/Signing, and Multi-Channel Upgrade</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/">
+        
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.7092acb7ea331869c1e1d1894091f36f_hu_26121de83b12f576.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal"
+                        
+                        data-hash="md5-cJKst&#43;ozGGnB4dGJQJHzbw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+    <div class="comment"></div>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 lingsir007
+    </section>
+    
+    <section class="running-time">
+        
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 5 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 17.27 k ></span> words
+    </section>
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script> <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
+<script>
+  var pjax = new Pjax({
+    selectors: ["title", ".main-container", ".js-Pjax1", ".js-Pjax2"],
+  });
+</script>
+
+<div id="aplayer"></div>
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<script>
+  const staticDir = "http://localhost:1313/Hugo_Web/en/";
+  const ap = new APlayer({
+    container: document.getElementById("aplayer"),
+    audio: [
+      {
+        name: "Keil Generic Key",
+        artist: "EDGE",
+        url: staticDir + "music/Keil Generic Key-EDGE/song.mp3",
+        cover: staticDir + "music/Keil Generic Key-EDGE/cover.png",
+        lrc: staticDir + "music/Keil Generic Key-EDGE/lyric.lrc",
+      },
+      {
+        name: "查无此字",
+        artist: "林奕匡",
+        url: staticDir + "music/查无此字-林奕匡/song.mp3",
+        cover: staticDir + "music/查无此字-林奕匡/cover.jpg",
+        lrc: staticDir + "music/查无此字-林奕匡/lyric.lrc",
+      },
+      {
+        name: "爱别等",
+        artist: "洪卓立",
+        url: staticDir + "music/爱别等-洪卓立/song.mp3",
+        cover: staticDir + "music/爱别等-洪卓立/cover.jpg",
+        lrc: staticDir + "music/爱别等-洪卓立/lyric.lrc",
+      },
+      {
+        name: "乖乖报到",
+        artist: "MC 张天赋",
+        url: staticDir + "music/乖乖报到-MC 张天赋/song.mp3",
+        cover: staticDir + "music/乖乖报到-MC 张天赋/cover.jpg",
+        lrc: staticDir + "music/乖乖报到-MC 张天赋/lyric.lrc",
+      },
+      {
+        name: "指纹",
+        artist: "胡歌",
+        url: staticDir + "music/指纹-胡歌/song.mp3",
+        cover: staticDir + "music/指纹-胡歌/cover.jpg",
+        lrc: staticDir + "music/指纹-胡歌/lyric.lrc",
+      },
+      {
+        name: "还记得",
+        artist: "周柏豪",
+        url: staticDir + "music/还记得-周柏豪/song.mp3",
+        cover: staticDir + "music/还记得-周柏豪/cover.jpg",
+        lrc: staticDir + "music/还记得-周柏豪/lyric.lrc",
+      },
+      {
+        name: "摄氏零度",
+        artist: "张敬轩",
+        url: staticDir + "music/摄氏零度-张敬轩/song.mp3",
+        cover: staticDir + "music/摄氏零度-张敬轩/cover.jpg",
+        lrc: staticDir + "music/摄氏零度-张敬轩/lyric.lrc",
+      },
+      {
+        name: "下一位前度",
+        artist: "林家谦",
+        url: staticDir + "music/下一位前度-林家谦/song.mp3",
+        cover: staticDir + "music/下一位前度-林家谦/cover.jpg",
+        lrc: staticDir + "music/下一位前度-林家谦/lyric.lrc",
+      },
+      {
+        name: "初初",
+        artist: "古巨基",
+        url: staticDir + "music/初初-古巨基/song.mp3",
+        cover: staticDir + "music/初初-古巨基/cover.jpg",
+        lrc: staticDir + "music/初初-古巨基/lyric.lrc",
+      },
+      {
+        name: "这个故事教训我们",
+        artist: "李克勤",
+        url: staticDir + "music/这个故事教训我们-李克勤/song.mp3",
+        cover: staticDir + "music/这个故事教训我们-李克勤/cover.jpg",
+        lrc: staticDir + "music/这个故事教训我们-李克勤/lyric.lrc",
+      },
+      {
+        name: "最后祝福",
+        artist: "黄宗泽",
+        url: staticDir + "music/最后祝福-黄宗泽/song.mp3",
+        cover: staticDir + "music/最后祝福-黄宗泽/cover.jpg",
+        lrc: staticDir + "music/最后祝福-黄宗泽/lyric.lrc",
+      }
+    ],
+    lrcType: 3,
+    fixed: true
+  });
+</script>
+
+<script>
+  
+  function calculateRunningDays(startDateStr, elementId) {
+    let s1 = new Date(startDateStr.replace(/-/g, "/"));
+    let s2 = new Date();
+    let timeDifference = s2.getTime() - s1.getTime();
+
+    let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+    
+    let dayText = "d "; 
+    let hourText = "h ";
+    let minuteText = "m ";
+
+    let result = `<span>< ${days} ${dayText} ${hours} ${hourText} ${minutes} ${minuteText} ></span>`;
+    document.getElementById(elementId).innerHTML = result;
+    }
+
+    document.addEventListener("pjax:complete", () => {
+        calculateRunningDays('2025-3-14', 'runningdays');
+    });
+    calculateRunningDays('2025-3-14', 'runningdays');
+</script>
+
+<script>
+  pjax._handleResponse = pjax.handleResponse;
+  pjax.handleResponse = function (responseText, request, href, options) {
+    if (request.responseText.match("<html")) {
+      if (responseText) {
+        
+        let newDom = new DOMParser().parseFromString(responseText, "text/html");
+        
+        let bodyClass = newDom.body.className;
+        document.body.setAttribute("class", bodyClass);
+      }
+      
+      pjax._handleResponse(responseText, request, href, options);
+    } else {
+      
+    }
+  };
+</script>
+
+<script>
+  
+  function initClock() {
+    
+    var hr = document.getElementById("hr"); 
+    var mn = document.getElementById("mn"); 
+    var sc = document.getElementById("sc"); 
+    if (!hr || !mn || !sc) return;
+
+    
+    var date = new Date();
+    var HH = date.getHours();
+    var MM = date.getMinutes();
+    var SS = date.getSeconds();
+
+    
+    var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+    var minuteAngle = MM * 6 + (SS / 60) * 6;
+    var secondAngle = SS * 6;
+
+    
+    hr.style.transition = "none";
+    mn.style.transition = "none";
+    sc.style.transition = "none";
+
+    
+    hr.style.transform = "rotate(0deg)";
+    mn.style.transform = "rotate(0deg)";
+    sc.style.transform = "rotate(0deg)";
+
+    
+    setTimeout(() => {
+      hr.style.transition = "";
+      mn.style.transition = "";
+      sc.style.transition = "";
+
+      
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 0);
+
+    
+    setInterval(function () {
+      var date = new Date();
+      var HH = date.getHours();
+      var MM = date.getMinutes();
+      var SS = date.getSeconds();
+
+      
+      var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+      var minuteAngle = MM * 6 + (SS / 60) * 6;
+      var secondAngle = SS * 6;
+
+      
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 1000);
+  }
+
+  
+  window.onload = function () {
+    initClock();
+  };
+
+  
+  document.addEventListener("pjax:complete", () => {
+    initClock();
+  });
+</script>
+
+<script>
+  document.addEventListener("pjax:complete", () => {
+    
+    window.Stack.init();
+  });
+</script>
+
+<script>
+  async function renderKaTeX() {
+    
+    let katex = document.querySelector(".math-katex");
+    if (!katex) {
+      return;
+    }
+    
+    while (typeof renderMathInElement !== "function") {
+      await delay(500);
+    }
+    
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  }
+
+  
+
+  function delay(time) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, time);
+    });
+  }
+
+  document.addEventListener("pjax:complete", () => {
+    renderKaTeX();
+  });
+</script>
+
+<script src="http://localhost:1313/Hugo_Web/en/js/topbar.min.js"></script>
+
+<script>
+  
+  topbar.config({
+    barColors: {
+      0: "rgba(255,  255, 255, 1)", 
+      "1.0": "rgba(0, 149, 234,  1)", 
+    },
+  });
+
+  document.addEventListener("pjax:send", () => {
+    
+    topbar.show();
+  });
+
+  document.addEventListener("pjax:complete", () => {
+    
+    topbar.hide();
+  });
+</script>
+
+<script>
+  const cdnPath =
+    "https://cdn.jsdelivr.net/gh/Lingjia007/live2d-widget-v3@main";
+  const config = {
+    
+    path: {
+      homePath: "/",
+      modelPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/my-waifu-tips.json",
+      tipsJsPath: cdnPath + "/waifu-tips.js",
+      live2dCorePath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/live2d-sdk.js",
+    },
+    
+    tools: [
+      "hitokoto",
+      "asteroids",
+      "express",
+      "switch-model",
+      "switch-texture",
+      "photo",
+      "info",
+      "quit",
+    ],
+    
+    drag: {
+      enable: true,
+      direction: ["x", 0],
+    },
+    
+    switchType: "order",
+  };
+
+  
+  if (screen.width >= 10) {
+    Promise.all([
+      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(config.path.live2dCorePath, "js"),
+      loadExternalResource(config.path.live2dSdkPath, "js"),
+      loadExternalResource(config.path.tipsJsPath, "js"),
+    ]).then(() => {
+      initWidget({
+        homePath: config.path.homePath,
+        waifuPath: config.path.tipsJsonPath,
+        cdnPath: config.path.modelPath,
+        tools: config.tools,
+        dragEnable: config.drag.enable,
+        dragDirection: config.drag.direction,
+        switchType: config.switchType,
+      });
+    });
+    function waitForElement(selector, callback) {
+      new MutationObserver(function (mutations) {
+        if (document.querySelector(selector)) {
+          callback();
+          this.disconnect();
+        }
+      }).observe(document.documentElement, { childList: true, subtree: true });
+    }
+  }
+
+  
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      let tag;
+      if (type === "css") {
+        tag = document.createElement("link");
+        tag.rel = "stylesheet";
+        tag.href = url;
+      } else if (type === "js") {
+        tag = document.createElement("script");
+        tag.src = url;
+      }
+      if (tag) {
+        tag.onload = () => resolve(url);
+        tag.onerror = () => reject(url);
+        document.head.appendChild(tag);
+      }
+    });
+  }
+</script>
+
+<style>
+  .highlight {
+     
+    max-height: 400px;
+    overflow: hidden;
+  }
+
+  .code-show {
+    max-height: none !important;
+  }
+
+  .code-more-box {
+    width: 100%;
+    padding-top: 78px;
+    background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(rgba(255, 255, 255, 0)),
+      to(#fff)
+    );
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .code-more-btn {
+    display: block;
+    margin: auto;
+    width: 44px;
+    height: 22px;
+    background: #f0f0f5;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding-top: 6px;
+    cursor: pointer;
+  }
+
+  .code-more-img {
+    cursor: pointer !important;
+    display: block;
+    margin: auto;
+    width: 22px;
+    height: 16px;
+  }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach((codeBlock) => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement("div");
+      codeMoreBox.classList.add("code-more-box");
+      
+      let codeMoreBtn = document.createElement("span");
+      codeMoreBtn.classList.add("code-more-btn");
+      codeMoreBtn.addEventListener("click", () => {
+        codeBlock.classList.add("code-show");
+        codeMoreBox.style.display = "none";
+        
+        window.dispatchEvent(new Event("resize"));
+      });
+      
+      let img = document.createElement("img");
+      img.classList.add("code-more-img");
+      img.src = "http:\/\/localhost:1313\/Hugo_Web\/en\/icons/codeMore.png";
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox);
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initCodeMoreBox();
+  });
+  initCodeMoreBox();
+</script>
+
+<div id="particles-js"></div>
+
+<script src="http://localhost:1313/Hugo_Web/en/background/particles.min.js"></script>
+<script>
+  particlesJS.load(
+    "particles-js",
+    "http:\/\/localhost:1313\/Hugo_Web\/en\/background/particlesjs-config.json",
+    function () {
+      console.log("particles.js loaded - callback");
+    },
+  );
+</script>
+
+<style>
+  #particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+  }
+</style>
+
+<style>
+  #TableOfContents > ul,
+  ol {
+    ul,
+    ol {
+      display: none;
+    }
+    .open {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  function initTocHide() {
+    
+    let toc = document.querySelector(".widget--toc");
+    if (!toc) {
+      return;
+    }
+    
+    window.addEventListener("scroll", function () {
+      
+      let openUl = document.querySelectorAll(".open");
+      if (openUl.length > 0) {
+        openUl.forEach((ul) => {
+          ul.classList.remove("open");
+        });
+      }
+      
+      let currentLi = document.querySelector(".active-class");
+      if (!currentLi) {
+        return;
+      }
+      
+      if (currentLi.children.length > 1) {
+        currentLi.children[1].classList.add("open");
+      }
+      
+      let ul = currentLi.parentElement;
+      do {
+        ul.classList.add("open");
+        ul = ul.parentElement.parentElement;
+      } while (
+        ul !== undefined &&
+        (ul.localName === "ul" || ul.localName === "ol")
+      );
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initTocHide();
+  });
+  initTocHide();
+</script>
+
+<style>
+  @font-face {
+    font-family: "AlibabaPuHuiTi-3-65-Medium";
+    src: url(http://localhost:1313/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+      format("truetype");
+  }
+
+  :root {
+    --base-font-family: "AlibabaPuHuiTi-3-65-Medium";
+    --code-font-family: "AlibabaPuHuiTi-3-65-Medium";
+  }
+</style>
+
+<style>
+  #backTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    z-index: 99;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-image: url("http://localhost:1313/Hugo_Web/en/icons/backTop.svg");
+  }
+</style>
+
+<script>
+  
+
+  function initScrollTop() {
+    let rightSideBar = document.querySelector(".right-sidebar");
+    if (!rightSideBar) {
+      return;
+    }
+    
+    let btn = document.createElement("div");
+    btn.id = "backTopBtn";
+    btn.onclick = backToTop;
+    rightSideBar.appendChild(btn);
+    
+    window.onscroll = function () {
+      
+      if (
+        document.body.scrollTop > 20 ||
+        document.documentElement.scrollTop > 20
+      ) {
+        btn.style.display = "block";
+      } else {
+        btn.style.display = "none";
+      }
+    };
+  }
+
+  
+
+  function backToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initScrollTop();
+  });
+  initScrollTop();
+</script>
+
+<div class="js-Pjax2">
+  
+  <script>
+    (function () {
+      
+      const verScript = document.createElement("script");
+      verScript.defer = true;
+      verScript.src = "https://cn.vercount.one/js";
+      document.body.appendChild(verScript);
+
+      
+      function showHideView() {
+        const viewCounts = document.querySelectorAll("#viewCount");
+        if (viewCounts) {
+          const isArticle = !!document.querySelector(".article-page");
+          viewCounts.forEach((ele) => {
+            ele.style.display = isArticle ? "" : "none";
+          });
+        }
+      }
+      
+      showHideView();
+      
+      document.addEventListener("pjax:complete", function () {
+        showHideView();
+      });
+    })();
+  </script>
+</div><script>
+  (function () {
+    var giscusConfig = {
+      repo: "Lingjia007\/Hugo_Web",
+      repoId: "R_kgDOOH5NOA",
+      category: "Announcements",
+      categoryId: "DIC_kwDOOH5NOM4Cn-zx",
+      mapping: 'title',
+      strict: "0",
+      reactionsEnabled: "1",
+      emitMetadata: "0",
+      inputPosition: 'top',
+      theme: 'light',
+      loading: "lazy",
+    };
+    var giscusLightTheme = 'light';
+    var giscusDarkTheme = 'dark_dimmed';
+
+    function getGiscusLang() {
+      var path = window.location.pathname;
+      if (path.indexOf("/zh-hk") !== -1) return "zh-HK";
+      if (path.indexOf("/en") !== -1) return "en";
+      return "zh-CN";
+    }
+
+    function getGiscusTheme() {
+      if (document.documentElement.dataset.scheme === "light") {
+        return giscusLightTheme;
+      }
+      return giscusDarkTheme;
+    }
+
+    function setGiscusTheme(theme) {
+      var giscus = document.querySelector("iframe.giscus-frame");
+      if (giscus) {
+        giscus.contentWindow.postMessage(
+          { giscus: { setConfig: { theme: theme } } },
+          "https://giscus.app",
+        );
+      }
+    }
+
+    function loadGiscus() {
+      var comment = document.querySelector(".comment");
+      if (!comment) return;
+      comment.innerHTML = "";
+      var lang = getGiscusLang();
+      var script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.setAttribute("data-repo", giscusConfig.repo);
+      script.setAttribute("data-repo-id", giscusConfig.repoId);
+      script.setAttribute("data-category", giscusConfig.category);
+      script.setAttribute("data-category-id", giscusConfig.categoryId);
+      script.setAttribute("data-mapping", giscusConfig.mapping);
+      script.setAttribute("data-strict", giscusConfig.strict);
+      script.setAttribute(
+        "data-reactions-enabled",
+        giscusConfig.reactionsEnabled,
+      );
+      script.setAttribute("data-emit-metadata", giscusConfig.emitMetadata);
+      script.setAttribute("data-input-position", giscusConfig.inputPosition);
+      script.setAttribute("data-theme", giscusConfig.theme);
+      script.setAttribute("data-lang", lang);
+      script.setAttribute("data-loading", giscusConfig.loading);
+      script.setAttribute("crossorigin", "anonymous");
+      script.async = true;
+      comment.appendChild(script);
+    }
+
+    window.addEventListener("message", function (e) {
+      if (e.origin !== "https://giscus.app") return;
+      setGiscusTheme(getGiscusTheme());
+    });
+    window.addEventListener("onColorSchemeChange", function () {
+      setGiscusTheme(getGiscusTheme());
+    });
+
+    loadGiscus();
+    document.addEventListener("pjax:complete", loadGiscus);
+  })();
+</script>
+
+    </body>
+</html>

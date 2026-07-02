@@ -7,15 +7,15 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-hk</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Thu, 02 Jul 2026 18:36:22 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/zh-hk/tags/artinchip/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 02 Jul 2026 21:43:56 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/zh-hk/tags/artinchip/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>LVGL 動態載入與渲染樹管理：智慧售貨機終端的應用樹架構實踐</title>
         <link>http://localhost:1313/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/</guid>
-        <description>&lt;h2 id=&#34;前言&#34;&gt;前言
+        <description>&lt;img src="http://localhost:1313/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png" alt="Featured image of post LVGL 動態載入與渲染樹管理：智慧售貨機終端的應用樹架構實踐" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;LVGL 作為嵌入式領域最活躍的圖形庫，其核心是一個樹形的&lt;strong&gt;渲染樹&lt;/strong&gt;（&lt;code&gt;lv_obj_t&lt;/code&gt; 物件樹），所有可見控件都是這棵樹的節點。但在實際業務中，直接操作渲染樹面臨諸多問題：&lt;strong&gt;靜態佈局無法動態更新&lt;/strong&gt;、&lt;strong&gt;控件生命週期難以統一管理&lt;/strong&gt;、&lt;strong&gt;元件間耦合緊密&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;本文以一個基於 &lt;strong&gt;ArtInChip + LVGL v8 + RT-Thread&lt;/strong&gt; 的智慧售貨機終端為實踐載體，深入剖析如何在 LVGL 渲染樹之上構建一層&lt;strong&gt;應用樹&lt;/strong&gt;（&lt;code&gt;layout_node&lt;/code&gt; 框架），通過組合模式、工廠模式、策略模式和發布-訂閱模式的協同，實現 UI 的動態載入、熱更新和生命週期管理。&lt;/p&gt;
+&lt;p&gt;本文以一個基於 &lt;strong&gt;ArtInChip + LVGL v9 + RT-Thread&lt;/strong&gt; 的智慧售貨機終端為實踐載體，深入剖析如何在 LVGL 渲染樹之上構建一層&lt;strong&gt;應用樹&lt;/strong&gt;（&lt;code&gt;layout_node&lt;/code&gt; 框架），通過組合模式、工廠模式、策略模式和發布-訂閱模式的協同，實現 UI 的動態載入、熱更新和生命週期管理。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;一雙樹架構渲染樹-vs-應用樹&#34;&gt;一、雙樹架構：渲染樹 vs 應用樹
 &lt;/h2&gt;&lt;h3 id=&#34;11-問題背景&#34;&gt;1.1 問題背景
@@ -34,7 +34,21 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;// ...固定數量、固定資料、無法執行時增刪
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;業務需求要求&lt;strong&gt;執行時動態增刪控件&lt;/strong&gt;（商品數量可變、購物車項動態添加、橫幅可配置替換），直接操作渲染樹會導致：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder.png&#34;
+	width=&#34;2557&#34;
+	height=&#34;1437&#34;
+	srcset=&#34;http://localhost:1313/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_12ecb9afaf4eebaf.png 480w, http://localhost:1313/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_6c939ba1467fa223.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;AiUIBuilder 靜態 UI 骨架&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;177&#34;
+		data-flex-basis=&#34;427px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;業務需求要求&lt;strong&gt;執行時動態增刪控件&lt;/strong&gt;（商品數量可變、購物車項動態添加、橫幅可配置替換），直接操作渲染樹會導致：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;物件生命週期分散在各回呼中，容易洩漏&lt;/li&gt;
 &lt;li&gt;無法批次銷毀子樹&lt;/li&gt;
@@ -56,23 +70,19 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;┌─────────────────────────────────────────────┐
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│               應用樹 (layout_node)            │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  container (strategy=Flex-Row)               │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  ├── widget_unit (banner_item, priv=...)     │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  ├── widget_unit (banner_item, priv=...)     │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  └── widget_unit (banner_item, priv=...)     │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├─────────────────────────────────────────────┤
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│           渲染樹 (lv_obj_t)                  │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  lv_obj (LV_FLEX_FLOW_ROW)                  │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  ├── lv_img (banner_1.png)                  │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  ├── lv_img (banner_2.png)                  │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  └── lv_img (banner_3.png)                  │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;└─────────────────────────────────────────────┘
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;應用樹 (layout_node)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  container (strategy=Flex-Row)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ├── widget_unit (banner_item, priv=...)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ├── widget_unit (banner_item, priv=...)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  └── widget_unit (banner_item, priv=...)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;渲染樹 (lv_obj_t)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  lv_obj (LV_FLEX_FLOW_ROW)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ├── lv_img (banner_1.png)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ├── lv_img (banner_2.png)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  └── lv_img (banner_3.png)
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;應用樹節點通過 &lt;code&gt;obj&lt;/code&gt; 指標與渲染樹節點一一對應，但應用樹額外管理了：&lt;/p&gt;
@@ -878,32 +888,24 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;HTTP POST /api/config
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ├─ HTTP 執行緒: 解析 JSON → 寫入 s_pending_json → 設定 s_pending_update=1
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ├─ HTTP 執行緒: 儲存 JSON 到 /sdcard/config/banner.json（持久化）
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    └─ LVGL 計時器 (200ms): 偵測 s_pending_update
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        ├─ 發布 EVT_BANNER_CONFIG_CHANGED (data=json_str)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        └─ on_banner_config_changed() 訂閱者:
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            ├─ carousel_data_from_json(json_str, &amp;amp;data)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            └─ banner_component_update(comp, &amp;amp;data)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                └─ banner_carousel_update_data()
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    ├─ 暫停計時器
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    ├─ container-&amp;gt;clear()     ← 銷毀舊應用樹子節點
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    ├─ widget_factory_create() ← 創建新應用樹子節點
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    ├─ container-&amp;gt;add_child()  ← 加入應用樹
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    ├─ item-&amp;gt;bind()            ← 資料繫結
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    ├─ schedule_dots_init()    ← 重建指示器
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    └─ 恢復計時器
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├── HTTP 執行緒: 解析 JSON → 寫入 s_pending_json → 設定 s_pending_update=1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├── HTTP 執行緒: 儲存 JSON 到 /sdcard/config/banner.json（持久化）
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;└── LVGL 計時器 (200ms): 偵測 s_pending_update
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ├── 發布 EVT_BANNER_CONFIG_CHANGED (data=json_str)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    └── on_banner_config_changed() 訂閱者:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        ├── carousel_data_from_json(json_str, &amp;amp;data)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        └── banner_component_update(comp, &amp;amp;data)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            └── banner_carousel_update_data()
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                ├── 暫停計時器
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                ├── container-&amp;gt;clear()     ← 銷毀舊應用樹子節點
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                ├── widget_factory_create() ← 創建新應用樹子節點
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                ├── container-&amp;gt;add_child()  ← 加入應用樹
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                ├── item-&amp;gt;bind()            ← 資料繫結
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                ├── schedule_dots_init()    ← 重建指示器
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                └── 恢復計時器
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;&lt;strong&gt;關鍵&lt;/strong&gt;：HTTP 執行緒絕不直接呼叫 LVGL API，僅設定 volatile 標誌；所有 UI 操作在 LVGL 計時器的 LVGL 執行緒上下文中執行，保證執行緒安全。&lt;/p&gt;
@@ -1095,28 +1097,18 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;┌──────────────────────────────────────────────────┐
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│               component_factory                   │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  (組裝層: 容器 + 子控件 + 控制器)                  │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├──────────────────────────────────────────────────┤
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  widget_factory    │  layout_strategy  │ event_bus│
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  (工廠模式)        │  (策略模式)       │ (Pub-Sub)│
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├──────────────────────────────────────────────────┤
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│              layout_node (組合模式)                │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│  container ─┬─ widget_unit (葉子)                │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│             ├─ widget_unit                       │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│             └─ container ─┬─ widget_unit         │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│                           └─ ...                 │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├──────────────────────────────────────────────────┤
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│              LVGL 渲染樹 (lv_obj_t)               │
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;└──────────────────────────────────────────────────┘
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;component_factory (組裝層: 容器 + 子控件 + 控制器)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├── widget_factory (工廠模式)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├── layout_strategy (策略模式)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├── event_bus (Pub-Sub)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├── layout_node (組合模式)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│   └── container ─┬─ widget_unit (葉子)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│                   ├─ widget_unit
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│                   └─ container ─┬─ widget_unit
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│                                   └─ ...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;└── LVGL 渲染樹 (lv_obj_t)
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;102-核心價值&#34;&gt;10.2 核心價值
@@ -1135,6 +1127,271 @@
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;事件解耦&lt;/strong&gt;：元件間零直接依賴，購物車不知道商品卡片，支付模組不知道購物車，Web 配置不知道任何 UI API。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;十一串口支付流程&#34;&gt;十一、串口支付流程
+&lt;/h2&gt;&lt;h3 id=&#34;111-幀協議&#34;&gt;11.1 幀協議
+&lt;/h3&gt;&lt;p&gt;設備與 PC 主機透過 UART3 通信，採用自訂幀協議：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;AA 55 CMD LEN_H LEN_L DATA... 0D 0A
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;方向&lt;/th&gt;
+          &lt;th&gt;CMD&lt;/th&gt;
+          &lt;th&gt;名稱&lt;/th&gt;
+          &lt;th&gt;資料&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;PC → 設備&lt;/td&gt;
+          &lt;td&gt;0x01&lt;/td&gt;
+          &lt;td&gt;CMD_QR_URL&lt;/td&gt;
+          &lt;td&gt;二維碼 URL (UTF-8)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;PC → 設備&lt;/td&gt;
+          &lt;td&gt;0x02&lt;/td&gt;
+          &lt;td&gt;CMD_PAY_STATUS&lt;/td&gt;
+          &lt;td&gt;支付狀態碼 (1位元組)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;PC → 設備&lt;/td&gt;
+          &lt;td&gt;0x03&lt;/td&gt;
+          &lt;td&gt;CMD_ORDER_NO&lt;/td&gt;
+          &lt;td&gt;訂單號 (UTF-8)&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;PC → 設備&lt;/td&gt;
+          &lt;td&gt;0x04&lt;/td&gt;
+          &lt;td&gt;CMD_HEARTBEAT_ACK&lt;/td&gt;
+          &lt;td&gt;心跳應答&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;設備 → PC&lt;/td&gt;
+          &lt;td&gt;0x81&lt;/td&gt;
+          &lt;td&gt;CMD_REQ_QR&lt;/td&gt;
+          &lt;td&gt;name\0amount&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;設備 → PC&lt;/td&gt;
+          &lt;td&gt;0x82&lt;/td&gt;
+          &lt;td&gt;CMD_REQ_QUERY&lt;/td&gt;
+          &lt;td&gt;空&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;設備 → PC&lt;/td&gt;
+          &lt;td&gt;0x83&lt;/td&gt;
+          &lt;td&gt;CMD_REQ_CLOSE&lt;/td&gt;
+          &lt;td&gt;空&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;設備 → PC&lt;/td&gt;
+          &lt;td&gt;0x84&lt;/td&gt;
+          &lt;td&gt;CMD_HEARTBEAT&lt;/td&gt;
+          &lt;td&gt;空&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;設備 → PC&lt;/td&gt;
+          &lt;td&gt;0x85&lt;/td&gt;
+          &lt;td&gt;CMD_BARCODE_PAY&lt;/td&gt;
+          &lt;td&gt;auth_code\0[amount\0][subject]&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;112-雙支付模式&#34;&gt;11.2 雙支付模式
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;模式一：用戶掃碼&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;用戶點擊結算按鈕 → 解析購物車總價 → 顯示支付模式選擇彈窗&lt;/li&gt;
+&lt;li&gt;用戶選擇「用戶掃碼」→ 發送 &lt;code&gt;CMD_REQ_QR&lt;/code&gt; 到 PC&lt;/li&gt;
+&lt;li&gt;PC 生成支付寶沙箱訂單，回傳 &lt;code&gt;CMD_QR_URL&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;設備顯示 QR 碼覆蓋層（240×240，LVGL &lt;code&gt;lv_qrcode&lt;/code&gt; 控件）&lt;/li&gt;
+&lt;li&gt;PC 輪詢支付狀態後回傳 &lt;code&gt;CMD_PAY_STATUS&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;成功：顯示「支付成功!」，2 秒後自動隱藏，清空購物車，恢復輪播&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;模式二：設備掃碼（條碼支付）&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;用戶選擇「設備攝像頭掃碼」&lt;/li&gt;
+&lt;li&gt;啟動 DVP 攝像頭 + quirc 掃描執行緒&lt;/li&gt;
+&lt;li&gt;設定 UI 層 alpha=128 使視頻層透視顯示&lt;/li&gt;
+&lt;li&gt;quirc 掃描到 18~28 位純數字（支付授權碼）後，透過 &lt;code&gt;CMD_BARCODE_PAY&lt;/code&gt; 發送至 PC&lt;/li&gt;
+&lt;li&gt;PC 呼叫支付寶條碼支付 API，回傳支付狀態&lt;/li&gt;
+&lt;li&gt;成功後流程同上&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;113-執行緒安全設計&#34;&gt;11.3 執行緒安全設計
+&lt;/h3&gt;&lt;p&gt;UART3 RX 執行緒嚴格不呼叫任何 LVGL API。幀解析完成後僅入隊到 SPSC 環形緩衝區。LVGL 計時器 (100ms) 在 LVGL 執行緒上下文出隊處理，確保所有 UI 操作的執行緒安全。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;十二二維碼掃描模組&#34;&gt;十二、二維碼掃描模組
+&lt;/h2&gt;&lt;h3 id=&#34;121-硬體配置&#34;&gt;12.1 硬體配置
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;DVP 攝像頭 (OV5640)，強制 QVGA 320×240 輸出，降低記憶體佔用（約 460KB）&lt;/li&gt;
+&lt;li&gt;ArtInChip 視頻輸入框架 (&lt;code&gt;mpp_vin&lt;/code&gt;, &lt;code&gt;drv_dvp&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;Framebuffer 視頻層 (&lt;code&gt;mpp_fb&lt;/code&gt;) 用於攝像頭預覽&lt;/li&gt;
+&lt;li&gt;quirc QR 碼解碼庫&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;122-掃描流程&#34;&gt;12.2 掃描流程
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;qr_scanner_start()&lt;/code&gt;：初始化 DVP（含 5 次重試容錯）、配置感測器格式、創建 quirc 實例 (160×120，2 倍下取樣)&lt;/li&gt;
+&lt;li&gt;掃描執行緒迴圈：&lt;code&gt;dq_buf&lt;/code&gt; → 丟棄前幾幀 → 每 5 幀提取 Y 通道並下取樣 → &lt;code&gt;quirc_decode&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;handle_qr_result()&lt;/code&gt;：偵測是否為支付授權碼（18~28 位純數字），同碼 5 秒冷卻，呼叫 &lt;code&gt;uart3_payment_send_barcode()&lt;/code&gt; 發送&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;123-攝像頭視圖模式&#34;&gt;12.3 攝像頭視圖模式
+&lt;/h3&gt;&lt;p&gt;透過 ArtInChip framebuffer 的視頻層直接顯示 DVP 擷取幀：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;qr_scanner_start_camera_view()&lt;/code&gt;：開啟 framebuffer，設定 UI 層 alpha=128&lt;/li&gt;
+&lt;li&gt;DVP 緩衝區零拷貝推送到視頻層，實現高效能畫中畫效果&lt;/li&gt;
+&lt;li&gt;停止時嚴格順序：清標誌 → 停掃描執行緒 → 停 DVP 流 → 等執行緒退出 → 禁用視頻層 + 恢復 UI alpha → 釋放資源&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;十三web-配置系統&#34;&gt;十三、Web 配置系統
+&lt;/h2&gt;&lt;h3 id=&#34;131-架構&#34;&gt;13.1 架構
+&lt;/h3&gt;&lt;p&gt;設備啟動 WiFi AP（SSID: &lt;code&gt;AIC-Banner-Config&lt;/code&gt;，密碼: &lt;code&gt;12345678&lt;/code&gt;，信道 6），IP 位址 192.168.1.1，執行 DHCP 伺服器，在 80 埠啟動 Mongoose HTTP 伺服器。&lt;/p&gt;
+&lt;h3 id=&#34;132-api-介面&#34;&gt;13.2 API 介面
+&lt;/h3&gt;&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;方法&lt;/th&gt;
+          &lt;th&gt;路徑&lt;/th&gt;
+          &lt;th&gt;功能&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;GET&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;/&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;嵌入式 HTML 配置頁面&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;GET&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;/api/config&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;取得 Banner 配置 JSON&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;GET&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;/api/commodity&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;取得商品配置 JSON&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;GET&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;/api/navi&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;取得導航配置 JSON&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;POST&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;/api/config&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;更新 Banner 配置&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;POST&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;/api/commodity&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;更新商品配置&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;POST&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;/api/navi&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;更新導航配置&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;POST&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;/api/reset&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;重設為預設配置&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;POST&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;/api/upload/{filename}&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;上傳 Banner 圖片（校驗 494×78）&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;POST&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;/api/upload/commodity/{filename}&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;上傳商品圖片（校驗 80×80）&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;133-安全措施&#34;&gt;13.3 安全措施
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;檔案名白名單校驗：僅允許字母、數字、&lt;code&gt;.&lt;/code&gt;、&lt;code&gt;_&lt;/code&gt;、&lt;code&gt;-&lt;/code&gt;，長度不超過 64&lt;/li&gt;
+&lt;li&gt;Content-Length 早期拒絕：超限直接回傳 413&lt;/li&gt;
+&lt;li&gt;接收緩衝區限制：&lt;code&gt;recv_mbuf.len &amp;gt; 307200 + 4096&lt;/code&gt; 時強制關閉連線&lt;/li&gt;
+&lt;li&gt;圖片尺寸校驗：解析 PNG/JPEG/BMP 檔案頭驗證寬高，不匹配則刪除並回傳錯誤&lt;/li&gt;
+&lt;li&gt;價格格式校驗：支援多種貨幣前綴，驗證必須包含數字和可選小數部分&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;134-配置熱更新&#34;&gt;13.4 配置熱更新
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;HTTP 執行緒接收 POST → 解析 JSON → 寫入 &lt;code&gt;s_pending_json&lt;/code&gt; 緩衝區 → 設定標誌&lt;/li&gt;
+&lt;li&gt;同時將 JSON 儲存到 SD 卡檔案實現持久化&lt;/li&gt;
+&lt;li&gt;LVGL 計時器 200ms 輪詢偵測標誌 → 發布事件 → 各元件執行熱更新&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;十四非同步載入機制&#34;&gt;十四、非同步載入機制
+&lt;/h2&gt;&lt;p&gt;基於 RT-Thread 執行緒 + 雙訊息佇列實現：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;主執行緒 (LVGL)              工作執行緒
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    |                                                 |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    | submit(task)                         |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    | ----[task_mq]----&amp;gt;              |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    |                                                 | work_fn(arg) → result
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    |                                [result_mq]----&amp;gt; done_cb(result)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    |                                                 |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    | poll() &amp;lt;-- 排空 result_mq   |
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;工作執行緒棧：4096 位元組，優先級 20&lt;/li&gt;
+&lt;li&gt;任務/結果佇列容量：8 條&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;async_loader_poll()&lt;/code&gt; 在 LVGL 計時器中呼叫，保證 &lt;code&gt;done_cb&lt;/code&gt; 在 LVGL 執行緒安全執行&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;十五技術亮點總結&#34;&gt;十五、技術亮點總結
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Wrap 橋接&lt;/strong&gt;：&lt;code&gt;layout_container_wrap()&lt;/code&gt; 是連接靜態骨架與動態應用樹的橋樑，保留視覺化工具的快速原型能力，同時獲得執行時靈活性。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;深度優先銷毀&lt;/strong&gt;：&lt;code&gt;destroy()&lt;/code&gt; 虛函式遞迴銷毀子樹，消除了手動 &lt;code&gt;lv_obj_del()&lt;/code&gt; 散落各處的生命週期管理問題。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;資料驅動重建&lt;/strong&gt;：&lt;code&gt;clear()&lt;/code&gt; → &lt;code&gt;widget_factory_create()&lt;/code&gt; → &lt;code&gt;add_child()&lt;/code&gt; → &lt;code&gt;bind()&lt;/code&gt; 的標準化流程，使熱更新邏輯高度統一。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;策略封裝&lt;/strong&gt;：佈局參數從分散的 API 呼叫收攏為 &lt;code&gt;layout_strategy_t&lt;/code&gt; 結構體，元件創建時一目瞭然。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;事件解耦&lt;/strong&gt;：元件間零直接依賴，購物車不知道商品卡片，支付模組不知道購物車，Web 配置不知道任何 UI API。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;嵌入式 Web 配置&lt;/strong&gt;：RT-Thread 上執行 Mongoose HTTP 伺服器 + WiFi AP，手機連線熱點即可修改配置，無需韌體升級，配置自動持久化到 SD 卡。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;雙支付模式&lt;/strong&gt;：支援「用戶掃碼」和「設備掃碼」兩種模式，透過 UART3 與 PC 主機通信，實現支付寶沙箱環境下的完整支付閉環。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;無鎖執行緒間通信&lt;/strong&gt;：UART3 使用 SPSC 環形佇列，Web 配置使用 volatile 標誌 + 緩衝區，均避免重量級鎖開銷。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;記憶體池管理&lt;/strong&gt;：所有高頻創建/銷毀的控件使用 RT-Thread 記憶體池，容量與業務上限對齊，避免記憶體碎片。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;攝像頭視圖硬體加速&lt;/strong&gt;：DVP 緩衝區零拷貝推送到視頻層，UI 層半透明實現畫中畫效果。&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 </description>

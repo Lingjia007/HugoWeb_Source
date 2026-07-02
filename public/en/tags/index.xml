@@ -7,7 +7,7 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Thu, 02 Jul 2026 18:35:31 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/en/tags/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 02 Jul 2026 22:48:31 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/en/tags/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>ArtInChip</title>
         <link>http://localhost:1313/Hugo_Web/en/tags/artinchip/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
@@ -24,11 +24,43 @@
         <description></description>
         </item>
         <item>
+        <title>Embedded</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/embedded/</link>
+        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/embedded/</guid>
+        <description></description>
+        </item>
+        <item>
         <title>Embedded UI</title>
         <link>http://localhost:1313/Hugo_Web/en/tags/embedded-ui/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/en/tags/embedded-ui/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>GCC</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/gcc/</link>
+        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/gcc/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>GNU-LD</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/gnu-ld/</link>
+        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/gnu-ld/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Linker-Script</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/linker-script/</link>
+        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/linker-script/</guid>
         <description></description>
         </item>
         <item>
@@ -45,6 +77,14 @@
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/en/tags/rt-thread/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>STM32</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/stm32/</link>
+        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/stm32/</guid>
         <description></description>
         </item>
         <item>
@@ -125,14 +165,6 @@
         <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/en/tags/pyqt6/</guid>
-        <description></description>
-        </item>
-        <item>
-        <title>STM32</title>
-        <link>http://localhost:1313/Hugo_Web/en/tags/stm32/</link>
-        <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
-        
-        <guid>http://localhost:1313/Hugo_Web/en/tags/stm32/</guid>
         <description></description>
         </item>
         <item>

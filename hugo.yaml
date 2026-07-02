@@ -45,7 +45,7 @@ services:
     id:
 
 pagination:
-  pagerSize: 3
+  pagerSize: 4
 
 permalinks:
   post: /p/:slug/
@@ -279,4 +279,3 @@ frontmatter:
 
 # 允许获取Git信息
 enableGitInfo: true
-

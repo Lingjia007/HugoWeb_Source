@@ -7,12 +7,28 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-hk</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Thu, 02 Jul 2026 18:36:22 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/zh-hk/tags/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 02 Jul 2026 22:48:41 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/zh-hk/tags/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>ArtInChip</title>
         <link>http://localhost:1313/Hugo_Web/zh-hk/tags/artinchip/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/zh-hk/tags/artinchip/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>GCC</title>
+        <link>http://localhost:1313/Hugo_Web/zh-hk/tags/gcc/</link>
+        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/zh-hk/tags/gcc/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>GNU-LD</title>
+        <link>http://localhost:1313/Hugo_Web/zh-hk/tags/gnu-ld/</link>
+        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/zh-hk/tags/gnu-ld/</guid>
         <description></description>
         </item>
         <item>
@@ -32,6 +48,14 @@
         <description></description>
         </item>
         <item>
+        <title>STM32</title>
+        <link>http://localhost:1313/Hugo_Web/zh-hk/tags/stm32/</link>
+        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/zh-hk/tags/stm32/</guid>
+        <description></description>
+        </item>
+        <item>
         <title>售貨機</title>
         <link>http://localhost:1313/Hugo_Web/zh-hk/tags/%E5%94%AE%E8%B2%A8%E6%A9%9F/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
@@ -48,11 +72,27 @@
         <description></description>
         </item>
         <item>
+        <title>嵌入式</title>
+        <link>http://localhost:1313/Hugo_Web/zh-hk/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/</link>
+        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/zh-hk/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/</guid>
+        <description></description>
+        </item>
+        <item>
         <title>嵌入式UI</title>
         <link>http://localhost:1313/Hugo_Web/zh-hk/tags/%E5%B5%8C%E5%85%A5%E5%BC%8Fui/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/zh-hk/tags/%E5%B5%8C%E5%85%A5%E5%BC%8Fui/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>鏈結腳本</title>
+        <link>http://localhost:1313/Hugo_Web/zh-hk/tags/%E9%8F%88%E7%B5%90%E8%85%B3%E6%9C%AC/</link>
+        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/zh-hk/tags/%E9%8F%88%E7%B5%90%E8%85%B3%E6%9C%AC/</guid>
         <description></description>
         </item>
         <item>
@@ -109,14 +149,6 @@
         <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/zh-hk/tags/pyqt6/</guid>
-        <description></description>
-        </item>
-        <item>
-        <title>STM32</title>
-        <link>http://localhost:1313/Hugo_Web/zh-hk/tags/stm32/</link>
-        <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
-        
-        <guid>http://localhost:1313/Hugo_Web/zh-hk/tags/stm32/</guid>
         <description></description>
         </item>
         <item>
