@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="基于 ArtInChip 平台 + LVGL v8 + RT-Thread 的智能售货机终端 UI 系统完整设计，涵盖组合模式 UI 树、事件驱动架构、Flex/Grid 布局框架、双支付模式（二维码展示/摄像头扫码）、UART3 串口通信协议、Web WiFi 热点配置、DVP 摄像头零拷贝预览等核心技术详解">
+<title>智能售货机终端：基于 LVGL 的嵌入式 UI 架构设计与实现</title>
+
+<link rel='canonical' href='http://localhost:1313/Hugo_Web/p/%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E5%9F%BA%E4%BA%8E-lvgl-%E7%9A%84%E5%B5%8C%E5%85%A5%E5%BC%8F-ui-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/'>
+
+<link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="智能售货机终端：基于 LVGL 的嵌入式 UI 架构设计与实现">
+<meta property='og:description' content="基于 ArtInChip 平台 + LVGL v8 + RT-Thread 的智能售货机终端 UI 系统完整设计，涵盖组合模式 UI 树、事件驱动架构、Flex/Grid 布局框架、双支付模式（二维码展示/摄像头扫码）、UART3 串口通信协议、Web WiFi 热点配置、DVP 摄像头零拷贝预览等核心技术详解">
+<meta property='og:url' content='http://localhost:1313/Hugo_Web/p/%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E5%9F%BA%E4%BA%8E-lvgl-%E7%9A%84%E5%B5%8C%E5%85%A5%E5%BC%8F-ui-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/'>
+<meta property='og:site_name' content='lingsir007'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='售货机' /><meta property='article:tag' content='MQTT' /><meta property='article:tag' content='嵌入式UI' /><meta property='article:published_time' content='2026-07-01T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-01T23:06:20&#43;08:00'/>
+<meta name="twitter:title" content="智能售货机终端：基于 LVGL 的嵌入式 UI 架构设计与实现">
+<meta name="twitter:description" content="基于 ArtInChip 平台 + LVGL v8 + RT-Thread 的智能售货机终端 UI 系统完整设计，涵盖组合模式 UI 树、事件驱动架构、Flex/Grid 布局框架、双支付模式（二维码展示/摄像头扫码）、UART3 串口通信协议、Web WiFi 热点配置、DVP 摄像头零拷贝预览等核心技术详解">
+    <link rel="shortcut icon" href="/icons/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/Hugo_Web/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/Hugo_Web/img/avatar_hu_6974417c8ac44e16.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤔</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/Hugo_Web">lingsir007</a></h1>
+            <h2 class="site-description">欢迎来到我的网站</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/Lingjia007?tab=repositories'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/Hugo_Web/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/" selected>简体中文</option>
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/zh-hk/" >繁體中文</option>
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/en/" >English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+        
+
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#一系统架构">一、系统架构</a>
+      <ol>
+        <li><a href="#11-项目组成">1.1 项目组成</a></li>
+        <li><a href="#12-设计模式">1.2 设计模式</a></li>
+      </ol>
+    </li>
+    <li><a href="#二事件驱动架构">二、事件驱动架构</a>
+      <ol>
+        <li><a href="#21-事件总线设计">2.1 事件总线设计</a></li>
+        <li><a href="#22-核心事件流">2.2 核心事件流</a></li>
+        <li><a href="#23-跨线程通信">2.3 跨线程通信</a></li>
+      </ol>
+    </li>
+    <li><a href="#三ui-布局框架">三、UI 布局框架</a>
+      <ol>
+        <li><a href="#31-组合模式-ui-树">3.1 组合模式 UI 树</a></li>
+        <li><a href="#32-布局策略">3.2 布局策略</a></li>
+        <li><a href="#33-屏幕分区">3.3 屏幕分区</a></li>
+        <li><a href="#34-动画效果">3.4 动画效果</a></li>
+      </ol>
+    </li>
+    <li><a href="#四轮播横幅模块">四、轮播横幅模块</a>
+      <ol>
+        <li><a href="#41-架构设计">4.1 架构设计</a></li>
+        <li><a href="#42-核心功能">4.2 核心功能</a></li>
+      </ol>
+    </li>
+    <li><a href="#五购物车系统">五、购物车系统</a>
+      <ol>
+        <li><a href="#51-商品卡片">5.1 商品卡片</a></li>
+        <li><a href="#52-购物车项">5.2 购物车项</a></li>
+      </ol>
+    </li>
+    <li><a href="#六串口支付流程">六、串口支付流程</a>
+      <ol>
+        <li><a href="#61-帧协议">6.1 帧协议</a></li>
+        <li><a href="#62-双支付模式">6.2 双支付模式</a></li>
+        <li><a href="#63-线程安全设计">6.3 线程安全设计</a></li>
+      </ol>
+    </li>
+    <li><a href="#七二维码扫描模块">七、二维码扫描模块</a>
+      <ol>
+        <li><a href="#71-硬件配置">7.1 硬件配置</a></li>
+        <li><a href="#72-扫描流程">7.2 扫描流程</a></li>
+        <li><a href="#73-摄像头视图模式">7.3 摄像头视图模式</a></li>
+        <li><a href="#74-内存管理">7.4 内存管理</a></li>
+      </ol>
+    </li>
+    <li><a href="#八web-配置系统">八、Web 配置系统</a>
+      <ol>
+        <li><a href="#81-架构">8.1 架构</a></li>
+        <li><a href="#82-api-接口">8.2 API 接口</a></li>
+        <li><a href="#83-安全措施">8.3 安全措施</a></li>
+        <li><a href="#84-配置热更新">8.4 配置热更新</a></li>
+      </ol>
+    </li>
+    <li><a href="#九异步加载机制">九、异步加载机制</a></li>
+    <li><a href="#十系统初始化流程">十、系统初始化流程</a></li>
+    <li><a href="#十一技术亮点总结">十一、技术亮点总结</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/Hugo_Web/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" >
+                嵌入式
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/Hugo_Web/p/%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E5%9F%BA%E4%BA%8E-lvgl-%E7%9A%84%E5%B5%8C%E5%85%A5%E5%BC%8F-ui-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/">智能售货机终端：基于 LVGL 的嵌入式 UI 架构设计与实现</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            基于 ArtInChip 平台 &#43; LVGL v8 &#43; RT-Thread 的智能售货机终端 UI 系统完整设计，涵盖组合模式 UI 树、事件驱动架构、Flex/Grid 布局框架、双支付模式（二维码展示/摄像头扫码）、UART3 串口通信协议、Web WiFi 热点配置、DVP 摄像头零拷贝预览等核心技术详解
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 01, 2026</time>
+            </div>
+        <div class="article-lastmod">
+                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M10 18l5 -5a1.414 1.414 0 0 0 -2 -2l-5 5v2h2z" /></svg>
+                <time>
+                    Jul 01, 2026 23:06 CST
+                </time>
+            </div><div id="wordCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
+            <time class="article-wordcount">
+                4290  字
+            </time>
+        </div>
+
+        
+
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                
+                <span id="vercount_value_page_pv">loading... </span> 次
+            </time>
+        </div>
+
+    </footer>
+    
+
+    
+        <footer class="article-translations">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+            <div>
+                
+                    <a href="http://localhost:1313/Hugo_Web/zh-hk/p/%E6%99%BA%E8%83%BD%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E5%9F%BA%E6%96%BC-lvgl-%E7%9A%84%E5%B5%8C%E5%85%A5%E5%BC%8F-ui-%E6%9E%B6%E6%A7%8B%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/" class="link">繁體中文</a>
+                
+                    <a href="http://localhost:1313/Hugo_Web/en/p/smart-vending-machine-terminal-embedded-ui-architecture-design-and-implementation-based-on-lvgl/" class="link">English</a>
+                
+            </div>
+        </footer>
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="前言">前言
+</h2><p>在物联网终端设备中，交互体验往往是产品竞争力的关键。本文将介绍一个基于 <strong>ArtInChip 嵌入式平台 + LVGL v8 + RT-Thread</strong> 的智能售货机终端 UI 系统的完整设计与实现。项目由 AiUIBuilder v2.0.2 生成的静态 UI 骨架 + 手工编写的动态业务逻辑组成，实现了从&quot;所见即所得&quot;的可视化原型到可交互动态应用的平滑过渡。</p>
+<hr>
+<h2 id="一系统架构">一、系统架构
+</h2><h3 id="11-项目组成">1.1 项目组成
+</h3><p>项目分为两大模块：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>目录</th>
+          <th>职责</th>
+          <th>来源</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>ui_builder/</code></td>
+          <td>屏幕布局、静态控件、样式和字体</td>
+          <td>AiUIBuilder 自动生成</td>
+      </tr>
+      <tr>
+          <td><code>my_custom_init/</code></td>
+          <td>交互逻辑、数据绑定、通信和动态加载</td>
+          <td>手工编写</td>
+      </tr>
+  </tbody>
+</table></div>
+<p><code>my_custom_init/</code> 内部的模块层次如下：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>层级</th>
+          <th>模块</th>
+          <th>职责</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>基础设施层</td>
+          <td><code>event_bus</code></td>
+          <td>发布-订阅解耦通信</td>
+      </tr>
+      <tr>
+          <td>基础设施层</td>
+          <td><code>async_loader</code></td>
+          <td>工作线程 + LVGL 定时器回调</td>
+      </tr>
+      <tr>
+          <td>布局框架层</td>
+          <td><code>layout_node</code></td>
+          <td>组合模式的 UI 节点树</td>
+      </tr>
+      <tr>
+          <td>布局框架层</td>
+          <td><code>layout_strategy</code></td>
+          <td>Flex/Grid 布局策略映射</td>
+      </tr>
+      <tr>
+          <td>组件工厂层</td>
+          <td><code>component_factory</code></td>
+          <td>组装完整 UI 组件</td>
+      </tr>
+      <tr>
+          <td>组件工厂层</td>
+          <td><code>widget_factory</code></td>
+          <td>按类型名注册/创建控件</td>
+      </tr>
+      <tr>
+          <td>控件层</td>
+          <td><code>banner_carousel</code> / <code>banner_item</code></td>
+          <td>横幅轮播控制器</td>
+      </tr>
+      <tr>
+          <td>控件层</td>
+          <td><code>commodity_card</code></td>
+          <td>商品展示与加购</td>
+      </tr>
+      <tr>
+          <td>控件层</td>
+          <td><code>cart_item</code></td>
+          <td>购物车状态管理</td>
+      </tr>
+      <tr>
+          <td>控件层</td>
+          <td><code>navi_item</code></td>
+          <td>导航栏选项卡</td>
+      </tr>
+      <tr>
+          <td>业务层</td>
+          <td><code>custom_init</code></td>
+          <td>组装所有模块</td>
+      </tr>
+      <tr>
+          <td>业务层</td>
+          <td><code>web_config</code></td>
+          <td>WiFi AP + HTTP 配置页面</td>
+      </tr>
+      <tr>
+          <td>业务层</td>
+          <td><code>uart3_payment</code></td>
+          <td>UART3 通信 + 支付流程</td>
+      </tr>
+      <tr>
+          <td>业务层</td>
+          <td><code>qr_scanner</code></td>
+          <td>DVP 摄像头 + quirc 解码</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="12-设计模式">1.2 设计模式
+</h3><p>项目中运用了多种经典设计模式：</p>
+<ul>
+<li><strong>组合模式 (Composite)</strong>：<code>layout_node</code> 框架将 Container 和 Widget 统一为树形结构，通过 <code>destroy()</code> 虚函数实现深度优先销毁。</li>
+<li><strong>工厂模式 (Factory)</strong>：<code>widget_factory</code> 按类型名字符串注册创建函数，支持 <code>banner_item</code>、<code>commodity_card</code>、<code>cart_item</code>、<code>navi_item</code> 四种控件的动态创建。</li>
+<li><strong>发布-订阅模式 (Pub-Sub)</strong>：<code>event_bus</code> 实现轻量级事件总线，组件间通过事件解耦。</li>
+<li><strong>策略模式 (Strategy)</strong>：<code>layout_strategy_t</code> 封装布局类型和参数，通过 <code>layout_strategy_apply()</code> 映射到 LVGL Flex API。</li>
+<li><strong>对象池模式 (Object Pool)</strong>：使用 RT-Thread 内存池 (<code>rt_mp_create</code>/<code>rt_mp_alloc</code>/<code>rt_mp_free</code>) 管理高频分配的控件数据，避免内存碎片。</li>
+</ul>
+<hr>
+<h2 id="二事件驱动架构">二、事件驱动架构
+</h2><h3 id="21-事件总线设计">2.1 事件总线设计
+</h3><p><code>event_bus</code> 维护一个 <code>s_slots[EVT_TYPE_MAX]</code> 数组，每个槽位最多 8 个订阅者，使用 RT-Thread 互斥锁保证线程安全。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">event_handler_t</span> <span class="n">handler</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="o">*</span><span class="n">user_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">subscriber_t</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">event_slot_t</span> <span class="n">s_slots</span><span class="p">[</span><span class="n">EVT_TYPE_MAX</span><span class="p">];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>event_bus_publish()</code> 在发布时先快照订阅者列表再释放锁后逐一回调，避免回调中修改订阅导致的迭代问题。</p>
+<h3 id="22-核心事件流">2.2 核心事件流
+</h3><p>定义了 8 种事件类型：购物车增/删/数量变/价格变、Banner/商品/导航配置变更、导航点击。</p>
+<p>典型事件流如下：</p>
+<ol>
+<li><strong>商品加购</strong>：<code>commodity_card</code> 点击加购按钮 → 发布 <code>EVT_CART_ITEM_ADDED</code> → <code>cart_item</code> 模块订阅处理 → 发布 <code>EVT_CART_COUNT_CHANGED</code> + <code>EVT_CART_PRICE_CHANGED</code></li>
+<li><strong>购物车数量变化</strong>：+/- 按钮点击 → 修改 count → 更新总价标签和数量角标</li>
+<li><strong>Web 配置变更</strong>：HTTP POST → 设置待处理标志 → LVGL 定时器轮询 → 发布 <code>EVT_BANNER_CONFIG_CHANGED</code> 等事件 → 各组件热更新</li>
+<li><strong>导航点击</strong>：<code>navi_item</code> 点击 → 发布 <code>EVT_NAVI_ITEM_CLICKED</code></li>
+</ol>
+<h3 id="23-跨线程通信">2.3 跨线程通信
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>通信路径</th>
+          <th>机制</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>UART3 RX 线程 → LVGL 线程</td>
+          <td>无锁 SPSC 环形队列 + LVGL 定时器 (100ms)</td>
+          <td>RX 线程只解析帧入队，绝不调用 LVGL API</td>
+      </tr>
+      <tr>
+          <td>Web 配置线程 → LVGL 线程</td>
+          <td>volatile 标志 + 缓冲区 + LVGL 定时器 (200ms)</td>
+          <td>HTTP 线程只写缓冲区，定时器在 LVGL 线程发布事件</td>
+      </tr>
+      <tr>
+          <td>QR 扫描线程 → UART3</td>
+          <td><code>rt_device_write()</code></td>
+          <td>线程安全的串口写入</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="三ui-布局框架">三、UI 布局框架
+</h2><h3 id="31-组合模式-ui-树">3.1 组合模式 UI 树
+</h3><p><code>layout_node</code> 是核心抽象，<code>layout_container_t</code> 为容器节点（含子节点动态数组，初始容量 8，倍增扩容），<code>widget_unit_t</code> 为叶子节点：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">layout_node</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">lv_obj_t</span> <span class="o">*</span><span class="n">obj</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type_name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">layout_node_type_t</span> <span class="n">node_type</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">layout_container_t</span> <span class="o">*</span><span class="n">parent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">destroy</span><span class="p">)(</span><span class="kt">layout_node_t</span> <span class="o">*</span><span class="n">self</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">update</span><span class="p">)(</span><span class="kt">layout_node_t</span> <span class="o">*</span><span class="n">self</span><span class="p">,</span> <span class="k">const</span> <span class="n">cJSON</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">layout_container</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">layout_node_t</span> <span class="n">base</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">layout_strategy_t</span> <span class="n">strategy</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">layout_node_t</span> <span class="o">**</span><span class="n">children</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">child_count</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">child_capacity</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>关键设计：<code>layout_container_wrap()</code> 可将 AiUIBuilder 生成的已有 LVGL 对象包装为 layout_container，保留外部对象所有权，仅挂载子管理逻辑。这使得动态组件可以复用可视化工具创建的容器。</p>
+<h3 id="32-布局策略">3.2 布局策略
+</h3><p><code>layout_strategy_t</code> 封装布局类型和参数，映射为 LVGL Flex API 调用：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>策略</th>
+          <th>实现</th>
+          <th>用途</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Flex-Row</td>
+          <td><code>LV_FLEX_FLOW_ROW</code></td>
+          <td>横幅轮播、导航栏</td>
+      </tr>
+      <tr>
+          <td>Flex-Column</td>
+          <td><code>LV_FLEX_FLOW_COLUMN</code></td>
+          <td>购物车列表</td>
+      </tr>
+      <tr>
+          <td>Grid</td>
+          <td><code>LV_FLEX_FLOW_ROW_WRAP</code> + <code>FLEX_IN_NEW_TRACK</code></td>
+          <td>商品展示区 (3列)</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="33-屏幕分区">3.3 屏幕分区
+</h3><p>800×480 屏幕分为四大区域：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>区域</th>
+          <th>位置</th>
+          <th>尺寸</th>
+          <th>组件</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>横幅轮播区</td>
+          <td>(153, 12)</td>
+          <td>494×78</td>
+          <td>banner (flex-row, 水平滚动)</td>
+      </tr>
+      <tr>
+          <td>导航栏</td>
+          <td>(16, 102)</td>
+          <td>768×45</td>
+          <td>navi (flex-row, 不可滚动)</td>
+      </tr>
+      <tr>
+          <td>商品展示区</td>
+          <td>(0, 150)</td>
+          <td>800×220</td>
+          <td>commodity (grid 3列, 垂直滚动)</td>
+      </tr>
+      <tr>
+          <td>购物车面板</td>
+          <td>(0, 70/480)</td>
+          <td>800×410</td>
+          <td>cart (flex-column, 垂直滚动)</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="34-动画效果">3.4 动画效果
+</h3><ul>
+<li><strong>按钮缩放动画</strong>：点击时 zoom 从 256 缩至 210，使用 <code>lv_anim_path_overshoot</code> 回弹，100ms 下压 + 200ms 回弹。</li>
+<li><strong>购物车面板滑入/滑出</strong>：Y 坐标从 480（屏幕外）动画至 70（可见），400ms linear；同时配合透明度渐变。</li>
+<li><strong>轮播翻页</strong>：<code>lv_obj_scroll_to_x</code> 动画，600ms <code>ease_out</code>。</li>
+</ul>
+<hr>
+<h2 id="四轮播横幅模块">四、轮播横幅模块
+</h2><h3 id="41-架构设计">4.1 架构设计
+</h3><p>轮播模块采用<strong>控制器-视图分离</strong>设计：</p>
+<ul>
+<li><code>banner_types.h</code>：纯数据类型定义，无 UI 依赖</li>
+<li><code>banner_carousel</code>：不创建也不拥有容器和子控件，只附加控制器行为</li>
+<li><code>banner_item</code>：简单图片控件，从内存池分配</li>
+</ul>
+<h3 id="42-核心功能">4.2 核心功能
+</h3><ul>
+<li><strong>自动滚动</strong>：定时器驱动，可暂停/恢复</li>
+<li><strong>滑动手势检测</strong>：基于 <code>scroll_begin_cb</code> / <code>scroll_end_cb</code>，比较 scroll_x 差值与 <code>switch_threshold</code> 阈值判断翻页</li>
+<li><strong>指示器圆点</strong>：延迟 50ms 创建，避免布局未完成时位置错误</li>
+<li><strong>数据热更新</strong>：<code>banner_carousel_update_data()</code> 暂停定时器 → 清除子控件 → 重建 → 重建圆点 → 恢复定时器</li>
+</ul>
+<hr>
+<h2 id="五购物车系统">五、购物车系统
+</h2><h3 id="51-商品卡片">5.1 商品卡片
+</h3><p>每个卡片包含：商品图片 (80×80)、名称标签、价格标签、加购按钮、标签角标（热卖/新品/推荐）。</p>
+<p><code>commodity_card_batch_update()</code> 实现差异更新：按需增删卡片数量，然后逐一 <code>update()</code> 数据，支持 Grid 布局自动换行。内存池容量 = <code>COMMODITY_MAX_COUNT</code> (30)。</p>
+<h3 id="52-购物车项">5.2 购物车项
+</h3><ul>
+<li><code>cart_add_commodity()</code> 先按名称搜索已有项，找到则增加数量，否则创建新项</li>
+<li>减到 0 时自动移除并发布 <code>EVT_CART_ITEM_REMOVED</code> 事件</li>
+<li><code>cart_update_total_price()</code> 遍历所有项，解析价格字符串（跳过货币前缀），计算 <code>count * price_val</code> 总和</li>
+<li><code>cart_update_count_tag()</code> 管理购物车图标上的数量角标</li>
+</ul>
+<hr>
+<h2 id="六串口支付流程">六、串口支付流程
+</h2><h3 id="61-帧协议">6.1 帧协议
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AA 55 CMD LEN_H LEN_L DATA... 0D 0A
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>方向</th>
+          <th>CMD</th>
+          <th>名称</th>
+          <th>数据</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>PC → 设备</td>
+          <td>0x01</td>
+          <td>CMD_QR_URL</td>
+          <td>二维码 URL (UTF-8)</td>
+      </tr>
+      <tr>
+          <td>PC → 设备</td>
+          <td>0x02</td>
+          <td>CMD_PAY_STATUS</td>
+          <td>支付状态码 (1字节)</td>
+      </tr>
+      <tr>
+          <td>PC → 设备</td>
+          <td>0x03</td>
+          <td>CMD_ORDER_NO</td>
+          <td>订单号 (UTF-8)</td>
+      </tr>
+      <tr>
+          <td>PC → 设备</td>
+          <td>0x04</td>
+          <td>CMD_HEARTBEAT_ACK</td>
+          <td>心跳应答</td>
+      </tr>
+      <tr>
+          <td>设备 → PC</td>
+          <td>0x81</td>
+          <td>CMD_REQ_QR</td>
+          <td>name\0amount</td>
+      </tr>
+      <tr>
+          <td>设备 → PC</td>
+          <td>0x82</td>
+          <td>CMD_REQ_QUERY</td>
+          <td>空</td>
+      </tr>
+      <tr>
+          <td>设备 → PC</td>
+          <td>0x83</td>
+          <td>CMD_REQ_CLOSE</td>
+          <td>空</td>
+      </tr>
+      <tr>
+          <td>设备 → PC</td>
+          <td>0x84</td>
+          <td>CMD_HEARTBEAT</td>
+          <td>空</td>
+      </tr>
+      <tr>
+          <td>设备 → PC</td>
+          <td>0x85</td>
+          <td>CMD_BARCODE_PAY</td>
+          <td>auth_code\0[amount\0][subject]</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="62-双支付模式">6.2 双支付模式
+</h3><p><strong>模式一：用户扫码</strong></p>
+<ol>
+<li>用户点击结算按钮 → 解析购物车总价 → 显示支付模式选择弹窗</li>
+<li>用户选择&quot;用户扫码&quot; → 发送 <code>CMD_REQ_QR</code> 到 PC</li>
+<li>PC 生成支付宝沙箱订单，返回 <code>CMD_QR_URL</code></li>
+<li>设备显示 QR 码覆盖层（240×240，LVGL <code>lv_qrcode</code> 控件）</li>
+<li>PC 轮询支付状态后返回 <code>CMD_PAY_STATUS</code></li>
+<li>成功：显示&quot;支付成功!&quot;，2 秒后自动隐藏，清空购物车，恢复轮播</li>
+</ol>
+<p><strong>模式二：设备扫码（条码支付）</strong></p>
+<ol>
+<li>用户选择&quot;设备摄像头扫码&quot;</li>
+<li>启动 DVP 摄像头 + quirc 扫描线程</li>
+<li>设置 UI 层 alpha=128 使视频层透视显示</li>
+<li>quirc 扫描到 18~28 位纯数字（支付授权码）后，通过 <code>CMD_BARCODE_PAY</code> 发送至 PC</li>
+<li>PC 调用支付宝条码支付 API，返回支付状态</li>
+<li>成功后流程同上</li>
+</ol>
+<h3 id="63-线程安全设计">6.3 线程安全设计
+</h3><p>UART3 RX 线程严格不调用任何 LVGL API。帧解析完成后仅入队到 SPSC 环形缓冲区。LVGL 定时器 (100ms) 在 LVGL 线程上下文出队处理，确保所有 UI 操作的线程安全。</p>
+<hr>
+<h2 id="七二维码扫描模块">七、二维码扫描模块
+</h2><h3 id="71-硬件配置">7.1 硬件配置
+</h3><ul>
+<li>DVP 摄像头 (OV5640)，强制 QVGA 320×240 输出，降低内存占用（约 460KB）</li>
+<li>ArtInChip 视频输入框架 (<code>mpp_vin</code>, <code>drv_dvp</code>)</li>
+<li>Framebuffer 视频层 (<code>mpp_fb</code>) 用于摄像头预览</li>
+<li>quirc QR 码解码库</li>
+</ul>
+<h3 id="72-扫描流程">7.2 扫描流程
+</h3><ol>
+<li><code>qr_scanner_start()</code>：初始化 DVP（含 5 次重试容错）、配置传感器格式、创建 quirc 实例 (160×120，2 倍下采样)</li>
+<li>扫描线程循环：<code>dq_buf</code> → 丢弃前几帧 → 每 5 帧提取 Y 通道并下采样 → <code>quirc_decode</code></li>
+<li><code>handle_qr_result()</code>：检测是否为支付授权码（18~28 位纯数字），同码 5 秒冷却，调用 <code>uart3_payment_send_barcode()</code> 发送</li>
+</ol>
+<h3 id="73-摄像头视图模式">7.3 摄像头视图模式
+</h3><p>通过 ArtInChip framebuffer 的视频层直接显示 DVP 采集帧：</p>
+<ul>
+<li><code>qr_scanner_start_camera_view()</code>：打开 framebuffer，设置 UI 层 alpha=128</li>
+<li>DVP 缓冲区零拷贝推送到视频层，实现高性能画中画效果</li>
+<li>停止时严格顺序：清标志 → 停扫描线程 → 停 DVP 流 → 等线程退出 → 禁用视频层 + 恢复 UI alpha → 释放资源</li>
+</ul>
+<h3 id="74-内存管理">7.4 内存管理
+</h3><ul>
+<li>灰度缓冲区从 CMA 分配：<code>aicos_malloc(MEM_CMA, scan_w * scan_h)</code></li>
+<li>下采样算法：2×2 区域取均值，将 320×240 降至 160×120 供 quirc 处理</li>
+<li>Y 通道提取后立即释放 DVP 缓冲区回队列，避免占用过久</li>
+</ul>
+<hr>
+<h2 id="八web-配置系统">八、Web 配置系统
+</h2><h3 id="81-架构">8.1 架构
+</h3><p>设备启动 WiFi AP（SSID: <code>AIC-Banner-Config</code>，密码: <code>12345678</code>，信道 6），IP 地址 192.168.1.1，运行 DHCP 服务器，在 80 端口启动 Mongoose HTTP 服务器。</p>
+<h3 id="82-api-接口">8.2 API 接口
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>方法</th>
+          <th>路径</th>
+          <th>功能</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>GET</td>
+          <td><code>/</code></td>
+          <td>嵌入式 HTML 配置页面</td>
+      </tr>
+      <tr>
+          <td>GET</td>
+          <td><code>/api/config</code></td>
+          <td>获取 Banner 配置 JSON</td>
+      </tr>
+      <tr>
+          <td>GET</td>
+          <td><code>/api/commodity</code></td>
+          <td>获取商品配置 JSON</td>
+      </tr>
+      <tr>
+          <td>GET</td>
+          <td><code>/api/navi</code></td>
+          <td>获取导航配置 JSON</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/config</code></td>
+          <td>更新 Banner 配置</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/commodity</code></td>
+          <td>更新商品配置</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/navi</code></td>
+          <td>更新导航配置</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/reset</code></td>
+          <td>重置为默认配置</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/upload/{filename}</code></td>
+          <td>上传 Banner 图片（校验 494×78）</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/upload/commodity/{filename}</code></td>
+          <td>上传商品图片（校验 80×80）</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="83-安全措施">8.3 安全措施
+</h3><ul>
+<li>文件名白名单校验：仅允许字母、数字、<code>.</code>、<code>_</code>、<code>-</code>，长度不超过 64</li>
+<li>Content-Length 早期拒绝：超限直接返回 413</li>
+<li>接收缓冲区限制：<code>recv_mbuf.len &gt; 307200 + 4096</code> 时强制关闭连接</li>
+<li>图片尺寸校验：解析 PNG/JPEG/BMP 文件头验证宽高，不匹配则删除并返回错误</li>
+<li>价格格式校验：支持多种货币前缀，验证必须包含数字和可选小数部分</li>
+</ul>
+<h3 id="84-配置热更新">8.4 配置热更新
+</h3><ol>
+<li>HTTP 线程接收 POST → 解析 JSON → 写入 <code>s_pending_json</code> 缓冲区 → 设置标志</li>
+<li>同时将 JSON 保存到 SD 卡文件实现持久化</li>
+<li>LVGL 定时器 200ms 轮询检测标志 → 发布事件 → 各组件执行热更新</li>
+</ol>
+<hr>
+<h2 id="九异步加载机制">九、异步加载机制
+</h2><p>基于 RT-Thread 线程 + 双消息队列实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">主线程 (LVGL)              工作线程
+</span></span><span class="line"><span class="cl">    |                            |
+</span></span><span class="line"><span class="cl">    | submit(task)               |
+</span></span><span class="line"><span class="cl">    | ----[task_mq]----&gt;         |
+</span></span><span class="line"><span class="cl">    |                            | work_fn(arg) → result
+</span></span><span class="line"><span class="cl">    |                     [result_mq]----&gt; done_cb(result)
+</span></span><span class="line"><span class="cl">    |                            |
+</span></span><span class="line"><span class="cl">    | poll() &lt;-- 排空 result_mq   |
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>工作线程栈：4096 字节，优先级 20</li>
+<li>任务/结果队列容量：8 条</li>
+<li><code>async_loader_poll()</code> 在 LVGL 定时器中调用，保证 <code>done_cb</code> 在 LVGL 线程安全执行</li>
+</ul>
+<hr>
+<h2 id="十系统初始化流程">十、系统初始化流程
+</h2><p><code>custom_init()</code> 是整个系统的组装入口，执行以下初始化序列：</p>
+<ol>
+<li>初始化基础设施：event_bus、async_loader</li>
+<li>初始化所有控件模块的对象池</li>
+<li>等待 SD 卡挂载（最多重试 50 次，每次 100ms）</li>
+<li>复制默认图片资源从 <code>/rodata/image</code> 到 <code>/sdcard</code></li>
+<li>初始化 TTF 字体（汉仪旗黑 15/18 号）</li>
+<li>注册四种控件到 widget_factory</li>
+<li><strong>删除 AiUIBuilder 生成的静态控件</strong>，替换为动态组件</li>
+<li>创建四大组件（banner、commodity、cart、navi）</li>
+<li>绑定购物车动画、结算按钮事件</li>
+<li>订阅 Web 配置变更事件</li>
+<li>启动 Web 配置服务器、UART3 支付模块、QR 扫描模块</li>
+<li>加载持久化配置（覆盖默认值）</li>
+</ol>
+<hr>
+<h2 id="十一技术亮点总结">十一、技术亮点总结
+</h2><ol>
+<li>
+<p><strong>AiUIBuilder + 自定义代码桥接</strong>：通过 <code>layout_container_wrap()</code> 将工具创建的 LVGL 对象包装为动态布局容器，既保留可视化快速原型能力，又获得运行时灵活性。</p>
+</li>
+<li>
+<p><strong>全事件驱动架构</strong>：组件间零直接依赖，购物车不知道商品卡片的实现，支付模块不知道购物车的实现，Web 配置不知道任何 UI 组件的 API。</p>
+</li>
+<li>
+<p><strong>嵌入式 Web 配置</strong>：RT-Thread 上运行 Mongoose HTTP 服务器 + WiFi AP，手机连接热点即可修改配置，无需固件升级，配置自动持久化到 SD 卡。</p>
+</li>
+<li>
+<p><strong>双支付模式</strong>：支持&quot;用户扫码&quot;和&quot;设备扫码&quot;两种模式，通过 UART3 与 PC 主机通信，实现支付宝沙箱环境下的完整支付闭环。</p>
+</li>
+<li>
+<p><strong>无锁线程间通信</strong>：UART3 使用 SPSC 环形队列，Web 配置使用 volatile 标志 + 缓冲区，均避免重量级锁开销。</p>
+</li>
+<li>
+<p><strong>内存池管理</strong>：所有高频创建/销毁的控件使用 RT-Thread 内存池，容量与业务上限对齐，避免内存碎片。</p>
+</li>
+<li>
+<p><strong>摄像头视图硬件加速</strong>：DVP 缓冲区零拷贝推送到视频层，UI 层半透明实现画中画效果。</p>
+</li>
+<li>
+<p><strong>组合模式 UI 树</strong>：Container 和 Widget 统一为树形结构，支持深度优先销毁、批量更新、动态增删，使运行时热更新简单可靠。</p>
+</li>
+</ol>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/Hugo_Web/tags/lvgl/">LVGL</a>
+        
+            <a href="/Hugo_Web/tags/rt-thread/">RT-Thread</a>
+        
+            <a href="/Hugo_Web/tags/artinchip/">ArtInChip</a>
+        
+            <a href="/Hugo_Web/tags/%E5%94%AE%E8%B4%A7%E6%9C%BA/">售货机</a>
+        
+            <a href="/Hugo_Web/tags/mqtt/">MQTT</a>
+        
+            <a href="/Hugo_Web/tags/%E5%B5%8C%E5%85%A5%E5%BC%8Fui/">嵌入式UI</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            最后更新于 Jul 01, 2026 23:06 CST
+        </span>
+    </section></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const mainArticleElement = document.querySelector(".main-article");
+    renderMathInElement(mainArticleElement, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  });
+</script>
+<div class="math-katex"></div>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/">
+        
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_f8913fdcd1a8711e.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post PyIAPToolKit：STM32 IAP 上位机工具套件设计与实现"
+                        
+                        data-hash="md5-vOO1Pj1Sm7lmL3XzOtUpuQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">PyIAPToolKit：STM32 IAP 上位机工具套件设计与实现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/">
+        
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_989a706e6c4dfa57.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post STM32F407 安全 Bootloader 设计：A/B 双分区、加密签名与多渠道升级"
+                        
+                        data-hash="md5-fIM15TRcIvLhRDBeZFcjRg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">STM32F407 安全 Bootloader 设计：A/B 双分区、加密签名与多渠道升级</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+    <div class="comment"></div>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 lingsir007
+    </section>
+    
+    <section class="running-time">
+        
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 5 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 18.74 k ></span>字
+    </section>
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script> <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
+<script>
+  var pjax = new Pjax({
+    selectors: ["title", ".main-container", ".js-Pjax1", ".js-Pjax2"],
+  });
+</script>
+
+<div id="aplayer"></div>
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<script>
+  const staticDir = "http://localhost:1313/Hugo_Web/";
+  const ap = new APlayer({
+    container: document.getElementById("aplayer"),
+    audio: [
+      {
+        name: "Keil Generic Key",
+        artist: "EDGE",
+        url: staticDir + "music/Keil Generic Key-EDGE/song.mp3",
+        cover: staticDir + "music/Keil Generic Key-EDGE/cover.png",
+        lrc: staticDir + "music/Keil Generic Key-EDGE/lyric.lrc",
+      },
+      {
+        name: "查无此字",
+        artist: "林奕匡",
+        url: staticDir + "music/查无此字-林奕匡/song.mp3",
+        cover: staticDir + "music/查无此字-林奕匡/cover.jpg",
+        lrc: staticDir + "music/查无此字-林奕匡/lyric.lrc",
+      },
+      {
+        name: "爱别等",
+        artist: "洪卓立",
+        url: staticDir + "music/爱别等-洪卓立/song.mp3",
+        cover: staticDir + "music/爱别等-洪卓立/cover.jpg",
+        lrc: staticDir + "music/爱别等-洪卓立/lyric.lrc",
+      },
+      {
+        name: "乖乖报到",
+        artist: "MC 张天赋",
+        url: staticDir + "music/乖乖报到-MC 张天赋/song.mp3",
+        cover: staticDir + "music/乖乖报到-MC 张天赋/cover.jpg",
+        lrc: staticDir + "music/乖乖报到-MC 张天赋/lyric.lrc",
+      },
+      {
+        name: "指纹",
+        artist: "胡歌",
+        url: staticDir + "music/指纹-胡歌/song.mp3",
+        cover: staticDir + "music/指纹-胡歌/cover.jpg",
+        lrc: staticDir + "music/指纹-胡歌/lyric.lrc",
+      },
+      {
+        name: "还记得",
+        artist: "周柏豪",
+        url: staticDir + "music/还记得-周柏豪/song.mp3",
+        cover: staticDir + "music/还记得-周柏豪/cover.jpg",
+        lrc: staticDir + "music/还记得-周柏豪/lyric.lrc",
+      },
+      {
+        name: "摄氏零度",
+        artist: "张敬轩",
+        url: staticDir + "music/摄氏零度-张敬轩/song.mp3",
+        cover: staticDir + "music/摄氏零度-张敬轩/cover.jpg",
+        lrc: staticDir + "music/摄氏零度-张敬轩/lyric.lrc",
+      },
+      {
+        name: "下一位前度",
+        artist: "林家谦",
+        url: staticDir + "music/下一位前度-林家谦/song.mp3",
+        cover: staticDir + "music/下一位前度-林家谦/cover.jpg",
+        lrc: staticDir + "music/下一位前度-林家谦/lyric.lrc",
+      },
+      {
+        name: "初初",
+        artist: "古巨基",
+        url: staticDir + "music/初初-古巨基/song.mp3",
+        cover: staticDir + "music/初初-古巨基/cover.jpg",
+        lrc: staticDir + "music/初初-古巨基/lyric.lrc",
+      },
+      {
+        name: "这个故事教训我们",
+        artist: "李克勤",
+        url: staticDir + "music/这个故事教训我们-李克勤/song.mp3",
+        cover: staticDir + "music/这个故事教训我们-李克勤/cover.jpg",
+        lrc: staticDir + "music/这个故事教训我们-李克勤/lyric.lrc",
+      },
+      {
+        name: "最后祝福",
+        artist: "黄宗泽",
+        url: staticDir + "music/最后祝福-黄宗泽/song.mp3",
+        cover: staticDir + "music/最后祝福-黄宗泽/cover.jpg",
+        lrc: staticDir + "music/最后祝福-黄宗泽/lyric.lrc",
+      }
+    ],
+    lrcType: 3,
+    fixed: true
+  });
+</script>
+
+<script>
+  
+  function calculateRunningDays(startDateStr, elementId) {
+    let s1 = new Date(startDateStr.replace(/-/g, "/"));
+    let s2 = new Date();
+    let timeDifference = s2.getTime() - s1.getTime();
+
+    let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+    
+    let dayText = "天"; 
+    let hourText = "小时";
+    let minuteText = "分钟";
+
+    let result = `<span>< ${days} ${dayText} ${hours} ${hourText} ${minutes} ${minuteText} ></span>`;
+    document.getElementById(elementId).innerHTML = result;
+    }
+
+    document.addEventListener("pjax:complete", () => {
+        calculateRunningDays('2025-3-14', 'runningdays');
+    });
+    calculateRunningDays('2025-3-14', 'runningdays');
+</script>
+
+<script>
+  pjax._handleResponse = pjax.handleResponse;
+  pjax.handleResponse = function (responseText, request, href, options) {
+    if (request.responseText.match("<html")) {
+      if (responseText) {
+        
+        let newDom = new DOMParser().parseFromString(responseText, "text/html");
+        
+        let bodyClass = newDom.body.className;
+        document.body.setAttribute("class", bodyClass);
+      }
+      
+      pjax._handleResponse(responseText, request, href, options);
+    } else {
+      
+    }
+  };
+</script>
+
+<script>
+  
+  function initClock() {
+    
+    var hr = document.getElementById("hr"); 
+    var mn = document.getElementById("mn"); 
+    var sc = document.getElementById("sc"); 
+    if (!hr || !mn || !sc) return;
+
+    
+    var date = new Date();
+    var HH = date.getHours();
+    var MM = date.getMinutes();
+    var SS = date.getSeconds();
+
+    
+    var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+    var minuteAngle = MM * 6 + (SS / 60) * 6;
+    var secondAngle = SS * 6;
+
+    
+    hr.style.transition = "none";
+    mn.style.transition = "none";
+    sc.style.transition = "none";
+
+    
+    hr.style.transform = "rotate(0deg)";
+    mn.style.transform = "rotate(0deg)";
+    sc.style.transform = "rotate(0deg)";
+
+    
+    setTimeout(() => {
+      hr.style.transition = "";
+      mn.style.transition = "";
+      sc.style.transition = "";
+
+      
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 0);
+
+    
+    setInterval(function () {
+      var date = new Date();
+      var HH = date.getHours();
+      var MM = date.getMinutes();
+      var SS = date.getSeconds();
+
+      
+      var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+      var minuteAngle = MM * 6 + (SS / 60) * 6;
+      var secondAngle = SS * 6;
+
+      
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 1000);
+  }
+
+  
+  window.onload = function () {
+    initClock();
+  };
+
+  
+  document.addEventListener("pjax:complete", () => {
+    initClock();
+  });
+</script>
+
+<script>
+  document.addEventListener("pjax:complete", () => {
+    
+    window.Stack.init();
+  });
+</script>
+
+<script>
+  async function renderKaTeX() {
+    
+    let katex = document.querySelector(".math-katex");
+    if (!katex) {
+      return;
+    }
+    
+    while (typeof renderMathInElement !== "function") {
+      await delay(500);
+    }
+    
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  }
+
+  
+
+  function delay(time) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, time);
+    });
+  }
+
+  document.addEventListener("pjax:complete", () => {
+    renderKaTeX();
+  });
+</script>
+
+<script src="http://localhost:1313/Hugo_Web/js/topbar.min.js"></script>
+
+<script>
+  
+  topbar.config({
+    barColors: {
+      0: "rgba(255,  255, 255, 1)", 
+      "1.0": "rgba(0, 149, 234,  1)", 
+    },
+  });
+
+  document.addEventListener("pjax:send", () => {
+    
+    topbar.show();
+  });
+
+  document.addEventListener("pjax:complete", () => {
+    
+    topbar.hide();
+  });
+</script>
+
+<script>
+  const cdnPath =
+    "https://cdn.jsdelivr.net/gh/Lingjia007/live2d-widget-v3@main";
+  const config = {
+    
+    path: {
+      homePath: "/",
+      modelPath: "http:\/\/localhost:1313\/Hugo_Web\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:1313\/Hugo_Web\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:1313\/Hugo_Web\/js/my-waifu-tips.json",
+      tipsJsPath: cdnPath + "/waifu-tips.js",
+      live2dCorePath: "http:\/\/localhost:1313\/Hugo_Web\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:1313\/Hugo_Web\/js/live2d-sdk.js",
+    },
+    
+    tools: [
+      "hitokoto",
+      "asteroids",
+      "express",
+      "switch-model",
+      "switch-texture",
+      "photo",
+      "info",
+      "quit",
+    ],
+    
+    drag: {
+      enable: true,
+      direction: ["x", 0],
+    },
+    
+    switchType: "order",
+  };
+
+  
+  if (screen.width >= 10) {
+    Promise.all([
+      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(config.path.live2dCorePath, "js"),
+      loadExternalResource(config.path.live2dSdkPath, "js"),
+      loadExternalResource(config.path.tipsJsPath, "js"),
+    ]).then(() => {
+      initWidget({
+        homePath: config.path.homePath,
+        waifuPath: config.path.tipsJsonPath,
+        cdnPath: config.path.modelPath,
+        tools: config.tools,
+        dragEnable: config.drag.enable,
+        dragDirection: config.drag.direction,
+        switchType: config.switchType,
+      });
+    });
+    function waitForElement(selector, callback) {
+      new MutationObserver(function (mutations) {
+        if (document.querySelector(selector)) {
+          callback();
+          this.disconnect();
+        }
+      }).observe(document.documentElement, { childList: true, subtree: true });
+    }
+  }
+
+  
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      let tag;
+      if (type === "css") {
+        tag = document.createElement("link");
+        tag.rel = "stylesheet";
+        tag.href = url;
+      } else if (type === "js") {
+        tag = document.createElement("script");
+        tag.src = url;
+      }
+      if (tag) {
+        tag.onload = () => resolve(url);
+        tag.onerror = () => reject(url);
+        document.head.appendChild(tag);
+      }
+    });
+  }
+</script>
+
+<style>
+  .highlight {
+     
+    max-height: 400px;
+    overflow: hidden;
+  }
+
+  .code-show {
+    max-height: none !important;
+  }
+
+  .code-more-box {
+    width: 100%;
+    padding-top: 78px;
+    background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(rgba(255, 255, 255, 0)),
+      to(#fff)
+    );
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .code-more-btn {
+    display: block;
+    margin: auto;
+    width: 44px;
+    height: 22px;
+    background: #f0f0f5;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding-top: 6px;
+    cursor: pointer;
+  }
+
+  .code-more-img {
+    cursor: pointer !important;
+    display: block;
+    margin: auto;
+    width: 22px;
+    height: 16px;
+  }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach((codeBlock) => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement("div");
+      codeMoreBox.classList.add("code-more-box");
+      
+      let codeMoreBtn = document.createElement("span");
+      codeMoreBtn.classList.add("code-more-btn");
+      codeMoreBtn.addEventListener("click", () => {
+        codeBlock.classList.add("code-show");
+        codeMoreBox.style.display = "none";
+        
+        window.dispatchEvent(new Event("resize"));
+      });
+      
+      let img = document.createElement("img");
+      img.classList.add("code-more-img");
+      img.src = "http:\/\/localhost:1313\/Hugo_Web\/icons/codeMore.png";
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox);
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initCodeMoreBox();
+  });
+  initCodeMoreBox();
+</script>
+
+<div id="particles-js"></div>
+
+<script src="http://localhost:1313/Hugo_Web/background/particles.min.js"></script>
+<script>
+  particlesJS.load(
+    "particles-js",
+    "http:\/\/localhost:1313\/Hugo_Web\/background/particlesjs-config.json",
+    function () {
+      console.log("particles.js loaded - callback");
+    },
+  );
+</script>
+
+<style>
+  #particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+  }
+</style>
+
+<style>
+  #TableOfContents > ul,
+  ol {
+    ul,
+    ol {
+      display: none;
+    }
+    .open {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  function initTocHide() {
+    
+    let toc = document.querySelector(".widget--toc");
+    if (!toc) {
+      return;
+    }
+    
+    window.addEventListener("scroll", function () {
+      
+      let openUl = document.querySelectorAll(".open");
+      if (openUl.length > 0) {
+        openUl.forEach((ul) => {
+          ul.classList.remove("open");
+        });
+      }
+      
+      let currentLi = document.querySelector(".active-class");
+      if (!currentLi) {
+        return;
+      }
+      
+      if (currentLi.children.length > 1) {
+        currentLi.children[1].classList.add("open");
+      }
+      
+      let ul = currentLi.parentElement;
+      do {
+        ul.classList.add("open");
+        ul = ul.parentElement.parentElement;
+      } while (
+        ul !== undefined &&
+        (ul.localName === "ul" || ul.localName === "ol")
+      );
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initTocHide();
+  });
+  initTocHide();
+</script>
+
+<style>
+  @font-face {
+    font-family: "AlibabaPuHuiTi-3-65-Medium";
+    src: url(http://localhost:1313/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+      format("truetype");
+  }
+
+  :root {
+    --base-font-family: "AlibabaPuHuiTi-3-65-Medium";
+    --code-font-family: "AlibabaPuHuiTi-3-65-Medium";
+  }
+</style>
+
+<style>
+  #backTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    z-index: 99;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-image: url("http://localhost:1313/Hugo_Web/icons/backTop.svg");
+  }
+</style>
+
+<script>
+  
+
+  function initScrollTop() {
+    let rightSideBar = document.querySelector(".right-sidebar");
+    if (!rightSideBar) {
+      return;
+    }
+    
+    let btn = document.createElement("div");
+    btn.id = "backTopBtn";
+    btn.onclick = backToTop;
+    rightSideBar.appendChild(btn);
+    
+    window.onscroll = function () {
+      
+      if (
+        document.body.scrollTop > 20 ||
+        document.documentElement.scrollTop > 20
+      ) {
+        btn.style.display = "block";
+      } else {
+        btn.style.display = "none";
+      }
+    };
+  }
+
+  
+
+  function backToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initScrollTop();
+  });
+  initScrollTop();
+</script>
+
+<div class="js-Pjax2">
+  
+  <script>
+    (function () {
+      
+      const verScript = document.createElement("script");
+      verScript.defer = true;
+      verScript.src = "https://cn.vercount.one/js";
+      document.body.appendChild(verScript);
+
+      
+      function showHideView() {
+        const viewCounts = document.querySelectorAll("#viewCount");
+        if (viewCounts) {
+          const isArticle = !!document.querySelector(".article-page");
+          viewCounts.forEach((ele) => {
+            ele.style.display = isArticle ? "" : "none";
+          });
+        }
+      }
+      
+      showHideView();
+      
+      document.addEventListener("pjax:complete", function () {
+        showHideView();
+      });
+    })();
+  </script>
+</div><script>
+  (function () {
+    var giscusConfig = {
+      repo: "Lingjia007\/Hugo_Web",
+      repoId: "R_kgDOOH5NOA",
+      category: "Announcements",
+      categoryId: "DIC_kwDOOH5NOM4Cn-zx",
+      mapping: 'title',
+      strict: "0",
+      reactionsEnabled: "1",
+      emitMetadata: "0",
+      inputPosition: 'top',
+      theme: 'light',
+      loading: "lazy",
+    };
+    var giscusLightTheme = 'light';
+    var giscusDarkTheme = 'dark_dimmed';
+
+    function getGiscusLang() {
+      var path = window.location.pathname;
+      if (path.indexOf("/zh-hk") !== -1) return "zh-HK";
+      if (path.indexOf("/en") !== -1) return "en";
+      return "zh-CN";
+    }
+
+    function getGiscusTheme() {
+      if (document.documentElement.dataset.scheme === "light") {
+        return giscusLightTheme;
+      }
+      return giscusDarkTheme;
+    }
+
+    function setGiscusTheme(theme) {
+      var giscus = document.querySelector("iframe.giscus-frame");
+      if (giscus) {
+        giscus.contentWindow.postMessage(
+          { giscus: { setConfig: { theme: theme } } },
+          "https://giscus.app",
+        );
+      }
+    }
+
+    function loadGiscus() {
+      var comment = document.querySelector(".comment");
+      if (!comment) return;
+      comment.innerHTML = "";
+      var lang = getGiscusLang();
+      var script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.setAttribute("data-repo", giscusConfig.repo);
+      script.setAttribute("data-repo-id", giscusConfig.repoId);
+      script.setAttribute("data-category", giscusConfig.category);
+      script.setAttribute("data-category-id", giscusConfig.categoryId);
+      script.setAttribute("data-mapping", giscusConfig.mapping);
+      script.setAttribute("data-strict", giscusConfig.strict);
+      script.setAttribute(
+        "data-reactions-enabled",
+        giscusConfig.reactionsEnabled,
+      );
+      script.setAttribute("data-emit-metadata", giscusConfig.emitMetadata);
+      script.setAttribute("data-input-position", giscusConfig.inputPosition);
+      script.setAttribute("data-theme", giscusConfig.theme);
+      script.setAttribute("data-lang", lang);
+      script.setAttribute("data-loading", giscusConfig.loading);
+      script.setAttribute("crossorigin", "anonymous");
+      script.async = true;
+      comment.appendChild(script);
+    }
+
+    window.addEventListener("message", function (e) {
+      if (e.origin !== "https://giscus.app") return;
+      setGiscusTheme(getGiscusTheme());
+    });
+    window.addEventListener("onColorSchemeChange", function () {
+      setGiscusTheme(getGiscusTheme());
+    });
+
+    loadGiscus();
+    document.addEventListener("pjax:complete", loadGiscus);
+  })();
+</script>
+
+    </body>
+</html>

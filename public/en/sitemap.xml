@@ -2,6 +2,144 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/Hugo_Web/en/tags/artinchip/</loc>
+    <lastmod>2026-07-02T18:35:31+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/tags/artinchip/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/artinchip/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/tags/artinchip/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/en/categories/</loc>
+    <lastmod>2026-07-02T18:35:31+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/categories/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/categories/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/categories/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/en/tags/design-patterns/</loc>
+    <lastmod>2026-07-02T18:35:31+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/en/categories/embedded/</loc>
+    <lastmod>2026-07-02T18:35:31+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/en/tags/embedded-ui/</loc>
+    <lastmod>2026-07-02T18:35:31+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/en/tags/lvgl/</loc>
+    <lastmod>2026-07-02T18:35:31+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/tags/lvgl/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/lvgl/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/tags/lvgl/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/</loc>
+    <lastmod>2026-07-02T18:35:31+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/en/post/</loc>
+    <lastmod>2026-07-02T18:35:31+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/post/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/post/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/post/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/en/tags/rt-thread/</loc>
+    <lastmod>2026-07-02T18:35:31+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/tags/rt-thread/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/rt-thread/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/tags/rt-thread/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/en/tags/</loc>
+    <lastmod>2026-07-02T18:35:31+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/tags/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/en/tags/vending-machine/</loc>
+    <lastmod>2026-07-02T18:35:31+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/tags/a/b-partition/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
   </url><url>
@@ -41,24 +179,6 @@
                 href="http://localhost:1313/Hugo_Web/en/tags/bootloader/"
                 />
   </url><url>
-    <loc>http://localhost:1313/Hugo_Web/en/categories/</loc>
-    <lastmod>2026-06-30T23:07:45+08:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-cn"
-                href="http://localhost:1313/Hugo_Web/categories/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-hk"
-                href="http://localhost:1313/Hugo_Web/zh-hk/categories/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="http://localhost:1313/Hugo_Web/en/categories/"
-                />
-  </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/tags/differential-update/</loc>
     <lastmod>2026-06-30T23:07:45+08:00</lastmod>
   </url><url>
@@ -79,9 +199,6 @@
                 hreflang="en"
                 href="http://localhost:1313/Hugo_Web/en/tags/ed25519/"
                 />
-  </url><url>
-    <loc>http://localhost:1313/Hugo_Web/en/categories/embedded/</loc>
-    <lastmod>2026-06-30T23:07:45+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/tags/firmware-encryption/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
@@ -120,24 +237,6 @@
                 rel="alternate"
                 hreflang="en"
                 href="http://localhost:1313/Hugo_Web/en/tags/ota/"
-                />
-  </url><url>
-    <loc>http://localhost:1313/Hugo_Web/en/post/</loc>
-    <lastmod>2026-06-30T23:07:45+08:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-cn"
-                href="http://localhost:1313/Hugo_Web/post/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-hk"
-                href="http://localhost:1313/Hugo_Web/zh-hk/post/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="http://localhost:1313/Hugo_Web/en/post/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/</loc>
@@ -212,24 +311,6 @@
                 href="http://localhost:1313/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/"
                 />
   </url><url>
-    <loc>http://localhost:1313/Hugo_Web/en/tags/</loc>
-    <lastmod>2026-06-30T23:07:45+08:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-cn"
-                href="http://localhost:1313/Hugo_Web/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-hk"
-                href="http://localhost:1313/Hugo_Web/zh-hk/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="http://localhost:1313/Hugo_Web/en/tags/"
-                />
-  </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/tags/ymodem/</loc>
     <lastmod>2026-06-30T23:07:45+08:00</lastmod>
     <xhtml:link
@@ -267,7 +348,7 @@
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/page/</loc>
-    <lastmod>2026-06-30T15:49:53+08:00</lastmod>
+    <lastmod>2026-07-01T18:05:29+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
@@ -384,7 +465,7 @@
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/en/about/</loc>
-    <lastmod>2026-06-30T15:49:53+08:00</lastmod>
+    <lastmod>2026-07-01T18:05:29+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"

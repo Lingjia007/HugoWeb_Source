@@ -2,6 +2,164 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/Hugo_Web/tags/artinchip/</loc>
+    <lastmod>2026-07-02T18:31:11+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/artinchip/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/tags/artinchip/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/tags/artinchip/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/categories/</loc>
+    <lastmod>2026-07-02T18:31:11+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/categories/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/categories/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/categories/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/tags/lvgl/</loc>
+    <lastmod>2026-07-02T18:31:11+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/lvgl/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/tags/lvgl/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/tags/lvgl/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/</loc>
+    <lastmod>2026-07-02T18:31:11+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/post/</loc>
+    <lastmod>2026-07-02T18:31:11+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/post/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/post/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/post/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/tags/rt-thread/</loc>
+    <lastmod>2026-07-02T18:31:11+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/rt-thread/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/tags/rt-thread/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/tags/rt-thread/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/tags/</loc>
+    <lastmod>2026-07-02T18:31:11+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="http://localhost:1313/Hugo_Web/en/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/tags/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/</loc>
+    <lastmod>2026-07-02T18:31:11+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/tags/%E5%B5%8C%E5%85%A5%E5%BC%8Fui/</loc>
+    <lastmod>2026-07-02T18:31:11+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-hk"
+                href="http://localhost:1313/Hugo_Web/zh-hk/tags/%E5%B5%8C%E5%85%A5%E5%BC%8Fui/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="http://localhost:1313/Hugo_Web/tags/%E5%B5%8C%E5%85%A5%E5%BC%8Fui/"
+                />
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
+    <lastmod>2026-07-02T18:31:11+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/Hugo_Web/tags/%E5%94%AE%E8%B4%A7%E6%9C%BA/</loc>
+    <lastmod>2026-07-02T18:31:11+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/Hugo_Web/tags/a/b%E5%88%86%E5%8C%BA/</loc>
     <lastmod>2026-06-30T15:49:53+08:00</lastmod>
   </url><url>
@@ -39,24 +197,6 @@
                 rel="alternate"
                 hreflang="zh-cn"
                 href="http://localhost:1313/Hugo_Web/tags/bootloader/"
-                />
-  </url><url>
-    <loc>http://localhost:1313/Hugo_Web/categories/</loc>
-    <lastmod>2026-06-30T23:07:45+08:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-hk"
-                href="http://localhost:1313/Hugo_Web/zh-hk/categories/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="http://localhost:1313/Hugo_Web/en/categories/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-cn"
-                href="http://localhost:1313/Hugo_Web/categories/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/tags/ed25519/</loc>
@@ -111,24 +251,6 @@
                 rel="alternate"
                 hreflang="zh-cn"
                 href="http://localhost:1313/Hugo_Web/tags/ota/"
-                />
-  </url><url>
-    <loc>http://localhost:1313/Hugo_Web/post/</loc>
-    <lastmod>2026-06-30T23:07:45+08:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-hk"
-                href="http://localhost:1313/Hugo_Web/zh-hk/post/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="http://localhost:1313/Hugo_Web/en/post/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-cn"
-                href="http://localhost:1313/Hugo_Web/post/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/</loc>
@@ -203,24 +325,6 @@
                 href="http://localhost:1313/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/"
                 />
   </url><url>
-    <loc>http://localhost:1313/Hugo_Web/tags/</loc>
-    <lastmod>2026-06-30T23:07:45+08:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-hk"
-                href="http://localhost:1313/Hugo_Web/zh-hk/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="http://localhost:1313/Hugo_Web/en/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-cn"
-                href="http://localhost:1313/Hugo_Web/tags/"
-                />
-  </url><url>
     <loc>http://localhost:1313/Hugo_Web/tags/ymodem/</loc>
     <lastmod>2026-06-30T23:07:45+08:00</lastmod>
     <xhtml:link
@@ -253,19 +357,6 @@
                 rel="alternate"
                 hreflang="zh-cn"
                 href="http://localhost:1313/Hugo_Web/tags/%E5%9B%BA%E4%BB%B6%E5%8A%A0%E5%AF%86/"
-                />
-  </url><url>
-    <loc>http://localhost:1313/Hugo_Web/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/</loc>
-    <lastmod>2026-06-30T23:07:45+08:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-hk"
-                href="http://localhost:1313/Hugo_Web/zh-hk/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-cn"
-                href="http://localhost:1313/Hugo_Web/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/"
                 />
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/tags/css/</loc>
@@ -350,7 +441,7 @@
     <lastmod>2025-03-20T23:07:19+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/page/</loc>
-    <lastmod>2026-06-30T15:49:53+08:00</lastmod>
+    <lastmod>2026-07-01T18:05:29+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"
@@ -416,7 +507,7 @@
     <lastmod>2025-03-19T13:41:49+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/Hugo_Web/%E5%85%B3%E4%BA%8E/</loc>
-    <lastmod>2026-06-30T15:49:53+08:00</lastmod>
+    <lastmod>2026-07-01T18:05:29+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-hk"

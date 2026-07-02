@@ -1,0 +1,2061 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="A complete smart vending machine terminal UI system design based on ArtInChip platform + LVGL v8 + RT-Thread, covering composite pattern UI tree, event-driven architecture, Flex/Grid layout framework, dual payment modes (QR code display/camera scanning), UART3 serial communication protocol, Web WiFi AP configuration, DVP camera zero-copy preview, and other core technologies">
+<title>Smart Vending Machine Terminal: Embedded UI Architecture Design and Implementation Based on LVGL</title>
+
+<link rel='canonical' href='http://localhost:1313/Hugo_Web/en/p/smart-vending-machine-terminal-embedded-ui-architecture-design-and-implementation-based-on-lvgl/'>
+
+<link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="Smart Vending Machine Terminal: Embedded UI Architecture Design and Implementation Based on LVGL">
+<meta property='og:description' content="A complete smart vending machine terminal UI system design based on ArtInChip platform + LVGL v8 + RT-Thread, covering composite pattern UI tree, event-driven architecture, Flex/Grid layout framework, dual payment modes (QR code display/camera scanning), UART3 serial communication protocol, Web WiFi AP configuration, DVP camera zero-copy preview, and other core technologies">
+<meta property='og:url' content='http://localhost:1313/Hugo_Web/en/p/smart-vending-machine-terminal-embedded-ui-architecture-design-and-implementation-based-on-lvgl/'>
+<meta property='og:site_name' content='lingsir007'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='Vending Machine' /><meta property='article:tag' content='MQTT' /><meta property='article:tag' content='Embedded UI' /><meta property='article:published_time' content='2026-07-01T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-01T23:07:41&#43;08:00'/>
+<meta name="twitter:title" content="Smart Vending Machine Terminal: Embedded UI Architecture Design and Implementation Based on LVGL">
+<meta name="twitter:description" content="A complete smart vending machine terminal UI system design based on ArtInChip platform + LVGL v8 + RT-Thread, covering composite pattern UI tree, event-driven architecture, Flex/Grid layout framework, dual payment modes (QR code display/camera scanning), UART3 serial communication protocol, Web WiFi AP configuration, DVP camera zero-copy preview, and other core technologies">
+    <link rel="shortcut icon" href="/icons/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/Hugo_Web/en/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/Hugo_Web/img/avatar_hu_6974417c8ac44e16.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🤔</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/Hugo_Web/en">lingsir007</a></h1>
+            <h2 class="site-description">welcome to my website</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/Lingjia007?tab=repositories'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://twitter.com'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/Hugo_Web/en/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/en/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/en/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/en/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/Hugo_Web/en/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/" >简体中文</option>
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/zh-hk/" >繁體中文</option>
+                                
+                                    <option value="http://localhost:1313/Hugo_Web/en/" selected>English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+        
+
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#preface">Preface</a></li>
+    <li><a href="#1-system-architecture">1. System Architecture</a>
+      <ol>
+        <li><a href="#11-project-composition">1.1 Project Composition</a></li>
+        <li><a href="#12-design-patterns">1.2 Design Patterns</a></li>
+      </ol>
+    </li>
+    <li><a href="#2-event-driven-architecture">2. Event-Driven Architecture</a>
+      <ol>
+        <li><a href="#21-event-bus-design">2.1 Event Bus Design</a></li>
+        <li><a href="#22-core-event-flow">2.2 Core Event Flow</a></li>
+        <li><a href="#23-cross-thread-communication">2.3 Cross-Thread Communication</a></li>
+      </ol>
+    </li>
+    <li><a href="#3-ui-layout-framework">3. UI Layout Framework</a>
+      <ol>
+        <li><a href="#31-composite-pattern-ui-tree">3.1 Composite Pattern UI Tree</a></li>
+        <li><a href="#32-layout-strategies">3.2 Layout Strategies</a></li>
+        <li><a href="#33-screen-layout">3.3 Screen Layout</a></li>
+        <li><a href="#34-animation-effects">3.4 Animation Effects</a></li>
+      </ol>
+    </li>
+    <li><a href="#4-banner-carousel-module">4. Banner Carousel Module</a>
+      <ol>
+        <li><a href="#41-architecture">4.1 Architecture</a></li>
+        <li><a href="#42-core-features">4.2 Core Features</a></li>
+      </ol>
+    </li>
+    <li><a href="#5-shopping-cart-system">5. Shopping Cart System</a>
+      <ol>
+        <li><a href="#51-commodity-card">5.1 Commodity Card</a></li>
+        <li><a href="#52-cart-item">5.2 Cart Item</a></li>
+      </ol>
+    </li>
+    <li><a href="#6-uart-payment-flow">6. UART Payment Flow</a>
+      <ol>
+        <li><a href="#61-frame-protocol">6.1 Frame Protocol</a></li>
+        <li><a href="#62-dual-payment-modes">6.2 Dual Payment Modes</a></li>
+        <li><a href="#63-thread-safety">6.3 Thread Safety</a></li>
+      </ol>
+    </li>
+    <li><a href="#7-qr-code-scanner-module">7. QR Code Scanner Module</a>
+      <ol>
+        <li><a href="#71-hardware-configuration">7.1 Hardware Configuration</a></li>
+        <li><a href="#72-scanning-flow">7.2 Scanning Flow</a></li>
+        <li><a href="#73-camera-view-mode">7.3 Camera View Mode</a></li>
+        <li><a href="#74-memory-management">7.4 Memory Management</a></li>
+      </ol>
+    </li>
+    <li><a href="#8-web-configuration-system">8. Web Configuration System</a>
+      <ol>
+        <li><a href="#81-architecture">8.1 Architecture</a></li>
+        <li><a href="#82-api-endpoints">8.2 API Endpoints</a></li>
+        <li><a href="#83-security-measures">8.3 Security Measures</a></li>
+        <li><a href="#84-config-hot-update">8.4 Config Hot-Update</a></li>
+      </ol>
+    </li>
+    <li><a href="#9-async-loading-mechanism">9. Async Loading Mechanism</a></li>
+    <li><a href="#10-system-initialization-flow">10. System Initialization Flow</a></li>
+    <li><a href="#11-technical-highlights">11. Technical Highlights</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/Hugo_Web/en/categories/embedded/" >
+                Embedded
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/Hugo_Web/en/p/smart-vending-machine-terminal-embedded-ui-architecture-design-and-implementation-based-on-lvgl/">Smart Vending Machine Terminal: Embedded UI Architecture Design and Implementation Based on LVGL</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            A complete smart vending machine terminal UI system design based on ArtInChip platform &#43; LVGL v8 &#43; RT-Thread, covering composite pattern UI tree, event-driven architecture, Flex/Grid layout framework, dual payment modes (QR code display/camera scanning), UART3 serial communication protocol, Web WiFi AP configuration, DVP camera zero-copy preview, and other core technologies
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 01, 2026</time>
+            </div>
+        <div class="article-lastmod">
+                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M10 18l5 -5a1.414 1.414 0 0 0 -2 -2l-5 5v2h2z" /></svg>
+                <time>
+                    Jul 01, 2026 23:07 CST
+                </time>
+            </div><div id="wordCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
+            <time class="article-wordcount">
+                1887  words
+            </time>
+        </div>
+
+        
+
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                
+                <span id="vercount_value_page_pv">loading... </span> views
+            </time>
+        </div>
+
+    </footer>
+    
+
+    
+        <footer class="article-translations">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+            <div>
+                
+                    <a href="http://localhost:1313/Hugo_Web/p/%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E5%9F%BA%E4%BA%8E-lvgl-%E7%9A%84%E5%B5%8C%E5%85%A5%E5%BC%8F-ui-%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/" class="link">简体中文</a>
+                
+                    <a href="http://localhost:1313/Hugo_Web/zh-hk/p/%E6%99%BA%E8%83%BD%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E5%9F%BA%E6%96%BC-lvgl-%E7%9A%84%E5%B5%8C%E5%85%A5%E5%BC%8F-ui-%E6%9E%B6%E6%A7%8B%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/" class="link">繁體中文</a>
+                
+            </div>
+        </footer>
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="preface">Preface
+</h2><p>In IoT terminal devices, interaction experience is often the key to product competitiveness. This article introduces the complete design and implementation of a smart vending machine terminal UI system based on <strong>ArtInChip embedded platform + LVGL v8 + RT-Thread</strong>. The project consists of a static UI skeleton generated by AiUIBuilder v2.0.2 combined with hand-written dynamic business logic, achieving a smooth transition from a WYSIWYG visual prototype to an interactive dynamic application.</p>
+<hr>
+<h2 id="1-system-architecture">1. System Architecture
+</h2><h3 id="11-project-composition">1.1 Project Composition
+</h3><p>The project is divided into two major modules:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Directory</th>
+          <th>Responsibility</th>
+          <th>Source</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>ui_builder/</code></td>
+          <td>Screen layout, static widgets, styles and fonts</td>
+          <td>AiUIBuilder auto-generated</td>
+      </tr>
+      <tr>
+          <td><code>my_custom_init/</code></td>
+          <td>Interaction logic, data binding, communication and dynamic loading</td>
+          <td>Hand-written</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>The module hierarchy within <code>my_custom_init/</code>:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Layer</th>
+          <th>Module</th>
+          <th>Responsibility</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Infrastructure</td>
+          <td><code>event_bus</code></td>
+          <td>Pub-Sub decoupled communication</td>
+      </tr>
+      <tr>
+          <td>Infrastructure</td>
+          <td><code>async_loader</code></td>
+          <td>Worker thread + LVGL timer callback</td>
+      </tr>
+      <tr>
+          <td>Layout Framework</td>
+          <td><code>layout_node</code></td>
+          <td>Composite pattern UI node tree</td>
+      </tr>
+      <tr>
+          <td>Layout Framework</td>
+          <td><code>layout_strategy</code></td>
+          <td>Flex/Grid layout strategy mapping</td>
+      </tr>
+      <tr>
+          <td>Component Factory</td>
+          <td><code>component_factory</code></td>
+          <td>Assemble complete UI components</td>
+      </tr>
+      <tr>
+          <td>Component Factory</td>
+          <td><code>widget_factory</code></td>
+          <td>Register/create widgets by type name</td>
+      </tr>
+      <tr>
+          <td>Widget</td>
+          <td><code>banner_carousel</code> / <code>banner_item</code></td>
+          <td>Banner carousel controller</td>
+      </tr>
+      <tr>
+          <td>Widget</td>
+          <td><code>commodity_card</code></td>
+          <td>Product display and add-to-cart</td>
+      </tr>
+      <tr>
+          <td>Widget</td>
+          <td><code>cart_item</code></td>
+          <td>Shopping cart state management</td>
+      </tr>
+      <tr>
+          <td>Widget</td>
+          <td><code>navi_item</code></td>
+          <td>Navigation bar tab</td>
+      </tr>
+      <tr>
+          <td>Business</td>
+          <td><code>custom_init</code></td>
+          <td>Assemble all modules</td>
+      </tr>
+      <tr>
+          <td>Business</td>
+          <td><code>web_config</code></td>
+          <td>WiFi AP + HTTP configuration page</td>
+      </tr>
+      <tr>
+          <td>Business</td>
+          <td><code>uart3_payment</code></td>
+          <td>UART3 communication + payment flow</td>
+      </tr>
+      <tr>
+          <td>Business</td>
+          <td><code>qr_scanner</code></td>
+          <td>DVP camera + quirc decoding</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="12-design-patterns">1.2 Design Patterns
+</h3><p>The project employs several classic design patterns:</p>
+<ul>
+<li><strong>Composite Pattern</strong>: <code>layout_node</code> framework unifies Container and Widget into a tree structure, implementing depth-first destruction via <code>destroy()</code> virtual function.</li>
+<li><strong>Factory Pattern</strong>: <code>widget_factory</code> registers creation functions by type name string, supporting dynamic creation of four widget types.</li>
+<li><strong>Pub-Sub Pattern</strong>: <code>event_bus</code> implements a lightweight event bus for decoupled communication between components.</li>
+<li><strong>Strategy Pattern</strong>: <code>layout_strategy_t</code> encapsulates layout types and parameters, mapping to LVGL Flex API calls.</li>
+<li><strong>Object Pool Pattern</strong>: Uses RT-Thread memory pools (<code>rt_mp_create</code>/<code>rt_mp_alloc</code>/<code>rt_mp_free</code>) for high-frequency widget data allocation, avoiding memory fragmentation.</li>
+</ul>
+<hr>
+<h2 id="2-event-driven-architecture">2. Event-Driven Architecture
+</h2><h3 id="21-event-bus-design">2.1 Event Bus Design
+</h3><p><code>event_bus</code> maintains a <code>s_slots[EVT_TYPE_MAX]</code> array, each slot supporting up to 8 subscribers, with RT-Thread mutex for thread safety.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">event_handler_t</span> <span class="n">handler</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="o">*</span><span class="n">user_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">subscriber_t</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">event_slot_t</span> <span class="n">s_slots</span><span class="p">[</span><span class="n">EVT_TYPE_MAX</span><span class="p">];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>event_bus_publish()</code> snapshots the subscriber list before releasing the lock and invoking callbacks, preventing iteration issues from subscription modifications within callbacks.</p>
+<h3 id="22-core-event-flow">2.2 Core Event Flow
+</h3><p>Eight event types are defined: cart add/remove/count change/price change, banner/commodity/navi config change, navi click.</p>
+<p>Typical event flows:</p>
+<ol>
+<li><strong>Add to Cart</strong>: <code>commodity_card</code> click add button → publish <code>EVT_CART_ITEM_ADDED</code> → <code>cart_item</code> module subscribes → publish <code>EVT_CART_COUNT_CHANGED</code> + <code>EVT_CART_PRICE_CHANGED</code></li>
+<li><strong>Cart Quantity Change</strong>: +/- button click → modify count → update total price label and count badge</li>
+<li><strong>Web Config Change</strong>: HTTP POST → set pending flag → LVGL timer polls → publish <code>EVT_BANNER_CONFIG_CHANGED</code> etc. → components hot-update</li>
+<li><strong>Navigation Click</strong>: <code>navi_item</code> click → publish <code>EVT_NAVI_ITEM_CLICKED</code></li>
+</ol>
+<h3 id="23-cross-thread-communication">2.3 Cross-Thread Communication
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Communication Path</th>
+          <th>Mechanism</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>UART3 RX thread → LVGL thread</td>
+          <td>Lock-free SPSC ring queue + LVGL timer (100ms)</td>
+          <td>RX thread only parses and enqueues frames, never calls LVGL API</td>
+      </tr>
+      <tr>
+          <td>Web config thread → LVGL thread</td>
+          <td>volatile flag + buffer + LVGL timer (200ms)</td>
+          <td>HTTP thread only writes buffer, timer publishes events in LVGL thread</td>
+      </tr>
+      <tr>
+          <td>QR scan thread → UART3</td>
+          <td><code>rt_device_write()</code></td>
+          <td>Thread-safe serial write</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="3-ui-layout-framework">3. UI Layout Framework
+</h2><h3 id="31-composite-pattern-ui-tree">3.1 Composite Pattern UI Tree
+</h3><p><code>layout_node</code> is the core abstraction. <code>layout_container_t</code> is a container node (with dynamic child array, initial capacity 8, doubling expansion), <code>widget_unit_t</code> is a leaf node:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">layout_node</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">lv_obj_t</span> <span class="o">*</span><span class="n">obj</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type_name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">layout_node_type_t</span> <span class="n">node_type</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">layout_container_t</span> <span class="o">*</span><span class="n">parent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">destroy</span><span class="p">)(</span><span class="kt">layout_node_t</span> <span class="o">*</span><span class="n">self</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">update</span><span class="p">)(</span><span class="kt">layout_node_t</span> <span class="o">*</span><span class="n">self</span><span class="p">,</span> <span class="k">const</span> <span class="n">cJSON</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">layout_container</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">layout_node_t</span> <span class="n">base</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">layout_strategy_t</span> <span class="n">strategy</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">layout_node_t</span> <span class="o">**</span><span class="n">children</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">child_count</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">child_capacity</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Key design: <code>layout_container_wrap()</code> can wrap existing LVGL objects created by AiUIBuilder as layout_containers, retaining external ownership while mounting child management logic.</p>
+<h3 id="32-layout-strategies">3.2 Layout Strategies
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Strategy</th>
+          <th>Implementation</th>
+          <th>Usage</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Flex-Row</td>
+          <td><code>LV_FLEX_FLOW_ROW</code></td>
+          <td>Banner carousel, navigation bar</td>
+      </tr>
+      <tr>
+          <td>Flex-Column</td>
+          <td><code>LV_FLEX_FLOW_COLUMN</code></td>
+          <td>Shopping cart list</td>
+      </tr>
+      <tr>
+          <td>Grid</td>
+          <td><code>LV_FLEX_FLOW_ROW_WRAP</code> + <code>FLEX_IN_NEW_TRACK</code></td>
+          <td>Product display (3 columns)</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="33-screen-layout">3.3 Screen Layout
+</h3><p>800×480 screen divided into four zones:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Zone</th>
+          <th>Position</th>
+          <th>Size</th>
+          <th>Component</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Banner Carousel</td>
+          <td>(153, 12)</td>
+          <td>494×78</td>
+          <td>banner (flex-row, horizontal scroll)</td>
+      </tr>
+      <tr>
+          <td>Navigation Bar</td>
+          <td>(16, 102)</td>
+          <td>768×45</td>
+          <td>navi (flex-row, non-scrollable)</td>
+      </tr>
+      <tr>
+          <td>Product Display</td>
+          <td>(0, 150)</td>
+          <td>800×220</td>
+          <td>commodity (grid 3 columns, vertical scroll)</td>
+      </tr>
+      <tr>
+          <td>Cart Panel</td>
+          <td>(0, 70/480)</td>
+          <td>800×410</td>
+          <td>cart (flex-column, vertical scroll)</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="34-animation-effects">3.4 Animation Effects
+</h3><ul>
+<li><strong>Button Scale Animation</strong>: Zoom from 256 to 210 on click, using <code>lv_anim_path_overshoot</code> bounce, 100ms press + 200ms rebound.</li>
+<li><strong>Cart Panel Slide</strong>: Y coordinate animates from 480 (off-screen) to 70 (visible), 400ms linear, with opacity fade.</li>
+<li><strong>Carousel Page Turn</strong>: <code>lv_obj_scroll_to_x</code> animation, 600ms <code>ease_out</code>.</li>
+</ul>
+<hr>
+<h2 id="4-banner-carousel-module">4. Banner Carousel Module
+</h2><h3 id="41-architecture">4.1 Architecture
+</h3><p>The carousel module uses a <strong>controller-view separation</strong> design:</p>
+<ul>
+<li><code>banner_types.h</code>: Pure data type definitions, no UI dependency</li>
+<li><code>banner_carousel</code>: Does not create or own containers and child widgets, only attaches controller behavior</li>
+<li><code>banner_item</code>: Simple image widget, allocated from memory pool</li>
+</ul>
+<h3 id="42-core-features">4.2 Core Features
+</h3><ul>
+<li><strong>Auto-scroll</strong>: Timer-driven, pausable/resumable</li>
+<li><strong>Swipe Gesture Detection</strong>: Based on <code>scroll_begin_cb</code> / <code>scroll_end_cb</code>, comparing scroll_x delta against <code>switch_threshold</code></li>
+<li><strong>Indicator Dots</strong>: Created with 50ms delay to avoid position errors from incomplete layout</li>
+<li><strong>Data Hot-Update</strong>: <code>banner_carousel_update_data()</code> pauses timer → clears children → rebuilds → rebuilds dots → resumes timer</li>
+</ul>
+<hr>
+<h2 id="5-shopping-cart-system">5. Shopping Cart System
+</h2><h3 id="51-commodity-card">5.1 Commodity Card
+</h3><p>Each card contains: product image (80×80), name label, price label, add-to-cart button, badge tag (best seller / new / recommended).</p>
+<p><code>commodity_card_batch_update()</code> implements differential update: add/remove cards as needed, then update data one by one, supporting Grid layout auto-wrapping. Memory pool capacity = <code>COMMODITY_MAX_COUNT</code> (30).</p>
+<h3 id="52-cart-item">5.2 Cart Item
+</h3><ul>
+<li><code>cart_add_commodity()</code> searches existing items by name first; if found, increments count; otherwise creates new item</li>
+<li>Automatically removes when count reaches 0, publishing <code>EVT_CART_ITEM_REMOVED</code></li>
+<li><code>cart_update_total_price()</code> iterates all items, parses price strings (skipping currency prefix), calculates <code>count * price_val</code> sum</li>
+<li><code>cart_update_count_tag()</code> manages the count badge on the cart icon</li>
+</ul>
+<hr>
+<h2 id="6-uart-payment-flow">6. UART Payment Flow
+</h2><h3 id="61-frame-protocol">6.1 Frame Protocol
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AA 55 CMD LEN_H LEN_L DATA... 0D 0A
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Direction</th>
+          <th>CMD</th>
+          <th>Name</th>
+          <th>Data</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>PC → Device</td>
+          <td>0x01</td>
+          <td>CMD_QR_URL</td>
+          <td>QR code URL (UTF-8)</td>
+      </tr>
+      <tr>
+          <td>PC → Device</td>
+          <td>0x02</td>
+          <td>CMD_PAY_STATUS</td>
+          <td>Payment status code (1 byte)</td>
+      </tr>
+      <tr>
+          <td>PC → Device</td>
+          <td>0x03</td>
+          <td>CMD_ORDER_NO</td>
+          <td>Order number (UTF-8)</td>
+      </tr>
+      <tr>
+          <td>PC → Device</td>
+          <td>0x04</td>
+          <td>CMD_HEARTBEAT_ACK</td>
+          <td>Heartbeat ACK</td>
+      </tr>
+      <tr>
+          <td>Device → PC</td>
+          <td>0x81</td>
+          <td>CMD_REQ_QR</td>
+          <td>name\0amount</td>
+      </tr>
+      <tr>
+          <td>Device → PC</td>
+          <td>0x82</td>
+          <td>CMD_REQ_QUERY</td>
+          <td>Empty</td>
+      </tr>
+      <tr>
+          <td>Device → PC</td>
+          <td>0x83</td>
+          <td>CMD_REQ_CLOSE</td>
+          <td>Empty</td>
+      </tr>
+      <tr>
+          <td>Device → PC</td>
+          <td>0x84</td>
+          <td>CMD_HEARTBEAT</td>
+          <td>Empty</td>
+      </tr>
+      <tr>
+          <td>Device → PC</td>
+          <td>0x85</td>
+          <td>CMD_BARCODE_PAY</td>
+          <td>auth_code\0[amount\0][subject]</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="62-dual-payment-modes">6.2 Dual Payment Modes
+</h3><p><strong>Mode 1: User Scans QR Code</strong></p>
+<ol>
+<li>User clicks settlement button → parse cart total → show payment mode selection dialog</li>
+<li>User selects &ldquo;User Scan&rdquo; → send <code>CMD_REQ_QR</code> to PC</li>
+<li>PC generates Alipay sandbox order, returns <code>CMD_QR_URL</code></li>
+<li>Device displays QR code overlay (240×240, LVGL <code>lv_qrcode</code> widget)</li>
+<li>PC polls payment status and returns <code>CMD_PAY_STATUS</code></li>
+<li>Success: show &ldquo;Payment Successful!&rdquo;, auto-hide after 2 seconds, clear cart, restore carousel</li>
+</ol>
+<p><strong>Mode 2: Device Scans Barcode</strong></p>
+<ol>
+<li>User selects &ldquo;Device Camera Scan&rdquo;</li>
+<li>Start DVP camera + quirc scanning thread</li>
+<li>Set UI layer alpha=128 for video layer transparency</li>
+<li>quirc scans 18-28 digit numeric strings (payment auth codes), sends via <code>CMD_BARCODE_PAY</code> to PC</li>
+<li>PC calls Alipay barcode payment API, returns payment status</li>
+<li>Success flow same as above</li>
+</ol>
+<h3 id="63-thread-safety">6.3 Thread Safety
+</h3><p>UART3 RX thread strictly never calls any LVGL API. After frame parsing, it only enqueues to the SPSC ring buffer. LVGL timer (100ms) dequeues and processes in the LVGL thread context.</p>
+<hr>
+<h2 id="7-qr-code-scanner-module">7. QR Code Scanner Module
+</h2><h3 id="71-hardware-configuration">7.1 Hardware Configuration
+</h3><ul>
+<li>DVP camera (OV5640), forced QVGA 320×240 output, reducing memory usage (~460KB)</li>
+<li>ArtInChip video input framework (<code>mpp_vin</code>, <code>drv_dvp</code>)</li>
+<li>Framebuffer video layer (<code>mpp_fb</code>) for camera preview</li>
+<li>quirc QR code decoding library</li>
+</ul>
+<h3 id="72-scanning-flow">7.2 Scanning Flow
+</h3><ol>
+<li><code>qr_scanner_start()</code>: Initialize DVP (with 5-retry tolerance), configure sensor format, create quirc instance (160×120, 2x downsampling)</li>
+<li>Scan thread loop: <code>dq_buf</code> → discard first few frames → extract Y channel every 5 frames and downsample → <code>quirc_decode</code></li>
+<li><code>handle_qr_result()</code>: Detect payment auth codes (18-28 digit numeric), 5-second same-code cooldown, call <code>uart3_payment_send_barcode()</code></li>
+</ol>
+<h3 id="73-camera-view-mode">7.3 Camera View Mode
+</h3><p>Direct display of DVP captured frames via ArtInChip framebuffer video layer:</p>
+<ul>
+<li><code>qr_scanner_start_camera_view()</code>: Open framebuffer, set UI layer alpha=128</li>
+<li>Zero-copy push of DVP buffers to video layer for high-performance picture-in-picture</li>
+<li>Strict shutdown order: clear flag → stop scan thread → stop DVP stream → wait thread exit → disable video layer + restore UI alpha → release resources</li>
+</ul>
+<h3 id="74-memory-management">7.4 Memory Management
+</h3><ul>
+<li>Grayscale buffer allocated from CMA: <code>aicos_malloc(MEM_CMA, scan_w * scan_h)</code></li>
+<li>Downsampling: 2×2 area averaging, reducing 320×240 to 160×120 for quirc processing</li>
+<li>DVP buffer released immediately after Y channel extraction</li>
+</ul>
+<hr>
+<h2 id="8-web-configuration-system">8. Web Configuration System
+</h2><h3 id="81-architecture">8.1 Architecture
+</h3><p>Device starts WiFi AP (SSID: <code>AIC-Banner-Config</code>, password: <code>12345678</code>, channel 6), IP 192.168.1.1, runs DHCP server and Mongoose HTTP server on port 80.</p>
+<h3 id="82-api-endpoints">8.2 API Endpoints
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Method</th>
+          <th>Path</th>
+          <th>Function</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>GET</td>
+          <td><code>/</code></td>
+          <td>Embedded HTML configuration page</td>
+      </tr>
+      <tr>
+          <td>GET</td>
+          <td><code>/api/config</code></td>
+          <td>Get banner config JSON</td>
+      </tr>
+      <tr>
+          <td>GET</td>
+          <td><code>/api/commodity</code></td>
+          <td>Get commodity config JSON</td>
+      </tr>
+      <tr>
+          <td>GET</td>
+          <td><code>/api/navi</code></td>
+          <td>Get navigation config JSON</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/config</code></td>
+          <td>Update banner config</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/commodity</code></td>
+          <td>Update commodity config</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/navi</code></td>
+          <td>Update navigation config</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/reset</code></td>
+          <td>Reset to default config</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/upload/{filename}</code></td>
+          <td>Upload banner image (validates 494×78)</td>
+      </tr>
+      <tr>
+          <td>POST</td>
+          <td><code>/api/upload/commodity/{filename}</code></td>
+          <td>Upload commodity image (validates 80×80)</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="83-security-measures">8.3 Security Measures
+</h3><ul>
+<li>Filename whitelist validation: only alphanumeric, <code>.</code>, <code>_</code>, <code>-</code>, max 64 characters</li>
+<li>Early Content-Length rejection: return 413 if oversized</li>
+<li>Receive buffer limit: force close connection when <code>recv_mbuf.len &gt; 307200 + 4096</code></li>
+<li>Image dimension validation: parse PNG/JPEG/BMP file headers to verify dimensions</li>
+<li>Price format validation: support multiple currency prefixes</li>
+</ul>
+<h3 id="84-config-hot-update">8.4 Config Hot-Update
+</h3><ol>
+<li>HTTP thread receives POST → parse JSON → write to <code>s_pending_json</code> buffer → set flag</li>
+<li>Save JSON to SD card for persistence</li>
+<li>LVGL timer polls every 200ms → detect flag → publish events → components hot-update</li>
+</ol>
+<hr>
+<h2 id="9-async-loading-mechanism">9. Async Loading Mechanism
+</h2><p>Implemented based on RT-Thread thread + dual message queues:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Main Thread (LVGL)          Worker Thread
+</span></span><span class="line"><span class="cl">    |                            |
+</span></span><span class="line"><span class="cl">    | submit(task)               |
+</span></span><span class="line"><span class="cl">    | ----[task_mq]----&gt;         |
+</span></span><span class="line"><span class="cl">    |                            | work_fn(arg) → result
+</span></span><span class="line"><span class="cl">    |                     [result_mq]----&gt; done_cb(result)
+</span></span><span class="line"><span class="cl">    |                            |
+</span></span><span class="line"><span class="cl">    | poll() &lt;-- drain result_mq |
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Worker thread stack: 4096 bytes, priority 20</li>
+<li>Task/result queue capacity: 8 entries</li>
+<li><code>async_loader_poll()</code> called in LVGL timer, ensuring <code>done_cb</code> executes safely in LVGL thread</li>
+</ul>
+<hr>
+<h2 id="10-system-initialization-flow">10. System Initialization Flow
+</h2><p><code>custom_init()</code> is the system assembly entry point, executing the following initialization sequence:</p>
+<ol>
+<li>Initialize infrastructure: event_bus, async_loader</li>
+<li>Initialize all widget module object pools</li>
+<li>Wait for SD card mount (max 50 retries, 100ms each)</li>
+<li>Copy default image resources from <code>/rodata/image</code> to <code>/sdcard</code></li>
+<li>Initialize TTF fonts (Source Han Sans 15/18pt)</li>
+<li>Register four widget types to widget_factory</li>
+<li><strong>Delete AiUIBuilder-generated static widgets</strong>, replace with dynamic components</li>
+<li>Create four major components (banner, commodity, cart, navi)</li>
+<li>Bind cart animation, settlement button events</li>
+<li>Subscribe to Web config change events</li>
+<li>Start Web config server, UART3 payment module, QR scanner module</li>
+<li>Load persistent config (override defaults)</li>
+</ol>
+<hr>
+<h2 id="11-technical-highlights">11. Technical Highlights
+</h2><ol>
+<li>
+<p><strong>AiUIBuilder + Custom Code Bridge</strong>: <code>layout_container_wrap()</code> wraps tool-created LVGL objects as dynamic layout containers, retaining WYSIWYG prototyping capability while gaining runtime flexibility.</p>
+</li>
+<li>
+<p><strong>Full Event-Driven Architecture</strong>: Zero direct dependencies between components. Cart doesn&rsquo;t know about commodity cards, payment module doesn&rsquo;t know about cart, Web config doesn&rsquo;t know any UI component API.</p>
+</li>
+<li>
+<p><strong>Embedded Web Configuration</strong>: Mongoose HTTP server + WiFi AP on RT-Thread. Connect phone to hotspot to modify config without firmware upgrade, auto-persisted to SD card.</p>
+</li>
+<li>
+<p><strong>Dual Payment Modes</strong>: Support &ldquo;user scan&rdquo; and &ldquo;device scan&rdquo; modes via UART3 communication with PC host, implementing complete payment loop with Alipay sandbox.</p>
+</li>
+<li>
+<p><strong>Lock-Free Inter-Thread Communication</strong>: SPSC ring queue for UART3, volatile flag + buffer for Web config, avoiding heavyweight lock overhead.</p>
+</li>
+<li>
+<p><strong>Memory Pool Management</strong>: All high-frequency create/destroy widgets use RT-Thread memory pools with capacity aligned to business limits, avoiding fragmentation.</p>
+</li>
+<li>
+<p><strong>Camera View Hardware Acceleration</strong>: Zero-copy DVP buffer push to video layer, UI layer semi-transparent for picture-in-picture effect.</p>
+</li>
+<li>
+<p><strong>Composite Pattern UI Tree</strong>: Container and Widget unified as tree structure, supporting depth-first destruction, batch update, dynamic add/remove, making runtime hot-updates simple and reliable.</p>
+</li>
+</ol>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/Hugo_Web/en/tags/lvgl/">LVGL</a>
+        
+            <a href="/Hugo_Web/en/tags/rt-thread/">RT-Thread</a>
+        
+            <a href="/Hugo_Web/en/tags/artinchip/">ArtInChip</a>
+        
+            <a href="/Hugo_Web/en/tags/vending-machine/">Vending Machine</a>
+        
+            <a href="/Hugo_Web/en/tags/mqtt/">MQTT</a>
+        
+            <a href="/Hugo_Web/en/tags/embedded-ui/">Embedded UI</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on Jul 01, 2026 23:07 CST
+        </span>
+    </section></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const mainArticleElement = document.querySelector(".main-article");
+    renderMathInElement(mainArticleElement, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  });
+</script>
+<div class="math-katex"></div>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">Related content</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/">
+        
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_f8913fdcd1a8711e.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite"
+                        
+                        data-hash="md5-vOO1Pj1Sm7lmL3XzOtUpuQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/">
+        
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_989a706e6c4dfa57.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post STM32F407 Secure Bootloader Design: A/B Dual Partition, Encryption/Signing, and Multi-Channel Upgrade"
+                        
+                        data-hash="md5-fIM15TRcIvLhRDBeZFcjRg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">STM32F407 Secure Bootloader Design: A/B Dual Partition, Encryption/Signing, and Multi-Channel Upgrade</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+    <div class="comment"></div>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 lingsir007
+    </section>
+    
+    <section class="running-time">
+        
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 4 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 10.03 k ></span> words
+    </section>
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script> <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
+<script>
+  var pjax = new Pjax({
+    selectors: ["title", ".main-container", ".js-Pjax1", ".js-Pjax2"],
+  });
+</script>
+
+<div id="aplayer"></div>
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+
+<script>
+  const staticDir = "http://localhost:1313/Hugo_Web/en/";
+  const ap = new APlayer({
+    container: document.getElementById("aplayer"),
+    audio: [
+      {
+        name: "Keil Generic Key",
+        artist: "EDGE",
+        url: staticDir + "music/Keil Generic Key-EDGE/song.mp3",
+        cover: staticDir + "music/Keil Generic Key-EDGE/cover.png",
+        lrc: staticDir + "music/Keil Generic Key-EDGE/lyric.lrc",
+      },
+      {
+        name: "查无此字",
+        artist: "林奕匡",
+        url: staticDir + "music/查无此字-林奕匡/song.mp3",
+        cover: staticDir + "music/查无此字-林奕匡/cover.jpg",
+        lrc: staticDir + "music/查无此字-林奕匡/lyric.lrc",
+      },
+      {
+        name: "爱别等",
+        artist: "洪卓立",
+        url: staticDir + "music/爱别等-洪卓立/song.mp3",
+        cover: staticDir + "music/爱别等-洪卓立/cover.jpg",
+        lrc: staticDir + "music/爱别等-洪卓立/lyric.lrc",
+      },
+      {
+        name: "乖乖报到",
+        artist: "MC 张天赋",
+        url: staticDir + "music/乖乖报到-MC 张天赋/song.mp3",
+        cover: staticDir + "music/乖乖报到-MC 张天赋/cover.jpg",
+        lrc: staticDir + "music/乖乖报到-MC 张天赋/lyric.lrc",
+      },
+      {
+        name: "指纹",
+        artist: "胡歌",
+        url: staticDir + "music/指纹-胡歌/song.mp3",
+        cover: staticDir + "music/指纹-胡歌/cover.jpg",
+        lrc: staticDir + "music/指纹-胡歌/lyric.lrc",
+      },
+      {
+        name: "还记得",
+        artist: "周柏豪",
+        url: staticDir + "music/还记得-周柏豪/song.mp3",
+        cover: staticDir + "music/还记得-周柏豪/cover.jpg",
+        lrc: staticDir + "music/还记得-周柏豪/lyric.lrc",
+      },
+      {
+        name: "摄氏零度",
+        artist: "张敬轩",
+        url: staticDir + "music/摄氏零度-张敬轩/song.mp3",
+        cover: staticDir + "music/摄氏零度-张敬轩/cover.jpg",
+        lrc: staticDir + "music/摄氏零度-张敬轩/lyric.lrc",
+      },
+      {
+        name: "下一位前度",
+        artist: "林家谦",
+        url: staticDir + "music/下一位前度-林家谦/song.mp3",
+        cover: staticDir + "music/下一位前度-林家谦/cover.jpg",
+        lrc: staticDir + "music/下一位前度-林家谦/lyric.lrc",
+      },
+      {
+        name: "初初",
+        artist: "古巨基",
+        url: staticDir + "music/初初-古巨基/song.mp3",
+        cover: staticDir + "music/初初-古巨基/cover.jpg",
+        lrc: staticDir + "music/初初-古巨基/lyric.lrc",
+      },
+      {
+        name: "这个故事教训我们",
+        artist: "李克勤",
+        url: staticDir + "music/这个故事教训我们-李克勤/song.mp3",
+        cover: staticDir + "music/这个故事教训我们-李克勤/cover.jpg",
+        lrc: staticDir + "music/这个故事教训我们-李克勤/lyric.lrc",
+      },
+      {
+        name: "最后祝福",
+        artist: "黄宗泽",
+        url: staticDir + "music/最后祝福-黄宗泽/song.mp3",
+        cover: staticDir + "music/最后祝福-黄宗泽/cover.jpg",
+        lrc: staticDir + "music/最后祝福-黄宗泽/lyric.lrc",
+      }
+    ],
+    lrcType: 3,
+    fixed: true
+  });
+</script>
+
+<script>
+  
+  function calculateRunningDays(startDateStr, elementId) {
+    let s1 = new Date(startDateStr.replace(/-/g, "/"));
+    let s2 = new Date();
+    let timeDifference = s2.getTime() - s1.getTime();
+
+    let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+    
+    let dayText = "d "; 
+    let hourText = "h ";
+    let minuteText = "m ";
+
+    let result = `<span>< ${days} ${dayText} ${hours} ${hourText} ${minutes} ${minuteText} ></span>`;
+    document.getElementById(elementId).innerHTML = result;
+    }
+
+    document.addEventListener("pjax:complete", () => {
+        calculateRunningDays('2025-3-14', 'runningdays');
+    });
+    calculateRunningDays('2025-3-14', 'runningdays');
+</script>
+
+<script>
+  pjax._handleResponse = pjax.handleResponse;
+  pjax.handleResponse = function (responseText, request, href, options) {
+    if (request.responseText.match("<html")) {
+      if (responseText) {
+        
+        let newDom = new DOMParser().parseFromString(responseText, "text/html");
+        
+        let bodyClass = newDom.body.className;
+        document.body.setAttribute("class", bodyClass);
+      }
+      
+      pjax._handleResponse(responseText, request, href, options);
+    } else {
+      
+    }
+  };
+</script>
+
+<script>
+  
+  function initClock() {
+    
+    var hr = document.getElementById("hr"); 
+    var mn = document.getElementById("mn"); 
+    var sc = document.getElementById("sc"); 
+    if (!hr || !mn || !sc) return;
+
+    
+    var date = new Date();
+    var HH = date.getHours();
+    var MM = date.getMinutes();
+    var SS = date.getSeconds();
+
+    
+    var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+    var minuteAngle = MM * 6 + (SS / 60) * 6;
+    var secondAngle = SS * 6;
+
+    
+    hr.style.transition = "none";
+    mn.style.transition = "none";
+    sc.style.transition = "none";
+
+    
+    hr.style.transform = "rotate(0deg)";
+    mn.style.transform = "rotate(0deg)";
+    sc.style.transform = "rotate(0deg)";
+
+    
+    setTimeout(() => {
+      hr.style.transition = "";
+      mn.style.transition = "";
+      sc.style.transition = "";
+
+      
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 0);
+
+    
+    setInterval(function () {
+      var date = new Date();
+      var HH = date.getHours();
+      var MM = date.getMinutes();
+      var SS = date.getSeconds();
+
+      
+      var hourAngle = (HH % 12) * 30 + (MM / 60) * 30;
+      var minuteAngle = MM * 6 + (SS / 60) * 6;
+      var secondAngle = SS * 6;
+
+      
+      hr.style.transform = "rotate(" + hourAngle + "deg)";
+      mn.style.transform = "rotate(" + minuteAngle + "deg)";
+      sc.style.transform = "rotate(" + secondAngle + "deg)";
+    }, 1000);
+  }
+
+  
+  window.onload = function () {
+    initClock();
+  };
+
+  
+  document.addEventListener("pjax:complete", () => {
+    initClock();
+  });
+</script>
+
+<script>
+  document.addEventListener("pjax:complete", () => {
+    
+    window.Stack.init();
+  });
+</script>
+
+<script>
+  async function renderKaTeX() {
+    
+    let katex = document.querySelector(".math-katex");
+    if (!katex) {
+      return;
+    }
+    
+    while (typeof renderMathInElement !== "function") {
+      await delay(500);
+    }
+    
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      ignoredClasses: ["gist"],
+    });
+  }
+
+  
+
+  function delay(time) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, time);
+    });
+  }
+
+  document.addEventListener("pjax:complete", () => {
+    renderKaTeX();
+  });
+</script>
+
+<script src="http://localhost:1313/Hugo_Web/en/js/topbar.min.js"></script>
+
+<script>
+  
+  topbar.config({
+    barColors: {
+      0: "rgba(255,  255, 255, 1)", 
+      "1.0": "rgba(0, 149, 234,  1)", 
+    },
+  });
+
+  document.addEventListener("pjax:send", () => {
+    
+    topbar.show();
+  });
+
+  document.addEventListener("pjax:complete", () => {
+    
+    topbar.hide();
+  });
+</script>
+
+<script>
+  const cdnPath =
+    "https://cdn.jsdelivr.net/gh/Lingjia007/live2d-widget-v3@main";
+  const config = {
+    
+    path: {
+      homePath: "/",
+      modelPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/my-waifu-tips.json",
+      tipsJsPath: cdnPath + "/waifu-tips.js",
+      live2dCorePath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/live2d-sdk.js",
+    },
+    
+    tools: [
+      "hitokoto",
+      "asteroids",
+      "express",
+      "switch-model",
+      "switch-texture",
+      "photo",
+      "info",
+      "quit",
+    ],
+    
+    drag: {
+      enable: true,
+      direction: ["x", 0],
+    },
+    
+    switchType: "order",
+  };
+
+  
+  if (screen.width >= 10) {
+    Promise.all([
+      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(config.path.live2dCorePath, "js"),
+      loadExternalResource(config.path.live2dSdkPath, "js"),
+      loadExternalResource(config.path.tipsJsPath, "js"),
+    ]).then(() => {
+      initWidget({
+        homePath: config.path.homePath,
+        waifuPath: config.path.tipsJsonPath,
+        cdnPath: config.path.modelPath,
+        tools: config.tools,
+        dragEnable: config.drag.enable,
+        dragDirection: config.drag.direction,
+        switchType: config.switchType,
+      });
+    });
+    function waitForElement(selector, callback) {
+      new MutationObserver(function (mutations) {
+        if (document.querySelector(selector)) {
+          callback();
+          this.disconnect();
+        }
+      }).observe(document.documentElement, { childList: true, subtree: true });
+    }
+  }
+
+  
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      let tag;
+      if (type === "css") {
+        tag = document.createElement("link");
+        tag.rel = "stylesheet";
+        tag.href = url;
+      } else if (type === "js") {
+        tag = document.createElement("script");
+        tag.src = url;
+      }
+      if (tag) {
+        tag.onload = () => resolve(url);
+        tag.onerror = () => reject(url);
+        document.head.appendChild(tag);
+      }
+    });
+  }
+</script>
+
+<style>
+  .highlight {
+     
+    max-height: 400px;
+    overflow: hidden;
+  }
+
+  .code-show {
+    max-height: none !important;
+  }
+
+  .code-more-box {
+    width: 100%;
+    padding-top: 78px;
+    background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(rgba(255, 255, 255, 0)),
+      to(#fff)
+    );
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .code-more-btn {
+    display: block;
+    margin: auto;
+    width: 44px;
+    height: 22px;
+    background: #f0f0f5;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding-top: 6px;
+    cursor: pointer;
+  }
+
+  .code-more-img {
+    cursor: pointer !important;
+    display: block;
+    margin: auto;
+    width: 22px;
+    height: 16px;
+  }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach((codeBlock) => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement("div");
+      codeMoreBox.classList.add("code-more-box");
+      
+      let codeMoreBtn = document.createElement("span");
+      codeMoreBtn.classList.add("code-more-btn");
+      codeMoreBtn.addEventListener("click", () => {
+        codeBlock.classList.add("code-show");
+        codeMoreBox.style.display = "none";
+        
+        window.dispatchEvent(new Event("resize"));
+      });
+      
+      let img = document.createElement("img");
+      img.classList.add("code-more-img");
+      img.src = "http:\/\/localhost:1313\/Hugo_Web\/en\/icons/codeMore.png";
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox);
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initCodeMoreBox();
+  });
+  initCodeMoreBox();
+</script>
+
+<div id="particles-js"></div>
+
+<script src="http://localhost:1313/Hugo_Web/en/background/particles.min.js"></script>
+<script>
+  particlesJS.load(
+    "particles-js",
+    "http:\/\/localhost:1313\/Hugo_Web\/en\/background/particlesjs-config.json",
+    function () {
+      console.log("particles.js loaded - callback");
+    },
+  );
+</script>
+
+<style>
+  #particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+  }
+</style>
+
+<style>
+  #TableOfContents > ul,
+  ol {
+    ul,
+    ol {
+      display: none;
+    }
+    .open {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  function initTocHide() {
+    
+    let toc = document.querySelector(".widget--toc");
+    if (!toc) {
+      return;
+    }
+    
+    window.addEventListener("scroll", function () {
+      
+      let openUl = document.querySelectorAll(".open");
+      if (openUl.length > 0) {
+        openUl.forEach((ul) => {
+          ul.classList.remove("open");
+        });
+      }
+      
+      let currentLi = document.querySelector(".active-class");
+      if (!currentLi) {
+        return;
+      }
+      
+      if (currentLi.children.length > 1) {
+        currentLi.children[1].classList.add("open");
+      }
+      
+      let ul = currentLi.parentElement;
+      do {
+        ul.classList.add("open");
+        ul = ul.parentElement.parentElement;
+      } while (
+        ul !== undefined &&
+        (ul.localName === "ul" || ul.localName === "ol")
+      );
+    });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initTocHide();
+  });
+  initTocHide();
+</script>
+
+<style>
+  @font-face {
+    font-family: "AlibabaPuHuiTi-3-65-Medium";
+    src: url(http://localhost:1313/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+      format("truetype");
+  }
+
+  :root {
+    --base-font-family: "AlibabaPuHuiTi-3-65-Medium";
+    --code-font-family: "AlibabaPuHuiTi-3-65-Medium";
+  }
+</style>
+
+<style>
+  #backTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    z-index: 99;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-image: url("http://localhost:1313/Hugo_Web/en/icons/backTop.svg");
+  }
+</style>
+
+<script>
+  
+
+  function initScrollTop() {
+    let rightSideBar = document.querySelector(".right-sidebar");
+    if (!rightSideBar) {
+      return;
+    }
+    
+    let btn = document.createElement("div");
+    btn.id = "backTopBtn";
+    btn.onclick = backToTop;
+    rightSideBar.appendChild(btn);
+    
+    window.onscroll = function () {
+      
+      if (
+        document.body.scrollTop > 20 ||
+        document.documentElement.scrollTop > 20
+      ) {
+        btn.style.display = "block";
+      } else {
+        btn.style.display = "none";
+      }
+    };
+  }
+
+  
+
+  function backToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.addEventListener("pjax:complete", () => {
+    
+    initScrollTop();
+  });
+  initScrollTop();
+</script>
+
+<div class="js-Pjax2">
+  
+  <script>
+    (function () {
+      
+      const verScript = document.createElement("script");
+      verScript.defer = true;
+      verScript.src = "https://cn.vercount.one/js";
+      document.body.appendChild(verScript);
+
+      
+      function showHideView() {
+        const viewCounts = document.querySelectorAll("#viewCount");
+        if (viewCounts) {
+          const isArticle = !!document.querySelector(".article-page");
+          viewCounts.forEach((ele) => {
+            ele.style.display = isArticle ? "" : "none";
+          });
+        }
+      }
+      
+      showHideView();
+      
+      document.addEventListener("pjax:complete", function () {
+        showHideView();
+      });
+    })();
+  </script>
+</div><script>
+  (function () {
+    var giscusConfig = {
+      repo: "Lingjia007\/Hugo_Web",
+      repoId: "R_kgDOOH5NOA",
+      category: "Announcements",
+      categoryId: "DIC_kwDOOH5NOM4Cn-zx",
+      mapping: 'title',
+      strict: "0",
+      reactionsEnabled: "1",
+      emitMetadata: "0",
+      inputPosition: 'top',
+      theme: 'light',
+      loading: "lazy",
+    };
+    var giscusLightTheme = 'light';
+    var giscusDarkTheme = 'dark_dimmed';
+
+    function getGiscusLang() {
+      var path = window.location.pathname;
+      if (path.indexOf("/zh-hk") !== -1) return "zh-HK";
+      if (path.indexOf("/en") !== -1) return "en";
+      return "zh-CN";
+    }
+
+    function getGiscusTheme() {
+      if (document.documentElement.dataset.scheme === "light") {
+        return giscusLightTheme;
+      }
+      return giscusDarkTheme;
+    }
+
+    function setGiscusTheme(theme) {
+      var giscus = document.querySelector("iframe.giscus-frame");
+      if (giscus) {
+        giscus.contentWindow.postMessage(
+          { giscus: { setConfig: { theme: theme } } },
+          "https://giscus.app",
+        );
+      }
+    }
+
+    function loadGiscus() {
+      var comment = document.querySelector(".comment");
+      if (!comment) return;
+      comment.innerHTML = "";
+      var lang = getGiscusLang();
+      var script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.setAttribute("data-repo", giscusConfig.repo);
+      script.setAttribute("data-repo-id", giscusConfig.repoId);
+      script.setAttribute("data-category", giscusConfig.category);
+      script.setAttribute("data-category-id", giscusConfig.categoryId);
+      script.setAttribute("data-mapping", giscusConfig.mapping);
+      script.setAttribute("data-strict", giscusConfig.strict);
+      script.setAttribute(
+        "data-reactions-enabled",
+        giscusConfig.reactionsEnabled,
+      );
+      script.setAttribute("data-emit-metadata", giscusConfig.emitMetadata);
+      script.setAttribute("data-input-position", giscusConfig.inputPosition);
+      script.setAttribute("data-theme", giscusConfig.theme);
+      script.setAttribute("data-lang", lang);
+      script.setAttribute("data-loading", giscusConfig.loading);
+      script.setAttribute("crossorigin", "anonymous");
+      script.async = true;
+      comment.appendChild(script);
+    }
+
+    window.addEventListener("message", function (e) {
+      if (e.origin !== "https://giscus.app") return;
+      setGiscusTheme(getGiscusTheme());
+    });
+    window.addEventListener("onColorSchemeChange", function () {
+      setGiscusTheme(getGiscusTheme());
+    });
+
+    loadGiscus();
+    document.addEventListener("pjax:complete", loadGiscus);
+  })();
+</script>
+
+    </body>
+</html>
