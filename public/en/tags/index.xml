@@ -7,7 +7,79 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Thu, 02 Jul 2026 22:52:44 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/en/tags/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Fri, 03 Jul 2026 19:00:08 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/en/tags/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Bootloader</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/bootloader/</link>
+        <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/bootloader/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>C Language</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/c-language/</link>
+        <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/c-language/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Embedded</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/embedded/</link>
+        <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/embedded/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Layered-Architecture</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/layered-architecture/</link>
+        <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/layered-architecture/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Linux Kernel</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/linux-kernel/</link>
+        <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/linux-kernel/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Object-Oriented</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/object-oriented/</link>
+        <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/object-oriented/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>OOP-in-C</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/oop-in-c/</link>
+        <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/oop-in-c/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Platform Abstraction</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/platform-abstraction/</link>
+        <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/platform-abstraction/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>STM32</title>
+        <link>http://localhost:1313/Hugo_Web/en/tags/stm32/</link>
+        <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/Hugo_Web/en/tags/stm32/</guid>
+        <description></description>
+        </item>
+        <item>
         <title>ArtInChip</title>
         <link>http://localhost:1313/Hugo_Web/en/tags/artinchip/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
@@ -21,14 +93,6 @@
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/en/tags/design-patterns/</guid>
-        <description></description>
-        </item>
-        <item>
-        <title>Embedded</title>
-        <link>http://localhost:1313/Hugo_Web/en/tags/embedded/</link>
-        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
-        
-        <guid>http://localhost:1313/Hugo_Web/en/tags/embedded/</guid>
         <description></description>
         </item>
         <item>
@@ -80,14 +144,6 @@
         <description></description>
         </item>
         <item>
-        <title>STM32</title>
-        <link>http://localhost:1313/Hugo_Web/en/tags/stm32/</link>
-        <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
-        
-        <guid>http://localhost:1313/Hugo_Web/en/tags/stm32/</guid>
-        <description></description>
-        </item>
-        <item>
         <title>Vending Machine</title>
         <link>http://localhost:1313/Hugo_Web/en/tags/vending-machine/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
@@ -109,14 +165,6 @@
         <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
         
         <guid>http://localhost:1313/Hugo_Web/en/tags/aes-256/</guid>
-        <description></description>
-        </item>
-        <item>
-        <title>Bootloader</title>
-        <link>http://localhost:1313/Hugo_Web/en/tags/bootloader/</link>
-        <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
-        
-        <guid>http://localhost:1313/Hugo_Web/en/tags/bootloader/</guid>
         <description></description>
         </item>
         <item>

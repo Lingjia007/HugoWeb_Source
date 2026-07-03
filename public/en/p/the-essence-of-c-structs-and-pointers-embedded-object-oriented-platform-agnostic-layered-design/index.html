@@ -10,7 +10,7 @@
 <meta property='og:description' content="Starting from struct + me pointer, through data ownership, inheritance nesting, operation tables, virtual pointers, polymorphic dispatch, container_of, platform abstraction layer, to Linux kernel style — using a single LED to explain the full essence of embedded C object-oriented programming">
 <meta property='og:url' content='http://localhost:1313/Hugo_Web/en/p/the-essence-of-c-structs-and-pointers-embedded-object-oriented-platform-agnostic-layered-design/'>
 <meta property='og:site_name' content='lingsir007'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='C Language' /><meta property='article:tag' content='Object-Oriented' /><meta property='article:tag' content='OOP-in-C' /><meta property='article:tag' content='Embedded' /><meta property='article:tag' content='Platform Abstraction' /><meta property='article:tag' content='Linux Kernel' /><meta property='article:published_time' content='2026-07-03T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-03T12:45:37&#43;08:00'/>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='C Language' /><meta property='article:tag' content='Object-Oriented' /><meta property='article:tag' content='OOP-in-C' /><meta property='article:tag' content='Embedded' /><meta property='article:tag' content='Platform Abstraction' /><meta property='article:tag' content='Linux Kernel' /><meta property='article:published_time' content='2026-07-03T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-03T12:54:47&#43;08:00'/>
 <meta name="twitter:title" content="The Essence of C: Structs and Pointers — Embedded Object-Oriented Platform-Agnostic Layered Design">
 <meta name="twitter:description" content="Starting from struct + me pointer, through data ownership, inheritance nesting, operation tables, virtual pointers, polymorphic dispatch, container_of, platform abstraction layer, to Linux kernel style — using a single LED to explain the full essence of embedded C object-oriented programming">
     <link rel="shortcut icon" href="/icons/favicon.ico" />
@@ -312,7 +312,7 @@
     </li>
     <li><a href="#3-three-levels-of-data-ownership-the-complete-form-of-information-hiding">3. Three Levels of Data Ownership: The Complete Form of Information Hiding</a>
       <ol>
-        <li><a href="#31-the归属-of-three-types-of-data">3.1 The归属 of Three Types of Data</a></li>
+        <li><a href="#31-the-ownership-of-three-types-of-data">3.1 The Ownership of Three Types of Data</a></li>
         <li><a href="#32-anti-pattern-the-disaster-of-global-variables">3.2 Anti-Pattern: The Disaster of Global Variables</a></li>
       </ol>
     </li>
@@ -359,6 +359,35 @@
         <li><a href="#103-optional-null-default-behavior">10.3 Optional: NULL Default Behavior</a></li>
       </ol>
     </li>
+    <li><a href="#11-platform-abstraction-layer-the-foundation-for-cross-mcu-porting">11. Platform Abstraction Layer: The Foundation for Cross-MCU Porting</a>
+      <ol>
+        <li><a href="#111-three-layer-architecture">11.1 Three-Layer Architecture</a></li>
+        <li><a href="#112-platform-layers-ops--register-mechanism">11.2 Platform Layer&rsquo;s ops + register Mechanism</a></li>
+        <li><a href="#113-cross-mcu-porting-only-swap-the-implementation-layer">11.3 Cross-MCU Porting: Only Swap the Implementation Layer</a></li>
+      </ol>
+    </li>
+    <li><a href="#12-linux-kernel-style-gpio_chip">12. Linux Kernel Style: gpio_chip</a>
+      <ol>
+        <li><a href="#121-ops-embedded-in-object--multi-instance-chip">12.1 ops Embedded in Object + Multi-Instance chip</a></li>
+        <li><a href="#122-desc--chip--ops-dispatch">12.2 desc → chip → ops dispatch</a></li>
+      </ol>
+    </li>
+    <li><a href="#13-initcall-auto-registration-the-ultimate-implementation-of-the-open-closed-principle">13. initcall Auto-Registration: The Ultimate Implementation of the Open-Closed Principle</a>
+      <ol>
+        <li><a href="#131-the-problem-every-new-driver-requires-changing-main">13.1 The Problem: Every New Driver Requires Changing main</a></li>
+        <li><a href="#132-the-solution-compiler--linker--startup-code-cooperation">13.2 The Solution: Compiler + Linker + Startup Code Cooperation</a></li>
+        <li><a href="#133-the-full-secret-of-the-magic">13.3 The Full Secret of the Magic</a></li>
+      </ol>
+    </li>
+    <li><a href="#14-oop-in-c-panorama">14. OOP-in-C Panorama</a></li>
+    <li><a href="#15-why-embedded-must-use-c-for-oop">15. Why Embedded Must Use C for OOP</a>
+      <ol>
+        <li><a href="#151-cs-real-world-difficulties-in-embedded">15.1 C++&rsquo;s Real-World Difficulties in Embedded</a></li>
+        <li><a href="#152-engineering-advantages-of-c-oop">15.2 Engineering Advantages of C OOP</a></li>
+        <li><a href="#153-one-sentence-summary">15.3 One-Sentence Summary</a></li>
+      </ol>
+    </li>
+    <li><a href="#references">References</a></li>
   </ol>
 </nav>
         </div>
@@ -417,12 +446,12 @@
         <div class="article-lastmod">
                 <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M10 18l5 -5a1.414 1.414 0 0 0 -2 -2l-5 5v2h2z" /></svg>
                 <time>
-                    Jul 03, 2026 12:45 CST
+                    Jul 03, 2026 12:54 CST
                 </time>
             </div><div id="wordCount">
             <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
             <time class="article-wordcount">
-                1742  words
+                2874  words
             </time>
         </div>
 
@@ -455,6 +484,8 @@
             <div>
                 
                     <a href="http://localhost:1313/Hugo_Web/p/c-%E8%AF%AD%E8%A8%80%E7%9A%84%E7%B2%BE%E9%AB%93%E7%BB%93%E6%9E%84%E4%BD%93%E4%B8%8E%E6%8C%87%E9%92%88%E5%B5%8C%E5%85%A5%E5%BC%8F%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B9%B3%E5%8F%B0%E5%8C%96%E5%88%86%E5%B1%82%E8%AE%BE%E8%AE%A1/" class="link">简体中文</a>
+                
+                    <a href="http://localhost:1313/Hugo_Web/zh-hk/p/c-%E8%AA%9E%E8%A8%80%E7%9A%84%E7%B2%BE%E9%AB%93%E7%B5%90%E6%A7%8B%E9%AB%94%E8%88%87%E6%8C%87%E6%A8%99%E5%B5%8C%E5%85%A5%E5%BC%8F%E9%9D%A2%E5%90%91%E7%89%A9%E4%BB%B6%E5%B9%B3%E5%8F%B0%E5%8C%96%E5%88%86%E5%B1%A4%E8%A8%AD%E8%A8%88/" class="link">繁體中文</a>
                 
             </div>
         </footer>
@@ -619,7 +650,7 @@
 </div><p><code>const</code> on <code>me</code> guarantees that query functions won&rsquo;t modify the object&rsquo;s state — the compiler catches accidental writes at compile time.</p>
 <hr>
 <h2 id="3-three-levels-of-data-ownership-the-complete-form-of-information-hiding">3. Three Levels of Data Ownership: The Complete Form of Information Hiding
-</h2><h3 id="31-the归属-of-three-types-of-data">3.1 The归属 of Three Types of Data
+</h2><h3 id="31-the-ownership-of-three-types-of-data">3.1 The Ownership of Three Types of Data
 </h3><div class="table-wrapper"><table>
   <thead>
       <tr>
@@ -1073,7 +1104,413 @@
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>GPIO LED doesn&rsquo;t fill <code>set_brightness</code> and gets the default behavior; PWM LED</p>
+</div><p>GPIO LED doesn&rsquo;t fill <code>set_brightness</code> and gets the default behavior; PWM LED fills it and gets its own implementation. Equivalent to a C++ virtual function with a default implementation.</p>
+<hr>
+<h2 id="11-platform-abstraction-layer-the-foundation-for-cross-mcu-porting">11. Platform Abstraction Layer: The Foundation for Cross-MCU Porting
+</h2><h3 id="111-three-layer-architecture">11.1 Three-Layer Architecture
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Layer</th>
+          <th>File</th>
+          <th>Key Operations</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Application</td>
+          <td><code>app.c</code></td>
+          <td><code>led_on(g_led_error)</code> — only calls base class interface</td>
+      </tr>
+      <tr>
+          <td>Driver</td>
+          <td><code>led_gpio.c</code> / <code>led_pwm.c</code></td>
+          <td><code>container_of</code> → <code>platform_gpio_write</code> — only calls platform API</td>
+      </tr>
+      <tr>
+          <td>Platform</td>
+          <td><code>platform_pin.c</code></td>
+          <td><code>_g_ops-&gt;write(pin, value)</code> — ops dispatch</td>
+      </tr>
+      <tr>
+          <td>Implementation</td>
+          <td><code>pin_board.c</code> (one per MCU)</td>
+          <td>STM32: <code>HAL_GPIO_WritePin</code> / NXP: <code>GPIO_PinWrite</code> / PC: <code>printf</code></td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="112-platform-layers-ops--register-mechanism">11.2 Platform Layer&rsquo;s ops + register Mechanism
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// platform_pin.h
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">mode</span><span class="p">)(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">int32_t</span> <span class="n">mode</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">write</span><span class="p">)(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="p">(</span><span class="o">*</span><span class="n">read</span><span class="p">)(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">platform_pin_register</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="o">*</span><span class="n">ops</span><span class="p">);</span>  <span class="c1">// Registration at startup
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">platform_pin_write</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">);</span>               <span class="c1">// Upper layer call
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// platform_pin.c
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="o">*</span><span class="n">_g_ops</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">platform_pin_register</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="o">*</span><span class="n">ops</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">_g_ops</span> <span class="o">=</span> <span class="n">ops</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">platform_pin_write</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">assert</span><span class="p">(</span><span class="n">_g_ops</span> <span class="o">&amp;&amp;</span> <span class="n">_g_ops</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">_g_ops</span><span class="o">-&gt;</span><span class="nf">write</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>    <span class="c1">// dispatch
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="113-cross-mcu-porting-only-swap-the-implementation-layer">11.3 Cross-MCU Porting: Only Swap the Implementation Layer
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// STM32: platform/arch/stm32/pin_board.c
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">stm32_pin_write</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">HAL_GPIO_WritePin</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">pin</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">const</span> <span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="n">stm32_pin_ops</span> <span class="o">=</span> <span class="p">{</span> <span class="p">.</span><span class="n">write</span> <span class="o">=</span> <span class="n">stm32_pin_write</span><span class="p">,</span> <span class="p">...</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// NXP: platform/arch/nxp/pin_board.c
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">nxp_pin_write</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">GPIO_PinWrite</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">const</span> <span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="n">nxp_pin_ops</span> <span class="o">=</span> <span class="p">{</span> <span class="p">.</span><span class="n">write</span> <span class="o">=</span> <span class="n">nxp_pin_write</span><span class="p">,</span> <span class="p">...</span> <span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>The same <code>led_gpio.c</code> compiles and runs on PC, STM32, and NXP with zero source modifications</strong> — this is the power of the platform abstraction layer.</p>
+<hr>
+<h2 id="12-linux-kernel-style-gpio_chip">12. Linux Kernel Style: gpio_chip
+</h2><h3 id="121-ops-embedded-in-object--multi-instance-chip">12.1 ops Embedded in Object + Multi-Instance chip
+</h3><p>The Linux kernel allows multiple vendors&rsquo; GPIO controllers (on-chip + external I/O expanders) to coexist on the same SoC, with each chip instance carrying its own ops table:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// gpio_chip.h
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">label</span><span class="p">;</span>          <span class="c1">// &#34;stm32-gpioa&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">base</span><span class="p">;</span>                   <span class="c1">// Starting GPIO number
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">ngpio</span><span class="p">;</span>                  <span class="c1">// How many pins this chip manages
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">request</span><span class="p">)(</span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">offset</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">free</span><span class="p">)(</span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">offset</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">direction_output</span><span class="p">)(</span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">get</span><span class="p">)(</span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">offset</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">set</span><span class="p">)(</span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="o">*</span><span class="n">driver_data</span><span class="p">;</span>         <span class="c1">// Vendor-private context
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">gpio_desc</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">;</span>      <span class="c1">// Reverse-lookup to chip
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">offset</span><span class="p">;</span>       <span class="c1">// Pin number offset
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="122-desc--chip--ops-dispatch">12.2 desc → chip → ops dispatch
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// gpiolib.c
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">gpiod_set_value</span><span class="p">(</span><span class="k">struct</span> <span class="n">gpio_desc</span> <span class="o">*</span><span class="n">desc</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">desc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="o">-&gt;</span><span class="nf">set</span><span class="p">(</span><span class="n">desc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">,</span> <span class="n">desc</span><span class="o">-&gt;</span><span class="n">offset</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//         ↑ dispatches to the corresponding vendor&#39;s implementation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The same <code>gpiod_set_value</code> call, depending on which vendor&rsquo;s <code>gpio_chip</code> <code>desc-&gt;gc</code> points to, lands in a different implementation. This is the foundation of the Linux kernel&rsquo;s &ldquo;one leds-gpio driver runs across N SoC vendors.&rdquo;</p>
+<hr>
+<h2 id="13-initcall-auto-registration-the-ultimate-implementation-of-the-open-closed-principle">13. initcall Auto-Registration: The Ultimate Implementation of the Open-Closed Principle
+</h2><h3 id="131-the-problem-every-new-driver-requires-changing-main">13.1 The Problem: Every New Driver Requires Changing main
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// main.c — Violates the Open-Closed Principle
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">led_init</span><span class="p">();</span>       <span class="c1">// Every new driver
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">motor_init</span><span class="p">();</span>     <span class="c1">// requires adding a line here
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sensor_init</span><span class="p">();</span>    <span class="c1">// and adding an #include
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">uart_init</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ...endless
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="132-the-solution-compiler--linker--startup-code-cooperation">13.2 The Solution: Compiler + Linker + Startup Code Cooperation
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// initcall.h
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="nf">int</span> <span class="p">(</span><span class="o">*</span><span class="kt">initcall_t</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#define MODULE_INIT(fn) \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    static initcall_t __initcall_##fn \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    __attribute__((used, section(&#34;my_initcall&#34;))) = fn
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Declare linker-generated section boundary symbols
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">extern</span> <span class="kt">initcall_t</span> <span class="n">__start_my_initcall</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl"><span class="k">extern</span> <span class="kt">initcall_t</span> <span class="n">__stop_my_initcall</span><span class="p">[];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// drv_led.c
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">drv_led_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ... LED driver initialization
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nf">MODULE_INIT</span><span class="p">(</span><span class="n">drv_led_init</span><span class="p">);</span>  <span class="c1">// One-line registration, main unchanged
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// initcall.c
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">do_initcalls</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">initcall_t</span> <span class="o">*</span><span class="n">fn</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">fn</span> <span class="o">=</span> <span class="n">__start_my_initcall</span><span class="p">;</span> <span class="n">fn</span> <span class="o">&lt;</span> <span class="n">__stop_my_initcall</span><span class="p">;</span> <span class="n">fn</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="o">*</span><span class="n">fn</span><span class="p">)();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="133-the-full-secret-of-the-magic">13.3 The Full Secret of the Magic
+</h3><ol>
+<li><code>__attribute__((section(&quot;my_initcall&quot;)))</code>: Places the function pointer into a custom section</li>
+<li>The linker automatically merges all <code>.o</code> files&rsquo; same-named sections, generating <code>__start_</code> / <code>__stop_</code> boundary symbols</li>
+<li><code>__attribute__((used))</code>: Prevents the compiler from optimizing away the seemingly &ldquo;dead code&rdquo; static variable</li>
+<li><code>do_initcalls()</code> iterates over the section range, calling each one</li>
+</ol>
+<p><strong>Adding a new driver = write a new file + one line of <code>MODULE_INIT</code></strong>, and <code>main.c</code> stays untouched — this is the full secret behind that one line of magic in the Linux kernel&rsquo;s <code>module_init</code>.</p>
+<hr>
+<h2 id="14-oop-in-c-panorama">14. OOP-in-C Panorama
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Section</th>
+          <th>C Approach</th>
+          <th>C++ Equivalent</th>
+          <th>Core Change</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Encapsulation</td>
+          <td><code>struct</code> + <code>me</code> pointer</td>
+          <td><code>class</code> + <code>this</code></td>
+          <td>Data and code separated, multiple instances share the same functions</td>
+      </tr>
+      <tr>
+          <td>Hand-rolled class</td>
+          <td>Function prefix + init/deinit</td>
+          <td>namespace + constructor/destructor</td>
+          <td>Naming convention prevents symbol conflicts, lifecycle management</td>
+      </tr>
+      <tr>
+          <td>Data ownership</td>
+          <td>static / static const</td>
+          <td>private / const</td>
+          <td>Three types of data each in their proper place, information hiding complete</td>
+      </tr>
+      <tr>
+          <td>Inheritance</td>
+          <td>struct nesting</td>
+          <td>class inheritance</td>
+          <td>Base as first field, constructor chaining</td>
+      </tr>
+      <tr>
+          <td>Operation table</td>
+          <td>ops struct</td>
+          <td>vtable embryo</td>
+          <td>Function pointers packed, access by name</td>
+      </tr>
+      <tr>
+          <td>Virtual pointer</td>
+          <td>ops field inside base</td>
+          <td>vptr</td>
+          <td>Object carries its own operation table, calls only need base pointer</td>
+      </tr>
+      <tr>
+          <td>Polymorphism</td>
+          <td>Unified base class interface</td>
+          <td>virtual dispatch</td>
+          <td>Same line of code, different behavior</td>
+      </tr>
+      <tr>
+          <td>Upcasting</td>
+          <td><code>&amp;sub.base</code> assignment</td>
+          <td>implicit upcast</td>
+          <td>Subclass hidden, base handle exposed, BSP encapsulation</td>
+      </tr>
+      <tr>
+          <td>container_of</td>
+          <td>Macro to recover outer struct</td>
+          <td><code>dynamic_cast</code></td>
+          <td>Base position unconstrained, zero runtime overhead</td>
+      </tr>
+      <tr>
+          <td>Pure virtual / Optional</td>
+          <td>assert / NULL default</td>
+          <td><code>= 0</code> / default impl</td>
+          <td>Required: debug-time assertion; Optional: quiet default</td>
+      </tr>
+      <tr>
+          <td>Platform abstraction</td>
+          <td>HAL ops + register</td>
+          <td>Abstract base class + factory</td>
+          <td>Cross-MCU porting only swaps implementation layer</td>
+      </tr>
+      <tr>
+          <td>Linux style</td>
+          <td>gpio_chip with embedded ops</td>
+          <td>Polymorphism + multi-instance</td>
+          <td>Multiple vendor chips coexist on the same SoC</td>
+      </tr>
+      <tr>
+          <td>initcall</td>
+          <td><code>__attribute__((section))</code></td>
+          <td>Open-Closed Principle</td>
+          <td>Compile-time + linker auto-registration, main unchanged</td>
+      </tr>
+  </tbody>
+</table></div>
+<hr>
+<h2 id="15-why-embedded-must-use-c-for-oop">15. Why Embedded Must Use C for OOP
+</h2><h3 id="151-cs-real-world-difficulties-in-embedded">15.1 C++&rsquo;s Real-World Difficulties in Embedded
+</h3><ul>
+<li><strong>Code bloat</strong>: Virtual function tables, RTTI, and exception handling increase Flash by 10-30%</li>
+<li><strong>Unstable ABI</strong>: Different compilers&rsquo; name mangling are incompatible; binary modules cannot be cross-linked</li>
+<li><strong>Lack of determinism</strong>: Exception handling stack unwinding, placement new failure paths are hard to predict</li>
+<li><strong>Toolchain limitations</strong>: Many MCUs only support C89/C99 compilers</li>
+</ul>
+<h3 id="152-engineering-advantages-of-c-oop">15.2 Engineering Advantages of C OOP
+</h3><ul>
+<li><strong>Zero abstraction overhead</strong>: struct nesting = zero offset, container_of = one sub instruction, ops table = indirect jump</li>
+<li><strong>Stable ABI</strong>: Struct layout is determined by the C ABI; different compilers and different languages can interoperate</li>
+<li><strong>Explicit control</strong>: No implicit construction/destruction, no implicit this — every line of code is visible</li>
+<li><strong>Auditable</strong>: All &ldquo;object-oriented magic&rdquo; is just a few lines of macros + structs — crystal clear during code review</li>
+</ul>
+<h3 id="153-one-sentence-summary">15.3 One-Sentence Summary
+</h3><blockquote>
+<p>Object-oriented programming in C is not &ldquo;making do without C++&rdquo; — it is the optimal solution for embedded scenarios: achieving the most design freedom with the fewest language features, where every byte of overhead is auditable.</p></blockquote>
+<hr>
+<h2 id="references">References
+</h2><ul>
+<li><a class="link" href="https://www.kernel.org/doc/html/latest/driver-api/gpio/"  target="_blank" rel="noopener"
+    >Linux Kernel — gpio_chip</a></li>
+<li><a class="link" href="https://docs.gtk.org/gobject/"  target="_blank" rel="noopener"
+    >GObject Type System</a></li>
+<li><a class="link" href="https://docs.zephyrproject.org/latest/contribute/device-drivers/index.html"  target="_blank" rel="noopener"
+    >Zephyr RTOS Device Driver Model</a></li>
+<li><a class="link" href="https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf"  target="_blank" rel="noopener"
+    >C11 Standard — 6.7.2.1 Structure and union specifiers</a></li>
+<li><a class="link" href="https://elixir.bootlin.com/linux/latest/source/include/linux/container_of.h"  target="_blank" rel="noopener"
+    >Linux Kernel container_of</a></li>
+</ul>
 
 </section>
 
@@ -1119,7 +1556,7 @@
 
 
         <span>
-            Last updated on Jul 03, 2026 12:45 CST
+            Last updated on Jul 03, 2026 12:54 CST
         </span>
     </section></footer>
 
@@ -1163,6 +1600,19 @@
     <h2 class="section-title">Related content</h2>
     <div class="related-content">
         <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">A Taste of Bootloader Five-Layer Architecture: OOP Object Design Model from Platform Abstraction to App Orchestration</h2>
+        </div>
+    </a>
+</article>
+
             
                 
 <article class="">
@@ -1293,7 +1743,9 @@
             
                 
             
-        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 6 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 19.01 k ></span> words
+                
+            
+        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 7 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 22.91 k ></span> words
     </section>
     <section class="powerby">
         Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
