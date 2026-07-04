@@ -426,41 +426,31 @@ void platform_config_init(void)
 
 ### 8.2 記憶體佈局推導
 
-```
-gpio_led_stm32_t 實例在記憶體中：
-┌──────────────────────────┐ ← &instance (gpio_led_stm32_t*)
-│  base (platform_led_base_t) │
-│    ├── ops (const ptr)     │ ← &instance.base (platform_led_base_t*)
-│    ├── name                │     傳入 ops 函式的 ctx 就是這個位址
-│    ├── type                │
-│    ├── state               │
-│    └── user_data           │
-│  port (GPIO_TypeDef*)      │
-│  pin  (uint16_t)           │
-└──────────────────────────┘
+**gpio_led_stm32_t 實例記憶體佈局**：
 
-container_of(ctx, gpio_led_stm32_t, base) 的計算：
-  = (gpio_led_stm32_t*)((char*)ctx - offsetof(gpio_led_stm32_t, base))
-  = (gpio_led_stm32_t*)((char*)ctx - 0)    // base 是第一個成員，偏移為 0
-  = (gpio_led_stm32_t*)ctx
-```
+| 字段 | 類型 | 說明 |
+|------|------|------|
+| `base.ops` | `const platform_led_ops_t*` | 虛指標，`&instance.base` 是傳入 ops 函式的 ctx |
+| `base.name` | `const char*` | LED 名稱 |
+| `base.type` | `platform_led_type_t` | LED 類型枚舉 |
+| `base.state` | `platform_led_state_t` | 目前狀態 |
+| `base.user_data` | `void*` | 使用者資料指標 |
+| `port` | `GPIO_TypeDef*` | STM32 GPIO 端口（衡生類特有） |
+| `pin` | `uint16_t` | GPIO 引腳號（衡生類特有） |
+
+> `base` 是第一個成員，偏移為 0，因此 `container_of(ctx, gpio_led_stm32_t, base)` 等價於 `(gpio_led_stm32_t*)ctx`。
 
 當 `base` 是第一個成員時，`container_of` 等價於強轉。但 **多重繼承** 時偏移不為零：
 
-```
-internal_flash_stm32_t 實例：
-┌────────────────────────────┐ ← &instance
-│  flash_base (offset = 0)    │ ← container_of(ctx, ..., flash_base) 偏移 0
-│    ├── ops                  │
-│    ├── name, start_addr...  │
-│  transport_base (offset≠0)  │ ← container_of(ctx, ..., transport_base) 偏移 > 0
-│    ├── source_ops           │
-│    ├── target_ops           │
-│  written_size, relocate...  │
-└────────────────────────────┘
-```
+**internal_flash_stm32_t 實例記憶體佈局（雙基類）**：
 
-兩個不同的 `container_of` 基準，從**同一個實例的不同基類指標**，恢復到**同一個衡生類實例**——這正是 C++ 多重繼承中 `dynamic_cast` 的運作原理。
+| 基類 | 偏移 | 字段 | container_of 基準 |
+|------|------|------|------------------|
+| `flash_base` | 0 | `ops`, `name`, `start_addr`... | `container_of(ctx, ..., flash_base)` 偏移 0 |
+| `transport_base` | sizeof(flash_base) | `source_ops`, `target_ops` | `container_of(ctx, ..., transport_base)` 偏移 > 0 |
+| 衡生類特有 | — | `written_size`, `relocate_offset`... | — |
+
+> 兩個不同的 `container_of` 基準，從**同一個實例的不同基類指標**，恢復到**同一個衡生類實例**——這正是 C++ 多重繼承中 `dynamic_cast` 的運作原理。
 
 ---
 

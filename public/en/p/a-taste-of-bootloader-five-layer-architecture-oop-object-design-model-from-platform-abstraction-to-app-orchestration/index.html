@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Using the STM32F407 Secure Bootloader as a real-world example, this post explores the five-layer Impl/Platform/Service/Core/App architecture's C object-oriented design model: ops virtual function tables, container_of downcasting, multiple inheritance with dual base classes, dependency injection containers, macro-wrapped safe calls, mapped one-to-one to oop-in-c-embedded concepts">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Using the STM32F407 Secure Bootloader as a real-world example, this post explores the five-layer Impl/Platform/Service/Core/App + Drivers(Vendor) architecture's C object-oriented design model: ops virtual function tables, container_of downcasting, multiple inheritance with dual base classes, dependency injection containers, macro-wrapped safe calls, mapped one-to-one to oop-in-c-embedded concepts">
 <title>A Taste of Bootloader Five-Layer Architecture: OOP Object Design Model from Platform Abstraction to App Orchestration</title>
 
-<link rel='canonical' href='http://localhost:1313/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/'>
+<link rel='canonical' href='https://lingjia007.github.io/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="A Taste of Bootloader Five-Layer Architecture: OOP Object Design Model from Platform Abstraction to App Orchestration">
-<meta property='og:description' content="Using the STM32F407 Secure Bootloader as a real-world example, this post explores the five-layer Impl/Platform/Service/Core/App architecture's C object-oriented design model: ops virtual function tables, container_of downcasting, multiple inheritance with dual base classes, dependency injection containers, macro-wrapped safe calls, mapped one-to-one to oop-in-c-embedded concepts">
-<meta property='og:url' content='http://localhost:1313/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/'>
+<meta property='og:description' content="Using the STM32F407 Secure Bootloader as a real-world example, this post explores the five-layer Impl/Platform/Service/Core/App + Drivers(Vendor) architecture's C object-oriented design model: ops virtual function tables, container_of downcasting, multiple inheritance with dual base classes, dependency injection containers, macro-wrapped safe calls, mapped one-to-one to oop-in-c-embedded concepts">
+<meta property='og:url' content='https://lingjia007.github.io/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/'>
 <meta property='og:site_name' content='lingsir007'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='Bootloader' /><meta property='article:tag' content='OOP-in-C' /><meta property='article:tag' content='Layered-Architecture' /><meta property='article:tag' content='Object-Oriented' /><meta property='article:tag' content='Platform-Abstraction' /><meta property='article:published_time' content='2026-07-03T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-03T21:52:27&#43;08:00'/>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='Bootloader' /><meta property='article:tag' content='OOP-in-C' /><meta property='article:tag' content='Layered-Architecture' /><meta property='article:tag' content='Object-Oriented' /><meta property='article:tag' content='Platform-Abstraction' /><meta property='article:published_time' content='2026-07-03T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-03T23:08:25&#43;08:00'/>
 <meta name="twitter:title" content="A Taste of Bootloader Five-Layer Architecture: OOP Object Design Model from Platform Abstraction to App Orchestration">
-<meta name="twitter:description" content="Using the STM32F407 Secure Bootloader as a real-world example, this post explores the five-layer Impl/Platform/Service/Core/App architecture's C object-oriented design model: ops virtual function tables, container_of downcasting, multiple inheritance with dual base classes, dependency injection containers, macro-wrapped safe calls, mapped one-to-one to oop-in-c-embedded concepts">
+<meta name="twitter:description" content="Using the STM32F407 Secure Bootloader as a real-world example, this post explores the five-layer Impl/Platform/Service/Core/App + Drivers(Vendor) architecture's C object-oriented design model: ops virtual function tables, container_of downcasting, multiple inheritance with dual base classes, dependency injection containers, macro-wrapped safe calls, mapped one-to-one to oop-in-c-embedded concepts">
     <link rel="shortcut icon" href="/icons/favicon.ico" />
 
     </head>
@@ -233,11 +233,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="http://localhost:1313/Hugo_Web/" >简体中文</option>
+                                    <option value="https://lingjia007.github.io/Hugo_Web/" >简体中文</option>
                                 
-                                    <option value="http://localhost:1313/Hugo_Web/zh-hk/" >繁體中文</option>
+                                    <option value="https://lingjia007.github.io/Hugo_Web/zh-hk/" >繁體中文</option>
                                 
-                                    <option value="http://localhost:1313/Hugo_Web/en/" selected>English</option>
+                                    <option value="https://lingjia007.github.io/Hugo_Web/en/" selected>English</option>
                                 
                             </select>
                         </li>
@@ -295,8 +295,6 @@
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#math-true">n&quot;
-math: true</a></li>
     <li><a href="#introduction">Introduction</a></li>
     <li><a href="#1-five-layer-architecture-overview">1. Five-Layer Architecture Overview</a>
       <ol>
@@ -391,7 +389,7 @@ math: true</a></li>
     
         
         <h3 class="article-subtitle">
-            Using the STM32F407 Secure Bootloader as a real-world example, this post explores the five-layer Impl/Platform/Service/Core/App architecture&#39;s C object-oriented design model: ops virtual function tables, container_of downcasting, multiple inheritance with dual base classes, dependency injection containers, macro-wrapped safe calls, mapped one-to-one to oop-in-c-embedded concepts
+            Using the STM32F407 Secure Bootloader as a real-world example, this post explores the five-layer Impl/Platform/Service/Core/App &#43; Drivers(Vendor) architecture&#39;s C object-oriented design model: ops virtual function tables, container_of downcasting, multiple inheritance with dual base classes, dependency injection containers, macro-wrapped safe calls, mapped one-to-one to oop-in-c-embedded concepts
         </h3>
         
     </div>
@@ -417,12 +415,12 @@ math: true</a></li>
         <div class="article-lastmod">
                 <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M10 18l5 -5a1.414 1.414 0 0 0 -2 -2l-5 5v2h2z" /></svg>
                 <time>
-                    Jul 03, 2026 21:52 CST
+                    Jul 03, 2026 23:08 CST
                 </time>
             </div><div id="wordCount">
             <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
             <time class="article-wordcount">
-                2768  words
+                2724  words
             </time>
         </div>
 
@@ -454,9 +452,9 @@ math: true</a></li>
 
             <div>
                 
-                    <a href="http://localhost:1313/Hugo_Web/p/%E6%B5%85%E5%B0%9D-bootloader-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E4%BB%8E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%BC%96%E6%8E%92%E7%9A%84-oop-%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%9E%8B/" class="link">简体中文</a>
+                    <a href="https://lingjia007.github.io/Hugo_Web/p/%E6%B5%85%E5%B0%9D-bootloader-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E4%BB%8E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%BC%96%E6%8E%92%E7%9A%84-oop-%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%9E%8B/" class="link">简体中文</a>
                 
-                    <a href="http://localhost:1313/Hugo_Web/zh-hk/p/%E6%B7%BA%E5%98%97-bootloader-%E4%BA%94%E5%B1%A4%E6%9E%B6%E6%A7%8B%E5%BE%9E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%B7%A8%E6%8E%92%E7%9A%84-oop-%E7%89%A9%E4%BB%B6%E8%A8%AD%E8%A8%88%E6%A8%A1%E5%9E%8B/" class="link">繁體中文</a>
+                    <a href="https://lingjia007.github.io/Hugo_Web/zh-hk/p/%E6%B7%BA%E5%98%97-bootloader-%E4%BA%94%E5%B1%A4%E6%9E%B6%E6%A7%8B%E5%BE%9E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%B7%A8%E6%8E%92%E7%9A%84-oop-%E7%89%A9%E4%BB%B6%E8%A8%AD%E8%A8%88%E6%A8%A1%E5%9E%8B/" class="link">繁體中文</a>
                 
             </div>
         </footer>
@@ -468,9 +466,7 @@ math: true</a></li>
     <section class="article-content">
     
     
-    <h2 id="math-true">n&quot;
-math: true
-</h2><h2 id="introduction">Introduction
+    <h2 id="introduction">Introduction
 </h2><p>In the previous post <a class="link" href="../oop-in-c-embedded/" >The Essence of C: Structs and Pointers</a>, we started from <code>struct + me</code> and walked all the way to Linux kernel-style <code>gpio_chip</code> + initcall auto-registration. The theory is there, but what about practice?</p>
 <p>This post uses the real code from the <a class="link" href="../stm32f407-secure-bootloader/" >STM32F407 Secure Bootloader</a> project as an example, taking a <strong>taste</strong> of its five-layer architecture object design model—seeing how the essence of OOP in C takes root in an industrial-grade Bootloader.</p>
 <blockquote class="alert alert-note">
@@ -1248,72 +1244,89 @@ math: true
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="82-memory-layout-derivation">8.2 Memory Layout Derivation
-</h3><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">gpio_led_stm32_t</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">memory</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl"><span class="err">┌──────────────────────────┐</span> <span class="err">←</span> <span class="o">&amp;</span><span class="n">instance</span> <span class="p">(</span><span class="n">gpio_led_stm32_t</span><span class="o">*</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="err">│</span>  <span class="n">base</span> <span class="p">(</span><span class="n">platform_led_base_t</span><span class="p">)</span> <span class="err">│</span>
-</span></span><span class="line"><span class="cl"><span class="err">│</span>    <span class="err">├──</span> <span class="n">ops</span> <span class="p">(</span><span class="k">const</span> <span class="n">ptr</span><span class="p">)</span>     <span class="err">│</span> <span class="err">←</span> <span class="o">&amp;</span><span class="n">instance</span><span class="o">.</span><span class="n">base</span> <span class="p">(</span><span class="n">platform_led_base_t</span><span class="o">*</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="err">│</span>    <span class="err">├──</span> <span class="n">name</span>                <span class="err">│</span>     <span class="n">ctx</span> <span class="n">passed</span> <span class="n">to</span> <span class="n">ops</span> <span class="n">functions</span> <span class="n">is</span> <span class="n">this</span> <span class="n">address</span>
-</span></span><span class="line"><span class="cl"><span class="err">│</span>    <span class="err">├──</span> <span class="n">type</span>                <span class="err">│</span>
-</span></span><span class="line"><span class="cl"><span class="err">│</span>    <span class="err">├──</span> <span class="n">state</span>               <span class="err">│</span>
-</span></span><span class="line"><span class="cl"><span class="err">│</span>    <span class="err">└──</span> <span class="n">user_data</span>           <span class="err">│</span>
-</span></span><span class="line"><span class="cl"><span class="err">│</span>  <span class="n">port</span> <span class="p">(</span><span class="n">GPIO_TypeDef</span><span class="o">*</span><span class="p">)</span>      <span class="err">│</span>
-</span></span><span class="line"><span class="cl"><span class="err">│</span>  <span class="n">pin</span>  <span class="p">(</span><span class="n">uint16_t</span><span class="p">)</span>           <span class="err">│</span>
-</span></span><span class="line"><span class="cl"><span class="err">└──────────────────────────┘</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">container_of</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">gpio_led_stm32_t</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span> <span class="n">calculation</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">  <span class="o">=</span> <span class="p">(</span><span class="n">gpio_led_stm32_t</span><span class="o">*</span><span class="p">)((</span><span class="n">char</span><span class="o">*</span><span class="p">)</span><span class="n">ctx</span> <span class="o">-</span> <span class="n">offsetof</span><span class="p">(</span><span class="n">gpio_led_stm32_t</span><span class="p">,</span> <span class="n">base</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">  <span class="o">=</span> <span class="p">(</span><span class="n">gpio_led_stm32_t</span><span class="o">*</span><span class="p">)((</span><span class="n">char</span><span class="o">*</span><span class="p">)</span><span class="n">ctx</span> <span class="o">-</span> <span class="mi">0</span><span class="p">)</span>    <span class="o">//</span> <span class="n">base</span> <span class="n">is</span> <span class="n">first</span> <span class="n">member</span><span class="p">,</span> <span class="n">offset</span> <span class="n">is</span> <span class="mi">0</span>
-</span></span><span class="line"><span class="cl">  <span class="o">=</span> <span class="p">(</span><span class="n">gpio_led_stm32_t</span><span class="o">*</span><span class="p">)</span><span class="n">ctx</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>When <code>base</code> is the first member, <code>container_of</code> is equivalent to a cast. But with <strong>multiple inheritance</strong>, the offset is non-zero:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">internal_flash_stm32_t instance:
-</span></span><span class="line"><span class="cl">┌────────────────────────────┐ ← &amp;instance
-</span></span><span class="line"><span class="cl">│  flash_base (offset = 0)    │ ← container_of(ctx, ..., flash_base) offset 0
-</span></span><span class="line"><span class="cl">│    ├── ops                  │
-</span></span><span class="line"><span class="cl">│    ├── name, start_addr...  │
-</span></span><span class="line"><span class="cl">│  transport_base (offset≠0)  │ ← container_of(ctx, ..., transport_base) offset &gt; 0
-</span></span><span class="line"><span class="cl">│    ├── source_ops           │
-</span></span><span class="line"><span class="cl">│    ├── target_ops           │
-</span></span><span class="line"><span class="cl">│  written_size, relocate...  │
-</span></span><span class="line"><span class="cl">└────────────────────────────┘
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>Two different <code>container_of</code> bases recover from <strong>different base class pointers of the same instance</strong> to <strong>the same derived class instance</strong>—this is exactly how <code>dynamic_cast</code> works with C++ multiple inheritance.</p>
+</h3><p><strong>gpio_led_stm32_t instance memory layout</strong>:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Field</th>
+          <th>Type</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>base.ops</code></td>
+          <td><code>const platform_led_ops_t*</code></td>
+          <td>Virtual pointer; <code>&amp;instance.base</code> is the ctx passed to ops functions</td>
+      </tr>
+      <tr>
+          <td><code>base.name</code></td>
+          <td><code>const char*</code></td>
+          <td>LED name</td>
+      </tr>
+      <tr>
+          <td><code>base.type</code></td>
+          <td><code>platform_led_type_t</code></td>
+          <td>LED type enum</td>
+      </tr>
+      <tr>
+          <td><code>base.state</code></td>
+          <td><code>platform_led_state_t</code></td>
+          <td>Current state</td>
+      </tr>
+      <tr>
+          <td><code>base.user_data</code></td>
+          <td><code>void*</code></td>
+          <td>User data pointer</td>
+      </tr>
+      <tr>
+          <td><code>port</code></td>
+          <td><code>GPIO_TypeDef*</code></td>
+          <td>STM32 GPIO port (derived class specific)</td>
+      </tr>
+      <tr>
+          <td><code>pin</code></td>
+          <td><code>uint16_t</code></td>
+          <td>GPIO pin number (derived class specific)</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote>
+<p><code>base</code> is the first member with offset 0, so <code>container_of(ctx, gpio_led_stm32_t, base)</code> is equivalent to <code>(gpio_led_stm32_t*)ctx</code>.</p></blockquote>
+<p>When <code>base</code> is the first member, <code>container_of</code> is equivalent to a cast. But with <strong>multiple inheritance</strong>, the offset is non-zero:</p>
+<p><strong>internal_flash_stm32_t instance memory layout (dual base classes)</strong>:</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Base Class</th>
+          <th>Offset</th>
+          <th>Fields</th>
+          <th>container_of Base</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>flash_base</code></td>
+          <td>0</td>
+          <td><code>ops</code>, <code>name</code>, <code>start_addr</code>&hellip;</td>
+          <td><code>container_of(ctx, ..., flash_base)</code> offset 0</td>
+      </tr>
+      <tr>
+          <td><code>transport_base</code></td>
+          <td>sizeof(flash_base)</td>
+          <td><code>source_ops</code>, <code>target_ops</code></td>
+          <td><code>container_of(ctx, ..., transport_base)</code> offset &gt; 0</td>
+      </tr>
+      <tr>
+          <td>Derived specific</td>
+          <td>—</td>
+          <td><code>written_size</code>, <code>relocate_offset</code>&hellip;</td>
+          <td>—</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote>
+<p>Two different <code>container_of</code> bases recover from <strong>different base class pointers of the same instance</strong> to <strong>the same derived class instance</strong>—this is exactly how <code>dynamic_cast</code> works with C++ multiple inheritance.</p></blockquote>
 <hr>
 <h2 id="9-chain-assembly-of-dependency-injection">9. Chain Assembly of Dependency Injection
 </h2><h3 id="91-dependency-graph">9.1 Dependency Graph
@@ -1529,7 +1542,7 @@ math: true
 <li><a class="link" href="../oop-in-c-embedded/" >The Essence of C: Structs and Pointers</a> — The theoretical foundation of this post</li>
 <li><a class="link" href="../stm32f407-secure-bootloader/" >STM32F407 Secure Bootloader Design</a> — The code source for this post</li>
 <li><a class="link" href="../gnu-ld-linker-script/" >GNU LD Linker Script in Depth</a> — NoInit section and linker script cooperation</li>
-<li><a class="link" href="../pyiap-toolkit/" >PyIAPToolKit</a> — PC-side com</li>
+<li><a class="link" href="../pyiap-toolkit/" >PyIAPToolKit</a> — PC-side companion tool suite</li>
 </ul>
 
 </section>
@@ -1576,7 +1589,7 @@ math: true
 
 
         <span>
-            Last updated on Jul 03, 2026 21:52 CST
+            Last updated on Jul 03, 2026 23:08 CST
         </span>
     </section></footer>
 
@@ -1765,7 +1778,7 @@ math: true
             
                 
             
-        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 7 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 22.91 k ></span> words
+        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 7 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 22.88 k ></span> words
     </section>
     <section class="powerby">
         Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
@@ -1858,7 +1871,7 @@ math: true
                 src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
                 
                 >
-            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.99ce1801c4bad426a42fc436add4721e149159dbb598636e9578fd59cf778c83.js" defer></script> <script>
     (function () {
         const customFont = document.createElement('link');
         customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
@@ -1884,7 +1897,7 @@ math: true
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "http://localhost:1313/Hugo_Web/en/";
+  const staticDir = "https://lingjia007.github.io/Hugo_Web/en/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -2131,7 +2144,7 @@ math: true
   });
 </script>
 
-<script src="http://localhost:1313/Hugo_Web/en/js/topbar.min.js"></script>
+<script src="https://lingjia007.github.io/Hugo_Web/en/js/topbar.min.js"></script>
 
 <script>
   
@@ -2160,12 +2173,12 @@ math: true
     
     path: {
       homePath: "/",
-      modelPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/live2d-moc3/",
-      cssPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/waifu.css",
-      tipsJsonPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/my-waifu-tips.json",
+      modelPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/live2d-moc3/",
+      cssPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/waifu.css",
+      tipsJsonPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/live2dcubismcore.js",
-      live2dSdkPath: "http:\/\/localhost:1313\/Hugo_Web\/en\/js/live2d-sdk.js",
+      live2dCorePath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/live2dcubismcore.js",
+      live2dSdkPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -2312,7 +2325,7 @@ math: true
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "http:\/\/localhost:1313\/Hugo_Web\/en\/icons/codeMore.png";
+      img.src = "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -2328,11 +2341,11 @@ math: true
 
 <div id="particles-js"></div>
 
-<script src="http://localhost:1313/Hugo_Web/en/background/particles.min.js"></script>
+<script src="https://lingjia007.github.io/Hugo_Web/en/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "http:\/\/localhost:1313\/Hugo_Web\/en\/background/particlesjs-config.json",
+    "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     },
@@ -2408,7 +2421,7 @@ math: true
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(http://localhost:1313/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(https://lingjia007.github.io/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -2427,7 +2440,7 @@ math: true
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("http://localhost:1313/Hugo_Web/en/icons/backTop.svg");
+    background-image: url("https://lingjia007.github.io/Hugo_Web/en/icons/backTop.svg");
   }
 </style>
 

@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Linux Kernel on lingsir007</title>
-        <link>http://localhost:1313/Hugo_Web/en/tags/linux-kernel/</link>
+        <link>https://lingjia007.github.io/Hugo_Web/en/tags/linux-kernel/</link>
         <description>Recent content in Linux Kernel on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Fri, 03 Jul 2026 12:54:47 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/en/tags/linux-kernel/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Fri, 03 Jul 2026 12:54:47 +0800</lastBuildDate><atom:link href="https://lingjia007.github.io/Hugo_Web/en/tags/linux-kernel/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>The Essence of C: Structs and Pointers — Embedded Object-Oriented Platform-Agnostic Layered Design</title>
-        <link>http://localhost:1313/Hugo_Web/en/p/the-essence-of-c-structs-and-pointers-embedded-object-oriented-platform-agnostic-layered-design/</link>
+        <link>https://lingjia007.github.io/Hugo_Web/en/p/the-essence-of-c-structs-and-pointers-embedded-object-oriented-platform-agnostic-layered-design/</link>
         <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/Hugo_Web/en/p/the-essence-of-c-structs-and-pointers-embedded-object-oriented-platform-agnostic-layered-design/</guid>
+        <guid>https://lingjia007.github.io/Hugo_Web/en/p/the-essence-of-c-structs-and-pointers-embedded-object-oriented-platform-agnostic-layered-design/</guid>
         <description>&lt;h2 id=&#34;preface&#34;&gt;Preface
 &lt;/h2&gt;&lt;p&gt;C has no &lt;code&gt;class&lt;/code&gt;, no &lt;code&gt;virtual&lt;/code&gt;, no &lt;code&gt;interface&lt;/code&gt;, yet large-scale projects like the Linux kernel, GObject, and Zephyr RTOS all build complete object-oriented systems in C. Their weapons are just two: &lt;strong&gt;structs&lt;/strong&gt; and &lt;strong&gt;pointers&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;This article follows the progressive refactoring of an embedded LED driver as its main thread, starting from the most primitive &lt;code&gt;struct + me&lt;/code&gt; and going all the way to Linux kernel-style &lt;code&gt;gpio_chip&lt;/code&gt; + initcall auto-registration, using a single LED to explain the full essence of embedded C object-oriented programming.&lt;/p&gt;
@@ -1016,6 +1016,8 @@
 &lt;hr&gt;
 &lt;h2 id=&#34;references&#34;&gt;References
 &lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/ZhaoChengBo/zhaoming-embedded&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;zhaoming-embedded/oop-in-c&lt;/a&gt; — Source repository for this post&lt;/li&gt;
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.kernel.org/doc/html/latest/driver-api/gpio/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Linux Kernel — gpio_chip&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://docs.gtk.org/gobject/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;

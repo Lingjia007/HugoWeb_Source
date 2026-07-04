@@ -426,41 +426,31 @@ void platform_config_init(void)
 
 ### 8.2 内存布局推导
 
-```
-gpio_led_stm32_t 实例在内存中：
-┌──────────────────────────┐ ← &instance (gpio_led_stm32_t*)
-│  base (platform_led_base_t) │
-│    ├── ops (const ptr)     │ ← &instance.base (platform_led_base_t*)
-│    ├── name                │     传入 ops 函数的 ctx 就是这个地址
-│    ├── type                │
-│    ├── state               │
-│    └── user_data           │
-│  port (GPIO_TypeDef*)      │
-│  pin  (uint16_t)           │
-└──────────────────────────┘
+**gpio_led_stm32_t 实例内存布局**：
 
-container_of(ctx, gpio_led_stm32_t, base) 的计算：
-  = (gpio_led_stm32_t*)((char*)ctx - offsetof(gpio_led_stm32_t, base))
-  = (gpio_led_stm32_t*)((char*)ctx - 0)    // base 是第一个成员，偏移为 0
-  = (gpio_led_stm32_t*)ctx
-```
+| 字段             | 类型                        | 说明                                           |
+| ---------------- | --------------------------- | ---------------------------------------------- |
+| `base.ops`       | `const platform_led_ops_t*` | 虚指针，`&instance.base` 是传入 ops 函数的 ctx |
+| `base.name`      | `const char*`               | LED 名称                                       |
+| `base.type`      | `platform_led_type_t`       | LED 类型枚举                                   |
+| `base.state`     | `platform_led_state_t`      | 当前状态                                       |
+| `base.user_data` | `void*`                     | 用户数据指针                                   |
+| `port`           | `GPIO_TypeDef*`             | STM32 GPIO 端口（派生类特有）                  |
+| `pin`            | `uint16_t`                  | GPIO 引脚号（派生类特有）                      |
+
+> `base` 是第一个成员，偏移为 0，因此 `container_of(ctx, gpio_led_stm32_t, base)` 等价于 `(gpio_led_stm32_t*)ctx`。
 
 当 `base` 是第一个成员时，`container_of` 等价于强转。但 **多重继承** 时偏移不为零：
 
-```
-internal_flash_stm32_t 实例：
-┌────────────────────────────┐ ← &instance
-│  flash_base (offset = 0)    │ ← container_of(ctx, ..., flash_base) 偏移 0
-│    ├── ops                  │
-│    ├── name, start_addr...  │
-│  transport_base (offset≠0)  │ ← container_of(ctx, ..., transport_base) 偏移 > 0
-│    ├── source_ops           │
-│    ├── target_ops           │
-│  written_size, relocate...  │
-└────────────────────────────┘
-```
+**internal_flash_stm32_t 实例内存布局（双基类）**：
 
-两个不同的 `container_of` 基准，从**同一个实例的不同基类指针**，恢复到**同一个派生类实例**——这正是 C++ 多重继承中 `dynamic_cast` 的工作原理。
+| 基类             | 偏移               | 字段                                 | container_of 基准                                 |
+| ---------------- | ------------------ | ------------------------------------ | ------------------------------------------------- |
+| `flash_base`     | 0                  | `ops`, `name`, `start_addr`...       | `container_of(ctx, ..., flash_base)` 偏移 0       |
+| `transport_base` | sizeof(flash_base) | `source_ops`, `target_ops`           | `container_of(ctx, ..., transport_base)` 偏移 > 0 |
+| 派生类特有       | —                  | `written_size`, `relocate_offset`... | —                                                 |
+
+> 两个不同的 `container_of` 基准，从**同一个实例的不同基类指针**，恢复到**同一个派生类实例**——这正是 C++ 多重继承中 `dynamic_cast` 的工作原理。
 
 ---
 

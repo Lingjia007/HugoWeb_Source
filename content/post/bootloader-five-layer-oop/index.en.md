@@ -426,41 +426,31 @@ Every design decision in this project can find a theoretical correspondence in [
 
 ### 8.2 Memory Layout Derivation
 
-```
-gpio_led_stm32_t instance in memory:
-┌──────────────────────────┐ ← &instance (gpio_led_stm32_t*)
-│  base (platform_led_base_t) │
-│    ├── ops (const ptr)     │ ← &instance.base (platform_led_base_t*)
-│    ├── name                │     ctx passed to ops functions is this address
-│    ├── type                │
-│    ├── state               │
-│    └── user_data           │
-│  port (GPIO_TypeDef*)      │
-│  pin  (uint16_t)           │
-└──────────────────────────┘
+**gpio_led_stm32_t instance memory layout**:
 
-container_of(ctx, gpio_led_stm32_t, base) calculation:
-  = (gpio_led_stm32_t*)((char*)ctx - offsetof(gpio_led_stm32_t, base))
-  = (gpio_led_stm32_t*)((char*)ctx - 0)    // base is first member, offset is 0
-  = (gpio_led_stm32_t*)ctx
-```
+| Field | Type | Description |
+|--------|------|------|
+| `base.ops` | `const platform_led_ops_t*` | Virtual pointer; `&instance.base` is the ctx passed to ops functions |
+| `base.name` | `const char*` | LED name |
+| `base.type` | `platform_led_type_t` | LED type enum |
+| `base.state` | `platform_led_state_t` | Current state |
+| `base.user_data` | `void*` | User data pointer |
+| `port` | `GPIO_TypeDef*` | STM32 GPIO port (derived class specific) |
+| `pin` | `uint16_t` | GPIO pin number (derived class specific) |
+
+> `base` is the first member with offset 0, so `container_of(ctx, gpio_led_stm32_t, base)` is equivalent to `(gpio_led_stm32_t*)ctx`.
 
 When `base` is the first member, `container_of` is equivalent to a cast. But with **multiple inheritance**, the offset is non-zero:
 
-```
-internal_flash_stm32_t instance:
-┌────────────────────────────┐ ← &instance
-│  flash_base (offset = 0)    │ ← container_of(ctx, ..., flash_base) offset 0
-│    ├── ops                  │
-│    ├── name, start_addr...  │
-│  transport_base (offset≠0)  │ ← container_of(ctx, ..., transport_base) offset > 0
-│    ├── source_ops           │
-│    ├── target_ops           │
-│  written_size, relocate...  │
-└────────────────────────────┘
-```
+**internal_flash_stm32_t instance memory layout (dual base classes)**:
 
-Two different `container_of` bases recover from **different base class pointers of the same instance** to **the same derived class instance**—this is exactly how `dynamic_cast` works with C++ multiple inheritance.
+| Base Class | Offset | Fields | container_of Base |
+|------------|--------|--------|------------------|
+| `flash_base` | 0 | `ops`, `name`, `start_addr`... | `container_of(ctx, ..., flash_base)` offset 0 |
+| `transport_base` | sizeof(flash_base) | `source_ops`, `target_ops` | `container_of(ctx, ..., transport_base)` offset > 0 |
+| Derived specific | — | `written_size`, `relocate_offset`... | — |
+
+> Two different `container_of` bases recover from **different base class pointers of the same instance** to **the same derived class instance**—this is exactly how `dynamic_cast` works with C++ multiple inheritance.
 
 ---
 

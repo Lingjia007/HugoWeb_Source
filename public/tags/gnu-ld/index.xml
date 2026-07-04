@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>GNU-LD on lingsir007</title>
-        <link>http://localhost:1313/Hugo_Web/tags/gnu-ld/</link>
+        <link>https://lingjia007.github.io/Hugo_Web/tags/gnu-ld/</link>
         <description>Recent content in GNU-LD on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Thu, 02 Jul 2026 22:52:44 +0800</lastBuildDate><atom:link href="http://localhost:1313/Hugo_Web/tags/gnu-ld/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 02 Jul 2026 22:52:44 +0800</lastBuildDate><atom:link href="https://lingjia007.github.io/Hugo_Web/tags/gnu-ld/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>GNU LD 链接脚本详解：从 STM32F407 实例剖析嵌入式内存布局与段重定位</title>
-        <link>http://localhost:1313/Hugo_Web/p/gnu-ld-%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E8%AF%A6%E8%A7%A3%E4%BB%8E-stm32f407-%E5%AE%9E%E4%BE%8B%E5%89%96%E6%9E%90%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E6%AE%B5%E9%87%8D%E5%AE%9A%E4%BD%8D/</link>
+        <link>https://lingjia007.github.io/Hugo_Web/p/gnu-ld-%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E8%AF%A6%E8%A7%A3%E4%BB%8E-stm32f407-%E5%AE%9E%E4%BE%8B%E5%89%96%E6%9E%90%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E6%AE%B5%E9%87%8D%E5%AE%9A%E4%BD%8D/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/Hugo_Web/p/gnu-ld-%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E8%AF%A6%E8%A7%A3%E4%BB%8E-stm32f407-%E5%AE%9E%E4%BE%8B%E5%89%96%E6%9E%90%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E6%AE%B5%E9%87%8D%E5%AE%9A%E4%BD%8D/</guid>
+        <guid>https://lingjia007.github.io/Hugo_Web/p/gnu-ld-%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E8%AF%A6%E8%A7%A3%E4%BB%8E-stm32f407-%E5%AE%9E%E4%BE%8B%E5%89%96%E6%9E%90%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E6%AE%B5%E9%87%8D%E5%AE%9A%E4%BD%8D/</guid>
         <description>&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;链接脚本（Linker Script, &lt;code&gt;.ld&lt;/code&gt;）是嵌入式开发中最常被忽视、却又最关键的文件之一。它告诉链接器：程序的代码和数据应该放在内存的什么位置、各个段的排列顺序如何、启动时需要从 Flash 拷贝到 RAM 的数据有哪些。&lt;/p&gt;
 &lt;p&gt;本文以一个真实项目的 STM32F407VGT6 链接脚本为例，逐行剖析 GNU LD 链接脚本的每一个语法要素，并深入讲解 VMA/LMA 地址模型、启动代码与链接脚本的协作机制。&lt;/p&gt;

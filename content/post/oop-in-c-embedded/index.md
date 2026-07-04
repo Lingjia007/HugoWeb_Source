@@ -607,6 +607,7 @@ void do_initcalls(void) {
 
 ## 参考资料
 
+- [zhaoming-embedded/oop-in-c](https://github.com/ZhaoChengBo/zhaoming-embedded) — 本文源码仓库
 - [Linux Kernel — gpio_chip](https://www.kernel.org/doc/html/latest/driver-api/gpio/)
 - [GObject Type System](https://docs.gtk.org/gobject/)
 - [Zephyr RTOS Device Driver Model](https://docs.zephyrproject.org/latest/contribute/device-drivers/index.html)
