@@ -2,6 +2,7 @@
 title: "GNU LD 链接脚本详解：从 STM32F407 实例剖析嵌入式内存布局与段重定位"
 date: 2026-07-02
 description: "以 STM32F407VGT6 的 GCC 链接脚本为实例，深入剖析 GNU LD 的 MEMORY 命令、SECTIONS 段分配、VMA/LMA 地址模型、启动代码与链接脚本的协作、CCMRAM 使用、TLS 支持等核心技术"
+image: gnu-ld-linker-script.png
 categories:
   - "嵌入式"
 tags:

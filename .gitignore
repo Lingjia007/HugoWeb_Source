@@ -1,1 +1,6 @@
+# 自动生成的文件
+public
+.hugo_build.lock
+
+# hugo命令
 hugo.exe

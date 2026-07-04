@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=10776&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+    <head><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Based on ArtInChip + LVGL v9 + RT-Thread smart vending terminal, an in-depth analysis of how the application tree (layout_node) manages the LVGL render tree, covering Composite pattern dual-tree mapping, Wrap bridging mechanism, strategy-driven Flex/Grid layout, widget factory dynamic creation, event-driven hot updates, and the replacement flow from static skeleton to dynamic components">
 <title>LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal</title>
 
-<link rel='canonical' href='http://localhost:10776/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/'>
+<link rel='canonical' href='https://lingjia007.github.io/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal">
 <meta property='og:description' content="Based on ArtInChip + LVGL v9 + RT-Thread smart vending terminal, an in-depth analysis of how the application tree (layout_node) manages the LVGL render tree, covering Composite pattern dual-tree mapping, Wrap bridging mechanism, strategy-driven Flex/Grid layout, widget factory dynamic creation, event-driven hot updates, and the replacement flow from static skeleton to dynamic components">
-<meta property='og:url' content='http://localhost:10776/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/'>
+<meta property='og:url' content='https://lingjia007.github.io/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/'>
 <meta property='og:site_name' content='lingsir007'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='Vending Machine' /><meta property='article:tag' content='Embedded UI' /><meta property='article:tag' content='Design Patterns' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T22:52:44&#43;08:00'/><meta property='og:image' content='http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='Vending Machine' /><meta property='article:tag' content='Embedded UI' /><meta property='article:tag' content='Design Patterns' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T22:52:44&#43;08:00'/><meta property='og:image' content='https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
 <meta name="twitter:title" content="LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal">
 <meta name="twitter:description" content="Based on ArtInChip + LVGL v9 + RT-Thread smart vending terminal, an in-depth analysis of how the application tree (layout_node) manages the LVGL render tree, covering Composite pattern dual-tree mapping, Wrap bridging mechanism, strategy-driven Flex/Grid layout, widget factory dynamic creation, event-driven hot updates, and the replacement flow from static skeleton to dynamic components"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
+    <meta name="twitter:image" content='https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
     <link rel="shortcut icon" href="/icons/favicon.ico" />
 
     </head>
@@ -234,11 +234,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="http://localhost:10776/Hugo_Web/" >简体中文</option>
+                                    <option value="https://lingjia007.github.io/Hugo_Web/" >简体中文</option>
                                 
-                                    <option value="http://localhost:10776/Hugo_Web/zh-hk/" >繁體中文</option>
+                                    <option value="https://lingjia007.github.io/Hugo_Web/zh-hk/" >繁體中文</option>
                                 
-                                    <option value="http://localhost:10776/Hugo_Web/en/" selected>English</option>
+                                    <option value="https://lingjia007.github.io/Hugo_Web/en/" selected>English</option>
                                 
                             </select>
                         </li>
@@ -488,9 +488,9 @@
 
             <div>
                 
-                    <a href="http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/" class="link">简体中文</a>
+                    <a href="https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/" class="link">简体中文</a>
                 
-                    <a href="http://localhost:10776/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/" class="link">繁體中文</a>
+                    <a href="https://lingjia007.github.io/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/" class="link">繁體中文</a>
                 
             </div>
         </footer>
@@ -2007,9 +2007,20 @@
 
             
                 
-<article class="">
+<article class="has-image">
     <a href="/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/">
         
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/gnu-ld-%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E8%AF%A6%E8%A7%A3%E4%BB%8E-stm32f407-%E5%AE%9E%E4%BE%8B%E5%89%96%E6%9E%90%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E6%AE%B5%E9%87%8D%E5%AE%9A%E4%BD%8D/gnu-ld-linker-script.fcad4f3ea326a9f595ecedb86073a2db_hu_604e604f3f084745.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post GNU LD Linker Script in Depth: Dissecting Embedded Memory Layout and Section Relocation via an STM32F407 Example"
+                        
+                        data-hash="md5-/K1PPqMmqfWV7O24YHOi2w==">
+                
+            </div>
         
 
         <div class="article-details">
@@ -2206,7 +2217,7 @@
                 src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
                 
                 >
-            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.99ce1801c4bad426a42fc436add4721e149159dbb598636e9578fd59cf778c83.js" defer></script> <script>
     (function () {
         const customFont = document.createElement('link');
         customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
@@ -2232,7 +2243,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "http://localhost:10776/Hugo_Web/en/";
+  const staticDir = "https://lingjia007.github.io/Hugo_Web/en/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -2479,7 +2490,7 @@
   });
 </script>
 
-<script src="http://localhost:10776/Hugo_Web/en/js/topbar.min.js"></script>
+<script src="https://lingjia007.github.io/Hugo_Web/en/js/topbar.min.js"></script>
 
 <script>
   
@@ -2508,12 +2519,12 @@
     
     path: {
       homePath: "/",
-      modelPath: "http:\/\/localhost:10776\/Hugo_Web\/en\/live2d-moc3/",
-      cssPath: "http:\/\/localhost:10776\/Hugo_Web\/en\/js/waifu.css",
-      tipsJsonPath: "http:\/\/localhost:10776\/Hugo_Web\/en\/js/my-waifu-tips.json",
+      modelPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/live2d-moc3/",
+      cssPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/waifu.css",
+      tipsJsonPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "http:\/\/localhost:10776\/Hugo_Web\/en\/js/live2dcubismcore.js",
-      live2dSdkPath: "http:\/\/localhost:10776\/Hugo_Web\/en\/js/live2d-sdk.js",
+      live2dCorePath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/live2dcubismcore.js",
+      live2dSdkPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -2660,7 +2671,7 @@
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "http:\/\/localhost:10776\/Hugo_Web\/en\/icons/codeMore.png";
+      img.src = "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -2676,11 +2687,11 @@
 
 <div id="particles-js"></div>
 
-<script src="http://localhost:10776/Hugo_Web/en/background/particles.min.js"></script>
+<script src="https://lingjia007.github.io/Hugo_Web/en/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "http:\/\/localhost:10776\/Hugo_Web\/en\/background/particlesjs-config.json",
+    "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     },
@@ -2756,7 +2767,7 @@
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(http://localhost:10776/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(https://lingjia007.github.io/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -2775,7 +2786,7 @@
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("http://localhost:10776/Hugo_Web/en/icons/backTop.svg");
+    background-image: url("https://lingjia007.github.io/Hugo_Web/en/icons/backTop.svg");
   }
 </style>
 

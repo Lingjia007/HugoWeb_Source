@@ -2,6 +2,7 @@
 title: "GNU LD Linker Script in Depth: Dissecting Embedded Memory Layout and Section Relocation via an STM32F407 Example"
 date: 2026-07-02
 description: "Using the GCC linker script for STM32F407VGT6 as a real-world example, this post provides an in-depth analysis of GNU LD's MEMORY command, SECTIONS allocation, VMA/LMA address model, the cooperation between startup code and linker scripts, CCMRAM usage, TLS support, and other core technologies"
+image: gnu-ld-linker-script.png
 categories:
   - "Embedded"
 tags:

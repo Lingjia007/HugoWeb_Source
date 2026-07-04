@@ -1,7 +1,8 @@
 ---
-title: "GNU LD 鏈結腳本詳解：從 STM32F407 實例剖析嵌入式記憶體佈局與段重定位"
+title: "GNU LD 鏈結腳本詳解：從 STM32F407 实例剖析嵌入式記憶體佈局與段重定位"
 date: 2026-07-02
 description: "以 STM32F407VGT6 的 GCC 鏈結腳本為實例，深入剖析 GNU LD 的 MEMORY 命令、SECTIONS 段分配、VMA/LMA 位址模型、啟動程式碼與鏈結腳本的協作、CCMRAM 使用、TLS 支援等核心技術"
+image: gnu-ld-linker-script.png
 categories:
   - "嵌入式"
 tags:

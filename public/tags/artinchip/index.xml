@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>ArtInChip on lingsir007</title>
-        <link>http://localhost:10776/Hugo_Web/tags/artinchip/</link>
+        <link>https://lingjia007.github.io/Hugo_Web/tags/artinchip/</link>
         <description>Recent content in ArtInChip on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Thu, 02 Jul 2026 22:52:44 +0800</lastBuildDate><atom:link href="http://localhost:10776/Hugo_Web/tags/artinchip/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 02 Jul 2026 22:52:44 +0800</lastBuildDate><atom:link href="https://lingjia007.github.io/Hugo_Web/tags/artinchip/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>LVGL 动态加载与渲染树管理：智能售货机终端的应用树架构实践</title>
-        <link>http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/</link>
+        <link>https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/</guid>
-        <description>&lt;img src="http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png" alt="Featured image of post LVGL 动态加载与渲染树管理：智能售货机终端的应用树架构实践" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+        <guid>https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/</guid>
+        <description>&lt;img src="https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png" alt="Featured image of post LVGL 动态加载与渲染树管理：智能售货机终端的应用树架构实践" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;LVGL 作为嵌入式领域最活跃的图形库，其核心是一个树形的&lt;strong&gt;渲染树&lt;/strong&gt;（&lt;code&gt;lv_obj_t&lt;/code&gt; 对象树），所有可见控件都是这棵树的节点。但在实际业务中，直接操作渲染树面临诸多问题：&lt;strong&gt;静态布局无法动态更新&lt;/strong&gt;、&lt;strong&gt;控件生命周期难以统一管理&lt;/strong&gt;、&lt;strong&gt;组件间耦合紧密&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;本文以一个基于 &lt;strong&gt;ArtInChip + LVGL v9 + RT-Thread&lt;/strong&gt; 的智能售货机终端为实践载体，深入剖析如何在 LVGL 渲染树之上构建一层&lt;strong&gt;应用树&lt;/strong&gt;（&lt;code&gt;layout_node&lt;/code&gt; 框架），通过组合模式、工厂模式、策略模式和发布-订阅模式的协同，实现 UI 的动态加载、热更新和生命周期管理。&lt;/p&gt;
 &lt;hr&gt;
@@ -34,10 +34,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;// ...固定数量、固定数据、无法运行时增删
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder.png&#34;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder.png&#34;
 	width=&#34;2557&#34;
 	height=&#34;1437&#34;
-	srcset=&#34;http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_d09a34aa53e12595.png 480w, http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_3fe0f6e08b5cac61.png 1024w&#34;
+	srcset=&#34;https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_d09a34aa53e12595.png 480w, https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_3fe0f6e08b5cac61.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;AiUIBuilder 静态 UI 骨架&#34;
