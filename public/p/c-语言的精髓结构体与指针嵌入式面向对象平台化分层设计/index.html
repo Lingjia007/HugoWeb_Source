@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh-cn" dir="ltr">
-    <head><meta charset='utf-8'>
+<html lang="en-us" dir="ltr">
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=6749&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="从 struct + me 指针出发，经数据归位、继承嵌套、操作表、虚指针、多态分发、container_of、平台抽象层到 Linux 内核风格，用一颗 LED 讲透嵌入式 C 面向对象编程的全部精髓">
 <title>C 语言的精髓：结构体与指针——嵌入式面向对象平台化分层设计</title>
 
-<link rel='canonical' href='https://lingjia007.github.io/Hugo_Web/p/c-%E8%AF%AD%E8%A8%80%E7%9A%84%E7%B2%BE%E9%AB%93%E7%BB%93%E6%9E%84%E4%BD%93%E4%B8%8E%E6%8C%87%E9%92%88%E5%B5%8C%E5%85%A5%E5%BC%8F%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B9%B3%E5%8F%B0%E5%8C%96%E5%88%86%E5%B1%82%E8%AE%BE%E8%AE%A1/'>
+<link rel='canonical' href='http://localhost:6749/Hugo_Web/p/c-%E8%AF%AD%E8%A8%80%E7%9A%84%E7%B2%BE%E9%AB%93%E7%BB%93%E6%9E%84%E4%BD%93%E4%B8%8E%E6%8C%87%E9%92%88%E5%B5%8C%E5%85%A5%E5%BC%8F%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B9%B3%E5%8F%B0%E5%8C%96%E5%88%86%E5%B1%82%E8%AE%BE%E8%AE%A1/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="C 语言的精髓：结构体与指针——嵌入式面向对象平台化分层设计">
 <meta property='og:description' content="从 struct + me 指针出发，经数据归位、继承嵌套、操作表、虚指针、多态分发、container_of、平台抽象层到 Linux 内核风格，用一颗 LED 讲透嵌入式 C 面向对象编程的全部精髓">
-<meta property='og:url' content='https://lingjia007.github.io/Hugo_Web/p/c-%E8%AF%AD%E8%A8%80%E7%9A%84%E7%B2%BE%E9%AB%93%E7%BB%93%E6%9E%84%E4%BD%93%E4%B8%8E%E6%8C%87%E9%92%88%E5%B5%8C%E5%85%A5%E5%BC%8F%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B9%B3%E5%8F%B0%E5%8C%96%E5%88%86%E5%B1%82%E8%AE%BE%E8%AE%A1/'>
+<meta property='og:url' content='http://localhost:6749/Hugo_Web/p/c-%E8%AF%AD%E8%A8%80%E7%9A%84%E7%B2%BE%E9%AB%93%E7%BB%93%E6%9E%84%E4%BD%93%E4%B8%8E%E6%8C%87%E9%92%88%E5%B5%8C%E5%85%A5%E5%BC%8F%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B9%B3%E5%8F%B0%E5%8C%96%E5%88%86%E5%B1%82%E8%AE%BE%E8%AE%A1/'>
 <meta property='og:site_name' content='lingsir007'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='C语言' /><meta property='article:tag' content='面向对象' /><meta property='article:tag' content='OOP-in-C' /><meta property='article:tag' content='嵌入式' /><meta property='article:tag' content='平台抽象' /><meta property='article:tag' content='Linux内核' /><meta property='article:published_time' content='2026-07-03T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-04T19:15:02&#43;08:00'/>
 <meta name="twitter:title" content="C 语言的精髓：结构体与指针——嵌入式面向对象平台化分层设计">
@@ -58,7 +58,7 @@
                     
                     
                         
-                        <img src="/Hugo_Web/img/avatar_hu_6974417c8ac44e16.png" width="300"
+                        <img src="/Hugo_Web/img/avatar_hu_49d0a8f5a8c62cc5.png" width="300"
                             height="300" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -233,11 +233,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/" selected>简体中文</option>
+                                    <option value="http://localhost:6749/Hugo_Web/" selected>简体中文</option>
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/zh-hk/" >繁體中文</option>
+                                    <option value="http://localhost:6749/Hugo_Web/zh-hk/" >繁體中文</option>
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/en/" >English</option>
+                                    <option value="http://localhost:6749/Hugo_Web/en/" >English</option>
                                 
                             </select>
                         </li>
@@ -483,9 +483,9 @@
 
             <div>
                 
-                    <a href="https://lingjia007.github.io/Hugo_Web/zh-hk/p/c-%E8%AA%9E%E8%A8%80%E7%9A%84%E7%B2%BE%E9%AB%93%E7%B5%90%E6%A7%8B%E9%AB%94%E8%88%87%E6%8C%87%E6%A8%99%E5%B5%8C%E5%85%A5%E5%BC%8F%E9%9D%A2%E5%90%91%E7%89%A9%E4%BB%B6%E5%B9%B3%E5%8F%B0%E5%8C%96%E5%88%86%E5%B1%A4%E8%A8%AD%E8%A8%88/" class="link">繁體中文</a>
+                    <a href="http://localhost:6749/Hugo_Web/zh-hk/p/c-%E8%AA%9E%E8%A8%80%E7%9A%84%E7%B2%BE%E9%AB%93%E7%B5%90%E6%A7%8B%E9%AB%94%E8%88%87%E6%8C%87%E6%A8%99%E5%B5%8C%E5%85%A5%E5%BC%8F%E9%9D%A2%E5%90%91%E7%89%A9%E4%BB%B6%E5%B9%B3%E5%8F%B0%E5%8C%96%E5%88%86%E5%B1%A4%E8%A8%AD%E8%A8%88/" class="link">繁體中文</a>
                 
-                    <a href="https://lingjia007.github.io/Hugo_Web/en/p/the-essence-of-c-structs-and-pointers-embedded-object-oriented-platform-agnostic-layered-design/" class="link">English</a>
+                    <a href="http://localhost:6749/Hugo_Web/en/p/the-essence-of-c-structs-and-pointers-embedded-object-oriented-platform-agnostic-layered-design/" class="link">English</a>
                 
             </div>
         </footer>
@@ -519,7 +519,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// led.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">led</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">pin</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">brightness</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">bool</span>    <span class="n">is_on</span><span class="p">;</span>
@@ -547,43 +547,43 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// main.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">led</span> <span class="n">red_led</span><span class="p">,</span> <span class="n">green_led</span><span class="p">,</span> <span class="n">blue_led</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led</span> <span class="n">red_led</span><span class="p">,</span> <span class="n">green_led</span><span class="p">,</span> <span class="n">blue_led</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="nf">led_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">red_led</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="nf">led_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">green_led</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="nf">led_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">blue_led</span><span class="p">,</span> <span class="mi">7</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="nf">led_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">red_led</span><span class="p">);</span>    <span class="c1">// 点亮红灯
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">led_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">green_led</span><span class="p">);</span>  <span class="c1">// 点亮绿灯
+</span></span></span><span class="line"><span class="cl"><span class="nf">led_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">green_led</span><span class="p">);</span>  <span class="c1">// 点亮绿灯
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>三颗 LED 共用同一份 <code>led_on</code> 代码，函数通过 <code>me</code> 指针知道操作哪一颗。想加第 100 颗 LED，多开一个 <code>struct led</code> 实例即可，函数一行不用动。</p>
 <h3 id="13-c-等价对照">1.3 C++ 等价对照
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>C 写法</th>
-          <th>C++ 等价</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>struct led</code></td>
-          <td><code>class Led</code></td>
-      </tr>
-      <tr>
-          <td><code>led_on(&amp;red_led)</code></td>
-          <td><code>red_led.on()</code></td>
-      </tr>
-      <tr>
-          <td><code>struct led *me</code></td>
-          <td>隐式 <code>this</code></td>
-      </tr>
-      <tr>
-          <td><code>me-&gt;pin</code></td>
-          <td><code>this-&gt;pin</code></td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>C 写法</th>
+					<th>C++ 等价</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>struct led</code></td>
+					<td><code>class Led</code></td>
+			</tr>
+			<tr>
+					<td><code>led_on(&amp;red_led)</code></td>
+					<td><code>red_led.on()</code></td>
+			</tr>
+			<tr>
+					<td><code>struct led *me</code></td>
+					<td>隐式 <code>this</code></td>
+			</tr>
+			<tr>
+					<td><code>me-&gt;pin</code></td>
+					<td><code>this-&gt;pin</code></td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="二手搓-class函数前缀--initdeinit">二、手搓 class：函数前缀 + init/deinit
@@ -602,12 +602,12 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// led.h — LED 类
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span>  <span class="nf">led_init</span><span class="p">(</span><span class="k">struct</span> <span class="n">led</span> <span class="o">*</span><span class="n">me</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">pin</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span>  <span class="nf">led_init</span><span class="p">(</span><span class="k">struct</span> <span class="n">led</span> <span class="o">*</span><span class="n">me</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">pin</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">led_deinit</span><span class="p">(</span><span class="k">struct</span> <span class="n">led</span> <span class="o">*</span><span class="n">me</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">led_on</span><span class="p">(</span><span class="k">struct</span> <span class="n">led</span> <span class="o">*</span><span class="n">me</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// motor.h — Motor 类
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span>  <span class="nf">motor_init</span><span class="p">(</span><span class="k">struct</span> <span class="n">motor</span> <span class="o">*</span><span class="n">me</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">pin</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span>  <span class="nf">motor_init</span><span class="p">(</span><span class="k">struct</span> <span class="n">motor</span> <span class="o">*</span><span class="n">me</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">pin</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">motor_deinit</span><span class="p">(</span><span class="k">struct</span> <span class="n">motor</span> <span class="o">*</span><span class="n">me</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">motor_start</span><span class="p">(</span><span class="k">struct</span> <span class="n">motor</span> <span class="o">*</span><span class="n">me</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
@@ -629,11 +629,11 @@
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">led_init</span><span class="p">(</span><span class="k">struct</span> <span class="n">led</span> <span class="o">*</span><span class="n">me</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">pin</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">me</span> <span class="o">||</span> <span class="o">!</span><span class="nf">pin_valid</span><span class="p">(</span><span class="n">pin</span><span class="p">))</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>  <span class="c1">// 1. 参数校验
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">me</span><span class="o">-&gt;</span><span class="n">pin</span> <span class="o">=</span> <span class="n">pin</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">me</span><span class="o">-&gt;</span><span class="n">pin</span> <span class="o">=</span> <span class="n">pin</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="n">me</span><span class="o">-&gt;</span><span class="n">is_on</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">platform_gpio_init</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">GPIO_OUTPUT</span><span class="p">);</span>    <span class="c1">// 2. 硬件初始化
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">platform_gpio_write</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>         <span class="c1">// 3. 默认状态
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">me</span><span class="o">-&gt;</span><span class="n">initialized</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">platform_gpio_write</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>         <span class="c1">// 3. 默认状态
+</span></span></span><span class="line"><span class="cl">    <span class="n">me</span><span class="o">-&gt;</span><span class="n">initialized</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
@@ -652,34 +652,34 @@
 <h2 id="三数据三级归位信息隐藏的完成形态">三、数据三级归位：信息隐藏的完成形态
 </h2><h3 id="31-三类数据的归属">3.1 三类数据的归属
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>类别</th>
-          <th>存放位置</th>
-          <th>生命周期</th>
-          <th>可见性</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>实例数据</td>
-          <td><code>struct</code> 字段</td>
-          <td>跟着 <code>me</code> 走</td>
-          <td><code>.h</code> 暴露或 <code>.c</code> 隐藏</td>
-      </tr>
-      <tr>
-          <td>模块共享数据</td>
-          <td><code>static</code> 变量</td>
-          <td>程序全程</td>
-          <td>仅本 <code>.c</code> 文件</td>
-      </tr>
-      <tr>
-          <td>只读常量</td>
-          <td><code>static const</code></td>
-          <td>编译期确定</td>
-          <td>仅本 <code>.c</code> 文件</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>类别</th>
+					<th>存放位置</th>
+					<th>生命周期</th>
+					<th>可见性</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>实例数据</td>
+					<td><code>struct</code> 字段</td>
+					<td>跟着 <code>me</code> 走</td>
+					<td><code>.h</code> 暴露或 <code>.c</code> 隐藏</td>
+			</tr>
+			<tr>
+					<td>模块共享数据</td>
+					<td><code>static</code> 变量</td>
+					<td>程序全程</td>
+					<td>仅本 <code>.c</code> 文件</td>
+			</tr>
+			<tr>
+					<td>只读常量</td>
+					<td><code>static const</code></td>
+					<td>编译期确定</td>
+					<td>仅本 <code>.c</code> 文件</td>
+			</tr>
+	</tbody>
 </table></div>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -702,12 +702,12 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// led.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">MAX_BRIGHTNESS</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>        <span class="c1">// 第三类：只读常量
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="k">struct</span> <span class="n">led</span> <span class="n">led_pool</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>                 <span class="c1">// 第二类：模块共享（对象池）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span> <span class="n">s_init_count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>                   <span class="c1">// 第二类：模块共享（计数器）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">MAX_BRIGHTNESS</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>        <span class="c1">// 第三类：只读常量
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">struct</span> <span class="n">led</span> <span class="n">led_pool</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>                 <span class="c1">// 第二类：模块共享（对象池）
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="n">s_init_count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>                   <span class="c1">// 第二类：模块共享（计数器）
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led</span> <span class="o">*</span><span class="nf">led_acquire</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">pin</span><span class="p">)</span> <span class="p">{</span>         <span class="c1">// 工厂：从池中分配
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">led_pool</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">in_use</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">            <span class="n">led_pool</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">in_use</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">led_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">led_pool</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pin</span><span class="p">);</span>
@@ -730,9 +730,9 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// led_bad.c — 千万别这样写！
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="n">g_pin</span><span class="p">;</span>           <span class="c1">// 实例数据用全局——最致命
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="n">g_brightness</span><span class="p">;</span>    <span class="c1">// 谁都能改，没有主人
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="n">init_count</span><span class="p">;</span>      <span class="c1">// 没有 static，外部 extern 能改
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">g_pin</span><span class="p">;</span>           <span class="c1">// 实例数据用全局——最致命
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">g_brightness</span><span class="p">;</span>    <span class="c1">// 谁都能改，没有主人
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">init_count</span><span class="p">;</span>      <span class="c1">// 没有 static，外部 extern 能改
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>bad_led_init(5)</code> 设 <code>g_pin=5</code>，随后 <code>bad_led_init(3)</code> 设 <code>g_pin=3</code>——红灯的 pin 被覆盖，代码不报错，逻辑全错，查一周也查不出来。</p>
@@ -764,22 +764,22 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// led_base.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">led_base</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led_base</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">is_on</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// led_gpio.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">led_gpio</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led_gpio</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">led_base</span> <span class="n">base</span><span class="p">;</span>   <span class="c1">// 基类放第一个字段！
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span> <span class="n">pin</span><span class="p">;</span>            <span class="c1">// GPIO 特有
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">pin</span><span class="p">;</span>            <span class="c1">// GPIO 特有
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// led_pwm.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">led_pwm</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led_pwm</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">led_base</span> <span class="n">base</span><span class="p">;</span>   <span class="c1">// 基类放第一个字段！
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span> <span class="n">channel</span><span class="p">;</span>        <span class="c1">// PWM 特有
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span> <span class="n">duty</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">channel</span><span class="p">;</span>        <span class="c1">// PWM 特有
+</span></span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">duty</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -796,8 +796,8 @@
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">led_gpio_init</span><span class="p">(</span><span class="k">struct</span> <span class="n">led_gpio</span> <span class="o">*</span><span class="n">me</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">pin</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">led_base_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">me</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>   <span class="c1">// 先调基类构造
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">me</span><span class="o">-&gt;</span><span class="n">pin</span> <span class="o">=</span> <span class="n">pin</span><span class="p">;</span>                     <span class="c1">// 再处理子类字段
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">me</span><span class="o">-&gt;</span><span class="n">pin</span> <span class="o">=</span> <span class="n">pin</span><span class="p">;</span>                     <span class="c1">// 再处理子类字段
+</span></span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -818,7 +818,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// led_base.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="nf">int</span> <span class="p">(</span><span class="o">*</span><span class="n">led_action_fn</span><span class="p">)(</span><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">me</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="nf">int</span> <span class="p">(</span><span class="o">*</span><span class="n">led_action_fn</span><span class="p">)(</span><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">me</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led_ops</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="n">led_action_fn</span> <span class="n">on</span><span class="p">;</span>
@@ -847,7 +847,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// led_gpio.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">gpio_on</span><span class="p">(</span><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">me</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">gpio_on</span><span class="p">(</span><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">me</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">led_gpio</span> <span class="o">*</span><span class="n">self</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">led_gpio</span> <span class="o">*</span><span class="p">)</span><span class="n">me</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">platform_gpio_write</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">pin</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="n">self</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">.</span><span class="n">is_on</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
@@ -881,12 +881,12 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// ch09: ops 作为参数传入
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">test_led</span><span class="p">(</span><span class="o">&amp;</span><span class="n">red_led</span><span class="p">.</span><span class="n">base</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">led_ops_gpio</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl"><span class="nf">test_led</span><span class="p">(</span><span class="o">&amp;</span><span class="n">red_led</span><span class="p">.</span><span class="n">base</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">led_ops_gpio</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// ch10: ops 跟着对象自己跑
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">led_base</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led_base</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="k">struct</span> <span class="n">led_ops</span> <span class="o">*</span><span class="n">ops</span><span class="p">;</span>   <span class="c1">// 虚指针
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">is_on</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
@@ -896,26 +896,26 @@
 </div><p>调用方不再需要记住&quot;红灯用 gpio 表、蓝灯用 pwm 表&quot;，彻底消除传错 ops 的风险。</p>
 <h3 id="62-c-vptr-对照">6.2 C++ vptr 对照
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>C 写法</th>
-          <th>C++ 等价</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>me-&gt;ops</code></td>
-          <td>隐式 vptr</td>
-      </tr>
-      <tr>
-          <td><code>me-&gt;ops-&gt;on(me)</code></td>
-          <td>虚函数调用</td>
-      </tr>
-      <tr>
-          <td><code>const struct led_ops *ops</code></td>
-          <td>vtable 指针</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>C 写法</th>
+					<th>C++ 等价</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>me-&gt;ops</code></td>
+					<td>隐式 vptr</td>
+			</tr>
+			<tr>
+					<td><code>me-&gt;ops-&gt;on(me)</code></td>
+					<td>虚函数调用</td>
+			</tr>
+			<tr>
+					<td><code>const struct led_ops *ops</code></td>
+					<td>vtable 指针</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="七多态父类统一接口">七、多态：父类统一接口
@@ -930,10 +930,10 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// led_base.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="nf">led_on</span><span class="p">(</span><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">me</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">led_on</span><span class="p">(</span><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">me</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">me</span> <span class="o">||</span> <span class="o">!</span><span class="n">me</span><span class="o">-&gt;</span><span class="n">ops</span> <span class="o">||</span> <span class="o">!</span><span class="n">me</span><span class="o">-&gt;</span><span class="n">ops</span><span class="o">-&gt;</span><span class="n">on</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">me</span><span class="o">-&gt;</span><span class="n">ops</span><span class="o">-&gt;</span><span class="nf">on</span><span class="p">(</span><span class="n">me</span><span class="p">);</span>     <span class="c1">// 一行 dispatch
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>应用层只调 <code>led_on(base)</code>，不再写 <code>me-&gt;ops-&gt;on(me)</code> 长串。</p>
@@ -952,11 +952,11 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// main.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">all_leds</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">all_leds</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="o">&amp;</span><span class="n">red_led</span><span class="p">.</span><span class="n">base</span><span class="p">,</span>    <span class="c1">// GPIO LED
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">&amp;</span><span class="n">blue_led</span><span class="p">.</span><span class="n">base</span><span class="p">,</span>   <span class="c1">// PWM LED
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">&amp;</span><span class="n">green_led</span><span class="p">.</span><span class="n">base</span><span class="p">,</span>  <span class="c1">// I2C LED
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl">    <span class="o">&amp;</span><span class="n">blue_led</span><span class="p">.</span><span class="n">base</span><span class="p">,</span>   <span class="c1">// PWM LED
+</span></span></span><span class="line"><span class="cl">    <span class="o">&amp;</span><span class="n">green_led</span><span class="p">.</span><span class="n">base</span><span class="p">,</span>  <span class="c1">// I2C LED
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">led_on</span><span class="p">(</span><span class="n">all_leds</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>   <span class="c1">// 同一行代码，三种行为
@@ -985,19 +985,19 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// led_board_init.c (BSP 层)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="k">struct</span> <span class="n">led_gpio</span>  <span class="n">s_led_err</span><span class="p">;</span>       <span class="c1">// 子类对象，文件私有
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="k">struct</span> <span class="n">led_pwm</span>   <span class="n">s_led_status</span><span class="p">;</span>    <span class="c1">// 外部不可见
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">struct</span> <span class="n">led_gpio</span>  <span class="n">s_led_err</span><span class="p">;</span>       <span class="c1">// 子类对象，文件私有
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">struct</span> <span class="n">led_pwm</span>   <span class="n">s_led_status</span><span class="p">;</span>    <span class="c1">// 外部不可见
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">g_led_error</span><span class="p">;</span>            <span class="c1">// 全局基类指针句柄
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">g_led_status</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">g_led_status</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">led_board_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">led_gpio_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s_led_err</span><span class="p">,</span> <span class="s">&#34;error&#34;</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">led_pwm_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s_led_status</span><span class="p">,</span> <span class="s">&#34;status&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="n">g_led_error</span>  <span class="o">=</span> <span class="o">&amp;</span><span class="n">s_led_err</span><span class="p">.</span><span class="n">base</span><span class="p">;</span>      <span class="c1">// 向上转型
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">g_led_status</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s_led_status</span><span class="p">.</span><span class="n">base</span><span class="p">;</span>   <span class="c1">// 向上转型
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">g_led_status</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s_led_status</span><span class="p">.</span><span class="n">base</span><span class="p">;</span>   <span class="c1">// 向上转型
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><strong>板级封装的价值</strong>：</p>
@@ -1037,7 +1037,7 @@
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">gpio_on</span><span class="p">(</span><span class="k">struct</span> <span class="n">led_base</span> <span class="o">*</span><span class="n">me</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">led_gpio</span> <span class="o">*</span><span class="n">self</span> <span class="o">=</span> <span class="nf">container_of</span><span class="p">(</span><span class="n">me</span><span class="p">,</span> <span class="k">struct</span> <span class="n">led_gpio</span><span class="p">,</span> <span class="n">base</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">//                 ↑ 编译期算偏移，运行时只剩一条 sub 指令
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">platform_gpio_write</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">pin</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">platform_gpio_write</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">pin</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="n">self</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">.</span><span class="n">is_on</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
@@ -1058,9 +1058,9 @@
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">led_ops</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="n">led_action_fn</span> <span class="n">on</span><span class="p">;</span>             <span class="c1">// 必填
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">led_action_fn</span> <span class="n">off</span><span class="p">;</span>            <span class="c1">// 必填
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">led_set_brightness_fn</span> <span class="n">set_brightness</span><span class="p">;</span>  <span class="c1">// 选填
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">led_action_fn</span> <span class="n">off</span><span class="p">;</span>            <span class="c1">// 必填
+</span></span></span><span class="line"><span class="cl">    <span class="n">led_set_brightness_fn</span> <span class="n">set_brightness</span><span class="p">;</span>  <span class="c1">// 选填
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="102-必填assert-模拟纯虚函数">10.2 必填：assert 模拟纯虚函数
@@ -1099,7 +1099,7 @@
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">me</span><span class="o">-&gt;</span><span class="n">ops</span><span class="o">-&gt;</span><span class="n">set_brightness</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;no dimming support</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>    <span class="c1">// 安静返回
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">me</span><span class="o">-&gt;</span><span class="n">ops</span><span class="o">-&gt;</span><span class="nf">set_brightness</span><span class="p">(</span><span class="n">me</span><span class="p">,</span> <span class="n">brightness</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
@@ -1109,35 +1109,35 @@
 <h2 id="十一平台抽象层跨-mcu-移植的根基">十一、平台抽象层：跨 MCU 移植的根基
 </h2><h3 id="111-三层架构">11.1 三层架构
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>层级</th>
-          <th>文件</th>
-          <th>关键操作</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>应用层</td>
-          <td><code>app.c</code></td>
-          <td><code>led_on(g_led_error)</code> — 只调基类接口</td>
-      </tr>
-      <tr>
-          <td>驱动层</td>
-          <td><code>led_gpio.c</code> / <code>led_pwm.c</code></td>
-          <td><code>container_of</code> → <code>platform_gpio_write</code> — 只调 platform 封装</td>
-      </tr>
-      <tr>
-          <td>平台层</td>
-          <td><code>platform_pin.c</code></td>
-          <td><code>_g_ops-&gt;write(pin, value)</code> — ops dispatch</td>
-      </tr>
-      <tr>
-          <td>实现层</td>
-          <td><code>pin_board.c</code>（每种 MCU 一份）</td>
-          <td>STM32: <code>HAL_GPIO_WritePin</code> / NXP: <code>GPIO_PinWrite</code> / PC: <code>printf</code></td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>层级</th>
+					<th>文件</th>
+					<th>关键操作</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>应用层</td>
+					<td><code>app.c</code></td>
+					<td><code>led_on(g_led_error)</code> — 只调基类接口</td>
+			</tr>
+			<tr>
+					<td>驱动层</td>
+					<td><code>led_gpio.c</code> / <code>led_pwm.c</code></td>
+					<td><code>container_of</code> → <code>platform_gpio_write</code> — 只调 platform 封装</td>
+			</tr>
+			<tr>
+					<td>平台层</td>
+					<td><code>platform_pin.c</code></td>
+					<td><code>_g_ops-&gt;write(pin, value)</code> — ops dispatch</td>
+			</tr>
+			<tr>
+					<td>实现层</td>
+					<td><code>pin_board.c</code>（每种 MCU 一份）</td>
+					<td>STM32: <code>HAL_GPIO_WritePin</code> / NXP: <code>GPIO_PinWrite</code> / PC: <code>printf</code></td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="112-platform-层的-ops--register-机制">11.2 platform 层的 ops + register 机制
 </h3><div class="highlight"><div class="chroma">
@@ -1154,14 +1154,14 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// platform_pin.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">mode</span><span class="p">)(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">int32_t</span> <span class="n">mode</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">write</span><span class="p">)(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="p">(</span><span class="o">*</span><span class="n">read</span><span class="p">)(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">platform_pin_register</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="o">*</span><span class="n">ops</span><span class="p">);</span>  <span class="c1">// 启动期注册
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">platform_pin_write</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">);</span>               <span class="c1">// 上层调用
+</span></span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">platform_pin_write</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">);</span>               <span class="c1">// 上层调用
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
@@ -1181,7 +1181,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// platform_pin.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="o">*</span><span class="n">_g_ops</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="o">*</span><span class="n">_g_ops</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">platform_pin_register</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="o">*</span><span class="n">ops</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="n">_g_ops</span> <span class="o">=</span> <span class="n">ops</span><span class="p">;</span>
@@ -1191,7 +1191,7 @@
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">platform_pin_write</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">assert</span><span class="p">(</span><span class="n">_g_ops</span> <span class="o">&amp;&amp;</span> <span class="n">_g_ops</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="n">_g_ops</span><span class="o">-&gt;</span><span class="nf">write</span><span class="p">(</span><span class="n">pin</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>    <span class="c1">// dispatch
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="113-跨-mcu-移植只換实现层">11.3 跨 MCU 移植：只換实现层
@@ -1213,14 +1213,14 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// STM32: platform/arch/stm32/pin_board.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">stm32_pin_write</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">stm32_pin_write</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">HAL_GPIO_WritePin</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">pin</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="k">const</span> <span class="k">struct</span> <span class="n">platform_pin_ops</span> <span class="n">stm32_pin_ops</span> <span class="o">=</span> <span class="p">{</span> <span class="p">.</span><span class="n">write</span> <span class="o">=</span> <span class="n">stm32_pin_write</span><span class="p">,</span> <span class="p">...</span> <span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// NXP: platform/arch/nxp/pin_board.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">nxp_pin_write</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">nxp_pin_write</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">pin</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">GPIO_PinWrite</span><span class="p">(</span><span class="n">GPIOA</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
@@ -1254,22 +1254,22 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// gpio_chip.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">label</span><span class="p">;</span>          <span class="c1">// &#34;stm32-gpioa&#34;
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">base</span><span class="p">;</span>                   <span class="c1">// 起始 GPIO 编号
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">ngpio</span><span class="p">;</span>                  <span class="c1">// 该 chip 管多少脚
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">request</span><span class="p">)(</span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">offset</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">base</span><span class="p">;</span>                   <span class="c1">// 起始 GPIO 编号
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">ngpio</span><span class="p">;</span>                  <span class="c1">// 该 chip 管多少脚
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">request</span><span class="p">)(</span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">offset</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">free</span><span class="p">)(</span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">offset</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">direction_output</span><span class="p">)(</span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">get</span><span class="p">)(</span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">offset</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">set</span><span class="p">)(</span><span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="o">*</span><span class="n">driver_data</span><span class="p">;</span>         <span class="c1">// 厂商私有上下文
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">gpio_desc</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">gpio_chip</span> <span class="o">*</span><span class="n">gc</span><span class="p">;</span>      <span class="c1">// 反查到 chip
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">offset</span><span class="p">;</span>       <span class="c1">// 脚号偏移
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">offset</span><span class="p">;</span>       <span class="c1">// 脚号偏移
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="122-desc--chip--ops-dispatch">12.2 desc → chip → ops dispatch
@@ -1283,10 +1283,10 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// gpiolib.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">gpiod_set_value</span><span class="p">(</span><span class="k">struct</span> <span class="n">gpio_desc</span> <span class="o">*</span><span class="n">desc</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">gpiod_set_value</span><span class="p">(</span><span class="k">struct</span> <span class="n">gpio_desc</span> <span class="o">*</span><span class="n">desc</span><span class="p">,</span> <span class="kt">int</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="n">desc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="o">-&gt;</span><span class="nf">set</span><span class="p">(</span><span class="n">desc</span><span class="o">-&gt;</span><span class="n">gc</span><span class="p">,</span> <span class="n">desc</span><span class="o">-&gt;</span><span class="n">offset</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">//         ↑ dispatch 到对应厂商的实现
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>同一行 <code>gpiod_set_value</code> 调用，根据 <code>desc-&gt;gc</code> 指向哪家厂商的 <code>gpio_chip</code>，落到不同实现。这就是 Linux 内核&quot;一份 leds-gpio 驱动跑遍 N 家 SoC&quot;的根基。</p>
@@ -1306,13 +1306,13 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// main.c — 违反开闭原则
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">led_init</span><span class="p">();</span>       <span class="c1">// 每加一个驱动
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">motor_init</span><span class="p">();</span>     <span class="c1">// 就要在这里加一行
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">sensor_init</span><span class="p">();</span>    <span class="c1">// 改完 main 还要加 #include
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">uart_init</span><span class="p">();</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">motor_init</span><span class="p">();</span>     <span class="c1">// 就要在这里加一行
+</span></span></span><span class="line"><span class="cl">    <span class="nf">sensor_init</span><span class="p">();</span>    <span class="c1">// 改完 main 还要加 #include
+</span></span></span><span class="line"><span class="cl">    <span class="nf">uart_init</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// ...无穷无尽
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="132-解决编译期--链接器--启动代码三方配合">13.2 解决：编译期 + 链接器 + 启动代码三方配合
@@ -1331,14 +1331,14 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// initcall.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="nf">int</span> <span class="p">(</span><span class="o">*</span><span class="kt">initcall_t</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="nf">int</span> <span class="p">(</span><span class="o">*</span><span class="kt">initcall_t</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="cp">#define MODULE_INIT(fn) \
 </span></span></span><span class="line"><span class="cl"><span class="cp">    static initcall_t __initcall_##fn \
 </span></span></span><span class="line"><span class="cl"><span class="cp">    __attribute__((used, section(&#34;my_initcall&#34;))) = fn
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 声明链接器自动生成的段边界符号
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">extern</span> <span class="kt">initcall_t</span> <span class="n">__start_my_initcall</span><span class="p">[];</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">extern</span> <span class="kt">initcall_t</span> <span class="n">__start_my_initcall</span><span class="p">[];</span>
 </span></span><span class="line"><span class="cl"><span class="k">extern</span> <span class="kt">initcall_t</span> <span class="n">__stop_my_initcall</span><span class="p">[];</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1353,9 +1353,9 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// drv_led.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">drv_led_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">drv_led_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// ... LED 驱动初始化
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="nf">MODULE_INIT</span><span class="p">(</span><span class="n">drv_led_init</span><span class="p">);</span>  <span class="c1">// 一行注册，main 不用改
 </span></span></span></code></pre></td></tr></table>
@@ -1371,7 +1371,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// initcall.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">do_initcalls</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">do_initcalls</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">initcall_t</span> <span class="o">*</span><span class="n">fn</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">fn</span> <span class="o">=</span> <span class="n">__start_my_initcall</span><span class="p">;</span> <span class="n">fn</span> <span class="o">&lt;</span> <span class="n">__stop_my_initcall</span><span class="p">;</span> <span class="n">fn</span><span class="o">++</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="o">*</span><span class="n">fn</span><span class="p">)();</span>
@@ -1389,94 +1389,94 @@
 <hr>
 <h2 id="十四oop-in-c-全景图">十四、OOP-in-C 全景图
 </h2><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>章节</th>
-          <th>C 写法</th>
-          <th>C++ 等价</th>
-          <th>核心变化</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>封装</td>
-          <td><code>struct</code> + <code>me</code> 指针</td>
-          <td><code>class</code> + <code>this</code></td>
-          <td>数据与代码分离，多实例共享同一份函数</td>
-      </tr>
-      <tr>
-          <td>手搓 class</td>
-          <td>函数前缀 + init/deinit</td>
-          <td>namespace + 构造/析构</td>
-          <td>命名规范防符号冲突，生命周期管理</td>
-      </tr>
-      <tr>
-          <td>数据归位</td>
-          <td>static / static const</td>
-          <td>private / const</td>
-          <td>三类数据各归其位，信息隐藏完成</td>
-      </tr>
-      <tr>
-          <td>继承</td>
-          <td>struct 嵌套</td>
-          <td>class 继承</td>
-          <td>基类放第一个字段，构造函数链</td>
-      </tr>
-      <tr>
-          <td>操作表</td>
-          <td>ops 结构体</td>
-          <td>vtable 雏形</td>
-          <td>函数指针打包，按名访问</td>
-      </tr>
-      <tr>
-          <td>虚指针</td>
-          <td>ops 字段进 base</td>
-          <td>vptr</td>
-          <td>对象自带操作表，调用只需 base 指针</td>
-      </tr>
-      <tr>
-          <td>多态</td>
-          <td>父类统一接口</td>
-          <td>virtual dispatch</td>
-          <td>同一行代码，不同行为</td>
-      </tr>
-      <tr>
-          <td>向上转型</td>
-          <td><code>&amp;sub.base</code> 赋值</td>
-          <td>implicit upcast</td>
-          <td>子类隐藏，base 句柄暴露，BSP 封装</td>
-      </tr>
-      <tr>
-          <td>container_of</td>
-          <td>宏反推外层结构体</td>
-          <td><code>dynamic_cast</code></td>
-          <td>base 位置不受限，零运行时开销</td>
-      </tr>
-      <tr>
-          <td>纯虚/选填</td>
-          <td>assert / NULL 默认</td>
-          <td><code>= 0</code> / 默认实现</td>
-          <td>必填调试期断言，选填安静默认</td>
-      </tr>
-      <tr>
-          <td>平台抽象</td>
-          <td>HAL ops + register</td>
-          <td>抽象基类 + 工厂</td>
-          <td>跨 MCU 移植只换实现层</td>
-      </tr>
-      <tr>
-          <td>Linux 风格</td>
-          <td>gpio_chip 内嵌 ops</td>
-          <td>多态 + 多实例</td>
-          <td>同一 SoC 多厂商 chip 并存</td>
-      </tr>
-      <tr>
-          <td>initcall</td>
-          <td><code>__attribute__((section))</code></td>
-          <td>开闭原则</td>
-          <td>编译期 + 链接器自动注册，main 不动</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>章节</th>
+					<th>C 写法</th>
+					<th>C++ 等价</th>
+					<th>核心变化</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>封装</td>
+					<td><code>struct</code> + <code>me</code> 指针</td>
+					<td><code>class</code> + <code>this</code></td>
+					<td>数据与代码分离，多实例共享同一份函数</td>
+			</tr>
+			<tr>
+					<td>手搓 class</td>
+					<td>函数前缀 + init/deinit</td>
+					<td>namespace + 构造/析构</td>
+					<td>命名规范防符号冲突，生命周期管理</td>
+			</tr>
+			<tr>
+					<td>数据归位</td>
+					<td>static / static const</td>
+					<td>private / const</td>
+					<td>三类数据各归其位，信息隐藏完成</td>
+			</tr>
+			<tr>
+					<td>继承</td>
+					<td>struct 嵌套</td>
+					<td>class 继承</td>
+					<td>基类放第一个字段，构造函数链</td>
+			</tr>
+			<tr>
+					<td>操作表</td>
+					<td>ops 结构体</td>
+					<td>vtable 雏形</td>
+					<td>函数指针打包，按名访问</td>
+			</tr>
+			<tr>
+					<td>虚指针</td>
+					<td>ops 字段进 base</td>
+					<td>vptr</td>
+					<td>对象自带操作表，调用只需 base 指针</td>
+			</tr>
+			<tr>
+					<td>多态</td>
+					<td>父类统一接口</td>
+					<td>virtual dispatch</td>
+					<td>同一行代码，不同行为</td>
+			</tr>
+			<tr>
+					<td>向上转型</td>
+					<td><code>&amp;sub.base</code> 赋值</td>
+					<td>implicit upcast</td>
+					<td>子类隐藏，base 句柄暴露，BSP 封装</td>
+			</tr>
+			<tr>
+					<td>container_of</td>
+					<td>宏反推外层结构体</td>
+					<td><code>dynamic_cast</code></td>
+					<td>base 位置不受限，零运行时开销</td>
+			</tr>
+			<tr>
+					<td>纯虚/选填</td>
+					<td>assert / NULL 默认</td>
+					<td><code>= 0</code> / 默认实现</td>
+					<td>必填调试期断言，选填安静默认</td>
+			</tr>
+			<tr>
+					<td>平台抽象</td>
+					<td>HAL ops + register</td>
+					<td>抽象基类 + 工厂</td>
+					<td>跨 MCU 移植只换实现层</td>
+			</tr>
+			<tr>
+					<td>Linux 风格</td>
+					<td>gpio_chip 内嵌 ops</td>
+					<td>多态 + 多实例</td>
+					<td>同一 SoC 多厂商 chip 并存</td>
+			</tr>
+			<tr>
+					<td>initcall</td>
+					<td><code>__attribute__((section))</code></td>
+					<td>开闭原则</td>
+					<td>编译期 + 链接器自动注册，main 不动</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="十五为什么嵌入式必须用-c-写-oop">十五、为什么嵌入式必须用 C 写 OOP
@@ -1496,7 +1496,8 @@
 </ul>
 <h3 id="153-一句话总结">15.3 一句话总结
 </h3><blockquote>
-<p>C 语言的面向对象不是&quot;没有 C++ 就凑合过&quot;，而是嵌入式场景下的最优解——用最少的语言特性获得最多的设计自由度，每一字节开销都可审计。</p></blockquote>
+<p>C 语言的面向对象不是&quot;没有 C++ 就凑合过&quot;，而是嵌入式场景下的最优解——用最少的语言特性获得最多的设计自由度，每一字节开销都可审计。</p>
+</blockquote>
 <hr>
 <h2 id="参考资料">参考资料
 </h2><ul>
@@ -1635,7 +1636,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.7092acb7ea331869c1e1d1894091f36f_hu_26121de83b12f576.png" 
+                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.7092acb7ea331869c1e1d1894091f36f_hu_e021237e267cb631.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -1659,7 +1660,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_f8913fdcd1a8711e.png" 
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_796cd764b38bb6af.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -1683,7 +1684,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_989a706e6c4dfa57.png" 
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_246f581f8c773c70.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -1749,7 +1750,7 @@
             
                 
             
-        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 8 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 38.87 k ></span>字
+        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 8 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 38.86 k ></span>字
     </section>
     <section class="powerby">
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
@@ -1842,7 +1843,7 @@
                 src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
                 
                 >
-            </script><script type="text/javascript" src="/Hugo_Web/ts/main.99ce1801c4bad426a42fc436add4721e149159dbb598636e9578fd59cf778c83.js" defer></script> <script>
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
     (function () {
         const customFont = document.createElement('link');
         customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
@@ -1868,7 +1869,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "https://lingjia007.github.io/Hugo_Web/";
+  const staticDir = "http://localhost:6749/Hugo_Web/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -2115,7 +2116,7 @@
   });
 </script>
 
-<script src="https://lingjia007.github.io/Hugo_Web/js/topbar.min.js"></script>
+<script src="http://localhost:6749/Hugo_Web/js/topbar.min.js"></script>
 
 <script>
   
@@ -2144,12 +2145,12 @@
     
     path: {
       homePath: "/",
-      modelPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/live2d-moc3/",
-      cssPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/waifu.css",
-      tipsJsonPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/my-waifu-tips.json",
+      modelPath: "http:\/\/localhost:6749\/Hugo_Web\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:6749\/Hugo_Web\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:6749\/Hugo_Web\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/live2dcubismcore.js",
-      live2dSdkPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/live2d-sdk.js",
+      live2dCorePath: "http:\/\/localhost:6749\/Hugo_Web\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:6749\/Hugo_Web\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -2296,7 +2297,7 @@
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "https:\/\/lingjia007.github.io\/Hugo_Web\/icons/codeMore.png";
+      img.src = "http:\/\/localhost:6749\/Hugo_Web\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -2312,11 +2313,11 @@
 
 <div id="particles-js"></div>
 
-<script src="https://lingjia007.github.io/Hugo_Web/background/particles.min.js"></script>
+<script src="http://localhost:6749/Hugo_Web/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "https:\/\/lingjia007.github.io\/Hugo_Web\/background/particlesjs-config.json",
+    "http:\/\/localhost:6749\/Hugo_Web\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     },
@@ -2392,7 +2393,7 @@
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(https://lingjia007.github.io/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(http://localhost:6749/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -2411,7 +2412,7 @@
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("https://lingjia007.github.io/Hugo_Web/icons/backTop.svg");
+    background-image: url("http://localhost:6749/Hugo_Web/icons/backTop.svg");
   }
 </style>
 

@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="zh-cn" dir="ltr">
-    <head><meta charset='utf-8'>
+<html lang="en-us" dir="ltr">
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=6749&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="基于 ArtInChip + LVGL v9 + RT-Thread 的智能售货机终端，深入剖析应用树（layout_node）如何管理 LVGL 渲染树，涵盖组合模式双树映射、Wrap 桥接机制、策略驱动的 Flex/Grid 布局、控件工厂动态创建、事件驱动热更新、静态骨架到动态组件的替换流程等核心技术详解">
 <title>LVGL 动态加载与渲染树管理：智能售货机终端的应用树架构实践</title>
 
-<link rel='canonical' href='https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/'>
+<link rel='canonical' href='http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="LVGL 动态加载与渲染树管理：智能售货机终端的应用树架构实践">
 <meta property='og:description' content="基于 ArtInChip + LVGL v9 + RT-Thread 的智能售货机终端，深入剖析应用树（layout_node）如何管理 LVGL 渲染树，涵盖组合模式双树映射、Wrap 桥接机制、策略驱动的 Flex/Grid 布局、控件工厂动态创建、事件驱动热更新、静态骨架到动态组件的替换流程等核心技术详解">
-<meta property='og:url' content='https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/'>
+<meta property='og:url' content='http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/'>
 <meta property='og:site_name' content='lingsir007'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='售货机' /><meta property='article:tag' content='嵌入式UI' /><meta property='article:tag' content='设计模式' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T22:52:44&#43;08:00'/><meta property='og:image' content='https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='售货机' /><meta property='article:tag' content='嵌入式UI' /><meta property='article:tag' content='设计模式' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T22:52:44&#43;08:00'/><meta property='og:image' content='http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
 <meta name="twitter:title" content="LVGL 动态加载与渲染树管理：智能售货机终端的应用树架构实践">
 <meta name="twitter:description" content="基于 ArtInChip + LVGL v9 + RT-Thread 的智能售货机终端，深入剖析应用树（layout_node）如何管理 LVGL 渲染树，涵盖组合模式双树映射、Wrap 桥接机制、策略驱动的 Flex/Grid 布局、控件工厂动态创建、事件驱动热更新、静态骨架到动态组件的替换流程等核心技术详解"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://lingjia007.github.io/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
+    <meta name="twitter:image" content='http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
     <link rel="shortcut icon" href="/icons/favicon.ico" />
 
     </head>
@@ -59,7 +59,7 @@
                     
                     
                         
-                        <img src="/Hugo_Web/img/avatar_hu_6974417c8ac44e16.png" width="300"
+                        <img src="/Hugo_Web/img/avatar_hu_49d0a8f5a8c62cc5.png" width="300"
                             height="300" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -234,11 +234,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/" selected>简体中文</option>
+                                    <option value="http://localhost:6749/Hugo_Web/" selected>简体中文</option>
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/zh-hk/" >繁體中文</option>
+                                    <option value="http://localhost:6749/Hugo_Web/zh-hk/" >繁體中文</option>
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/en/" >English</option>
+                                    <option value="http://localhost:6749/Hugo_Web/en/" >English</option>
                                 
                             </select>
                         </li>
@@ -396,8 +396,8 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/">
-                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal_hu_9fb179408923df1d.png"
-                        srcset="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal_hu_9fb179408923df1d.png 800w, /Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal_hu_c1e903136d18411.png 1600w"
+                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal_hu_2b1d132815a2f666.png"
+                        srcset="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal_hu_2b1d132815a2f666.png 800w, /Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal_hu_8e430064e9df8084.png 1600w"
                         width="800" 
                         height="415" 
                         loading="lazy"
@@ -488,9 +488,9 @@
 
             <div>
                 
-                    <a href="https://lingjia007.github.io/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/" class="link">繁體中文</a>
+                    <a href="http://localhost:6749/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/" class="link">繁體中文</a>
                 
-                    <a href="https://lingjia007.github.io/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/" class="link">English</a>
+                    <a href="http://localhost:6749/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/" class="link">English</a>
                 
             </div>
         </footer>
@@ -518,7 +518,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// screen.c (AiUIBuilder 生成)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">scr</span><span class="o">-&gt;</span><span class="n">image_banner_1</span> <span class="o">=</span> <span class="nf">lv_img_create</span><span class="p">(</span><span class="n">scr</span><span class="o">-&gt;</span><span class="n">container_banner</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl"><span class="n">scr</span><span class="o">-&gt;</span><span class="n">image_banner_1</span> <span class="o">=</span> <span class="nf">lv_img_create</span><span class="p">(</span><span class="n">scr</span><span class="o">-&gt;</span><span class="n">container_banner</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="n">scr</span><span class="o">-&gt;</span><span class="n">container_main_1</span> <span class="o">=</span> <span class="nf">lv_obj_create</span><span class="p">(</span><span class="n">scr</span><span class="o">-&gt;</span><span class="n">container_main</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="c1">// ...固定数量、固定数据、无法运行时增删
 </span></span></span></code></pre></td></tr></table>
@@ -526,7 +526,7 @@
 </div><p><img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder.png"
 	width="2557"
 	height="1437"
-	srcset="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_12ecb9afaf4eebaf.png 480w, /Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_6c939ba1467fa223.png 1024w"
+	srcset="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_d09a34aa53e12595.png 480w, /Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_3fe0f6e08b5cac61.png 1024w"
 	loading="lazy"
 	
 		alt="AiUIBuilder 静态 UI 骨架"
@@ -576,40 +576,40 @@
 </div>
 </div><p>应用树节点通过 <code>obj</code> 指针与渲染树节点一一对应，但应用树额外管理了：</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>管理维度</th>
-          <th>渲染树 (lv_obj_t)</th>
-          <th>应用树 (layout_node)</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>生命周期</td>
-          <td><code>lv_obj_del()</code> 手动散落各处</td>
-          <td><code>destroy()</code> 虚函数，深度优先自动销毁</td>
-      </tr>
-      <tr>
-          <td>子节点管理</td>
-          <td>LVGL 内部链表，无业务语义</td>
-          <td><code>children[]</code> 动态数组，容量倍增</td>
-      </tr>
-      <tr>
-          <td>布局参数</td>
-          <td>分散在各 <code>lv_obj_set_style_*</code> 调用</td>
-          <td><code>layout_strategy_t</code> 统一封装</td>
-      </tr>
-      <tr>
-          <td>数据绑定</td>
-          <td>手动逐字段赋值</td>
-          <td><code>bind()</code> / <code>update()</code> 虚函数</td>
-      </tr>
-      <tr>
-          <td>私有数据</td>
-          <td>无标准机制</td>
-          <td><code>widget_unit.priv</code> 指向内存池对象</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>管理维度</th>
+					<th>渲染树 (lv_obj_t)</th>
+					<th>应用树 (layout_node)</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>生命周期</td>
+					<td><code>lv_obj_del()</code> 手动散落各处</td>
+					<td><code>destroy()</code> 虚函数，深度优先自动销毁</td>
+			</tr>
+			<tr>
+					<td>子节点管理</td>
+					<td>LVGL 内部链表，无业务语义</td>
+					<td><code>children[]</code> 动态数组，容量倍增</td>
+			</tr>
+			<tr>
+					<td>布局参数</td>
+					<td>分散在各 <code>lv_obj_set_style_*</code> 调用</td>
+					<td><code>layout_strategy_t</code> 统一封装</td>
+			</tr>
+			<tr>
+					<td>数据绑定</td>
+					<td>手动逐字段赋值</td>
+					<td><code>bind()</code> / <code>update()</code> 虚函数</td>
+			</tr>
+			<tr>
+					<td>私有数据</td>
+					<td>无标准机制</td>
+					<td><code>widget_unit.priv</code> 指向内存池对象</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="二组合模式layout_node-核心设计">二、组合模式：layout_node 核心设计
@@ -651,31 +651,31 @@
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/* 抽象基类 - 虚函数表 */</span>
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">layout_node</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">lv_obj_t</span> <span class="o">*</span><span class="n">obj</span><span class="p">;</span>                          <span class="c1">// 对应的渲染树节点
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type_name</span><span class="p">;</span>                  <span class="c1">// 类型名（&#34;container&#34;/&#34;banner_item&#34;/...）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">layout_node_type_t</span> <span class="n">node_type</span><span class="p">;</span>           <span class="c1">// CONTAINER 或 WIDGET
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">layout_container_t</span> <span class="o">*</span><span class="n">parent</span><span class="p">;</span>             <span class="c1">// 父容器引用
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">type_name</span><span class="p">;</span>                  <span class="c1">// 类型名（&#34;container&#34;/&#34;banner_item&#34;/...）
+</span></span></span><span class="line"><span class="cl">    <span class="kt">layout_node_type_t</span> <span class="n">node_type</span><span class="p">;</span>           <span class="c1">// CONTAINER 或 WIDGET
+</span></span></span><span class="line"><span class="cl">    <span class="kt">layout_container_t</span> <span class="o">*</span><span class="n">parent</span><span class="p">;</span>             <span class="c1">// 父容器引用
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">destroy</span><span class="p">)(</span><span class="kt">layout_node_t</span> <span class="o">*</span><span class="n">self</span><span class="p">);</span>   <span class="c1">// 虚函数：销毁
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">update</span><span class="p">)(</span><span class="kt">layout_node_t</span> <span class="o">*</span><span class="n">self</span><span class="p">,</span>     <span class="c1">// 虚函数：数据更新
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                   <span class="k">const</span> <span class="n">cJSON</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">update</span><span class="p">)(</span><span class="kt">layout_node_t</span> <span class="o">*</span><span class="n">self</span><span class="p">,</span>     <span class="c1">// 虚函数：数据更新
+</span></span></span><span class="line"><span class="cl">                   <span class="k">const</span> <span class="n">cJSON</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="cm">/* 容器节点 - 可含子节点 */</span>
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">layout_container</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">layout_node_t</span> <span class="n">base</span><span class="p">;</span>                     <span class="c1">// 继承基类
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">layout_strategy_t</span> <span class="n">strategy</span><span class="p">;</span>             <span class="c1">// 布局策略
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">layout_node_t</span> <span class="o">**</span><span class="n">children</span><span class="p">;</span>               <span class="c1">// 子节点动态数组
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">child_count</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">layout_strategy_t</span> <span class="n">strategy</span><span class="p">;</span>             <span class="c1">// 布局策略
+</span></span></span><span class="line"><span class="cl">    <span class="kt">layout_node_t</span> <span class="o">**</span><span class="n">children</span><span class="p">;</span>               <span class="c1">// 子节点动态数组
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">child_count</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">child_capacity</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// 方法指针: add_child, remove_child, clear, get_child
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="cm">/* 叶子节点 - 最小可渲染单元 */</span>
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">widget_unit</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">layout_node_t</span> <span class="n">base</span><span class="p">;</span>                     <span class="c1">// 继承基类
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">void</span> <span class="o">*</span><span class="n">priv</span><span class="p">;</span>                             <span class="c1">// 私有数据（从内存池分配）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">bind</span><span class="p">)(</span><span class="kt">widget_unit_t</span> <span class="o">*</span><span class="n">self</span><span class="p">,</span>       <span class="c1">// 数据绑定函数
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                 <span class="k">const</span> <span class="n">cJSON</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="o">*</span><span class="n">priv</span><span class="p">;</span>                             <span class="c1">// 私有数据（从内存池分配）
+</span></span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">bind</span><span class="p">)(</span><span class="kt">widget_unit_t</span> <span class="o">*</span><span class="n">self</span><span class="p">,</span>       <span class="c1">// 数据绑定函数
+</span></span></span><span class="line"><span class="cl">                 <span class="k">const</span> <span class="n">cJSON</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -705,17 +705,17 @@
 </span></span><span class="line"><span class="cl">    <span class="kt">layout_container_t</span> <span class="o">*</span><span class="n">self</span> <span class="o">=</span> <span class="p">(</span><span class="kt">layout_container_t</span> <span class="o">*</span><span class="p">)</span><span class="n">self_base</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 1. 先销毁所有子节点（深度优先）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">self</span><span class="o">-&gt;</span><span class="n">child_count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">self</span><span class="o">-&gt;</span><span class="n">child_count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">layout_node_destroy</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 2. 释放子节点数组
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">rt_free</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">rt_free</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 3. 销毁渲染树对象
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">lv_obj_del</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">.</span><span class="n">obj</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">lv_obj_del</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">.</span><span class="n">obj</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 4. 释放自身
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">rt_free</span><span class="p">(</span><span class="n">self</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">rt_free</span><span class="p">(</span><span class="n">self</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -757,7 +757,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define LAYOUT_CHILDREN_INIT_CAP 8
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">children_ensure_capacity</span><span class="p">(</span><span class="kt">layout_container_t</span> <span class="o">*</span><span class="n">self</span><span class="p">,</span> <span class="kt">int</span> <span class="n">needed</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">needed</span> <span class="o">&lt;=</span> <span class="n">self</span><span class="o">-&gt;</span><span class="n">child_capacity</span><span class="p">)</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
@@ -826,31 +826,31 @@
 </h2><h3 id="31-两种创建方式">3.1 两种创建方式
 </h3><p><code>layout_container</code> 提供两种创建方式，这是整个架构最关键的设计：</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>方式</th>
-          <th>函数</th>
-          <th>创建 LVGL 对象</th>
-          <th>销毁 LVGL 对象</th>
-          <th>用途</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><strong>Create</strong></td>
-          <td><code>layout_container_create()</code></td>
-          <td>新建 <code>lv_obj_create()</code></td>
-          <td><code>container_destroy()</code> 中 <code>lv_obj_del()</code></td>
-          <td>全新动态容器</td>
-      </tr>
-      <tr>
-          <td><strong>Wrap</strong></td>
-          <td><code>layout_container_wrap()</code></td>
-          <td>复用已有对象</td>
-          <td><code>container_destroy_wrapped()</code> 中<strong>不</strong>删除</td>
-          <td>桥接 AiUIBuilder 静态对象</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>方式</th>
+					<th>函数</th>
+					<th>创建 LVGL 对象</th>
+					<th>销毁 LVGL 对象</th>
+					<th>用途</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Create</strong></td>
+					<td><code>layout_container_create()</code></td>
+					<td>新建 <code>lv_obj_create()</code></td>
+					<td><code>container_destroy()</code> 中 <code>lv_obj_del()</code></td>
+					<td>全新动态容器</td>
+			</tr>
+			<tr>
+					<td><strong>Wrap</strong></td>
+					<td><code>layout_container_wrap()</code></td>
+					<td>复用已有对象</td>
+					<td><code>container_destroy_wrapped()</code> 中<strong>不</strong>删除</td>
+					<td>桥接 AiUIBuilder 静态对象</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="32-wrap-机制详解">3.2 Wrap 机制详解
 </h3><p><code>layout_container_wrap()</code> 接收一个<strong>已存在的 <code>lv_obj_t*</code></strong>，将其包装为应用树容器，但<strong>不改变对象所有权</strong>：</p>
@@ -880,13 +880,13 @@
 </span></span><span class="line"><span class="cl">    <span class="nf">memset</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">self</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 复用已有对象，而非创建新对象
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">self</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">existing_obj</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">self</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">existing_obj</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 在已有对象上应用布局策略
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">layout_strategy_apply</span><span class="p">(</span><span class="n">existing_obj</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">strategy</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">layout_strategy_apply</span><span class="p">(</span><span class="n">existing_obj</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">strategy</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 使用特殊的销毁函数 - 不删除 LVGL 对象
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">self</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">.</span><span class="n">destroy</span> <span class="o">=</span> <span class="n">container_destroy_wrapped</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">self</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">.</span><span class="n">destroy</span> <span class="o">=</span> <span class="n">container_destroy_wrapped</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
@@ -914,12 +914,12 @@
 </span></span><span class="line"><span class="cl">    <span class="kt">layout_container_t</span> <span class="o">*</span><span class="n">self</span> <span class="o">=</span> <span class="p">(</span><span class="kt">layout_container_t</span> <span class="o">*</span><span class="p">)</span><span class="n">self_base</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 仍然销毁所有子节点（深度优先）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">self</span><span class="o">-&gt;</span><span class="n">child_count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">self</span><span class="o">-&gt;</span><span class="n">child_count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">layout_node_destroy</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">rt_free</span><span class="p">(</span><span class="n">self</span><span class="o">-&gt;</span><span class="n">children</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 关键：不删除 LVGL 对象，它由外部（screen_t）管理
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">self</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">.</span><span class="n">obj</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">self</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">.</span><span class="n">obj</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="nf">rt_free</span><span class="p">(</span><span class="n">self</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
@@ -985,13 +985,13 @@
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">layout_type_t</span> <span class="n">type</span><span class="p">;</span>       <span class="c1">// FLEX_ROW / FLEX_COLUMN / GRID
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">gap_x</span><span class="p">,</span> <span class="n">gap_y</span><span class="p">;</span>        <span class="c1">// 间距
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">pad_x</span><span class="p">,</span> <span class="n">pad_y</span><span class="p">;</span>        <span class="c1">// 内边距
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">cols</span><span class="p">;</span>                 <span class="c1">// Grid 列数
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">cell_w</span><span class="p">,</span> <span class="n">cell_h</span><span class="p">;</span>      <span class="c1">// 子节点固定尺寸 (0=auto)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">bool</span> <span class="n">scrollable</span><span class="p">;</span>          <span class="c1">// 是否可滚动
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">lv_dir_t</span> <span class="n">scroll_dir</span><span class="p">;</span>      <span class="c1">// 滚动方向
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="kt">layout_strategy_t</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">gap_x</span><span class="p">,</span> <span class="n">gap_y</span><span class="p">;</span>        <span class="c1">// 间距
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">pad_x</span><span class="p">,</span> <span class="n">pad_y</span><span class="p">;</span>        <span class="c1">// 内边距
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">cols</span><span class="p">;</span>                 <span class="c1">// Grid 列数
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">cell_w</span><span class="p">,</span> <span class="n">cell_h</span><span class="p">;</span>      <span class="c1">// 子节点固定尺寸 (0=auto)
+</span></span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">scrollable</span><span class="p">;</span>          <span class="c1">// 是否可滚动
+</span></span></span><span class="line"><span class="cl">    <span class="kt">lv_dir_t</span> <span class="n">scroll_dir</span><span class="p">;</span>      <span class="c1">// 滚动方向
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">layout_strategy_t</span><span class="p">;</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="42-策略应用">4.2 策略应用
@@ -1036,7 +1036,7 @@
 </span></span><span class="line"><span class="cl">        <span class="k">break</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nl">LAYOUT_GRID</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">        <span class="c1">// Grid = row-wrap，子节点通过 FLEX_IN_NEW_TRACK 换行
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">lv_obj_set_flex_flow</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">LV_FLEX_FLOW_ROW_WRAP</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">        <span class="nf">lv_obj_set_flex_flow</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">LV_FLEX_FLOW_ROW_WRAP</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="k">break</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">
@@ -1095,7 +1095,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 横幅轮播 - Flex-Row，水平滚动
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">s_banner_comp</span> <span class="o">=</span> <span class="nf">banner_component_create</span><span class="p">(</span>
+</span></span></span><span class="line"><span class="cl"><span class="n">s_banner_comp</span> <span class="o">=</span> <span class="nf">banner_component_create</span><span class="p">(</span>
 </span></span><span class="line"><span class="cl">    <span class="n">scr</span><span class="o">-&gt;</span><span class="n">container_banner</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="o">&amp;</span><span class="p">(</span><span class="kt">layout_strategy_t</span><span class="p">){</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">LAYOUT_FLEX_ROW</span><span class="p">,</span> <span class="p">.</span><span class="n">cell_w</span> <span class="o">=</span> <span class="mi">494</span><span class="p">,</span> <span class="p">.</span><span class="n">cell_h</span> <span class="o">=</span> <span class="mi">78</span><span class="p">,</span>
@@ -1103,7 +1103,7 @@
 </span></span><span class="line"><span class="cl">    <span class="p">},</span> <span class="p">...);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 商品展示 - Grid 3列，垂直滚动
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">s_commodity_comp</span> <span class="o">=</span> <span class="nf">commodity_component_create</span><span class="p">(</span>
+</span></span></span><span class="line"><span class="cl"><span class="n">s_commodity_comp</span> <span class="o">=</span> <span class="nf">commodity_component_create</span><span class="p">(</span>
 </span></span><span class="line"><span class="cl">    <span class="n">scr</span><span class="o">-&gt;</span><span class="n">container_main</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="o">&amp;</span><span class="p">(</span><span class="kt">layout_strategy_t</span><span class="p">){</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">LAYOUT_GRID</span><span class="p">,</span> <span class="p">.</span><span class="n">cols</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
@@ -1112,7 +1112,7 @@
 </span></span><span class="line"><span class="cl">    <span class="p">},</span> <span class="p">...);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 购物车 - Flex-Column，垂直滚动
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">s_cart_comp</span> <span class="o">=</span> <span class="nf">cart_component_create</span><span class="p">(</span>
+</span></span></span><span class="line"><span class="cl"><span class="n">s_cart_comp</span> <span class="o">=</span> <span class="nf">cart_component_create</span><span class="p">(</span>
 </span></span><span class="line"><span class="cl">    <span class="n">scr</span><span class="o">-&gt;</span><span class="n">container_cart_list_scroll</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="o">&amp;</span><span class="p">(</span><span class="kt">layout_strategy_t</span><span class="p">){</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">LAYOUT_FLEX_COLUMN</span><span class="p">,</span> <span class="p">.</span><span class="n">gap_y</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
@@ -1121,7 +1121,7 @@
 </span></span><span class="line"><span class="cl">    <span class="p">});</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 导航栏 - Flex-Row，不可滚动
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">s_navi_comp</span> <span class="o">=</span> <span class="nf">navi_component_create</span><span class="p">(</span>
+</span></span></span><span class="line"><span class="cl"><span class="n">s_navi_comp</span> <span class="o">=</span> <span class="nf">navi_component_create</span><span class="p">(</span>
 </span></span><span class="line"><span class="cl">    <span class="n">scr</span><span class="o">-&gt;</span><span class="n">container_navi_bg</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="o">&amp;</span><span class="p">(</span><span class="kt">layout_strategy_t</span><span class="p">){</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">LAYOUT_FLEX_ROW</span><span class="p">,</span> <span class="p">.</span><span class="n">gap_x</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
@@ -1168,10 +1168,10 @@
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">custom_init</span><span class="p">()</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">commodity_card_register</span><span class="p">();</span>   <span class="c1">// &#34;commodity_card&#34; -&gt; commodity_card_create()
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">banner_item_register</span><span class="p">();</span>      <span class="c1">// &#34;banner_item&#34;    -&gt; banner_item_create()
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">cart_item_register</span><span class="p">();</span>        <span class="c1">// &#34;cart_item&#34;      -&gt; cart_item_create()
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">navi_item_register</span><span class="p">();</span>        <span class="c1">// &#34;navi_item&#34;      -&gt; navi_item_create()
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">banner_item_register</span><span class="p">();</span>      <span class="c1">// &#34;banner_item&#34;    -&gt; banner_item_create()
+</span></span></span><span class="line"><span class="cl">    <span class="nf">cart_item_register</span><span class="p">();</span>        <span class="c1">// &#34;cart_item&#34;      -&gt; cart_item_create()
+</span></span></span><span class="line"><span class="cl">    <span class="nf">navi_item_register</span><span class="p">();</span>        <span class="c1">// &#34;navi_item&#34;      -&gt; navi_item_create()
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="52-运行时动态创建">5.2 运行时动态创建
@@ -1190,13 +1190,13 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// component_factory.c - 创建 banner 组件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">initial_data</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">initial_data</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">widget_unit_t</span> <span class="o">*</span><span class="n">item</span> <span class="o">=</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">widget_factory_create</span><span class="p">(</span><span class="s">&#34;banner_item&#34;</span><span class="p">,</span> <span class="n">comp</span><span class="o">-&gt;</span><span class="n">container</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">.</span><span class="n">obj</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="n">comp</span><span class="o">-&gt;</span><span class="n">container</span><span class="o">-&gt;</span><span class="nf">add_child</span><span class="p">(</span><span class="n">comp</span><span class="o">-&gt;</span><span class="n">container</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">item</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="n">item</span><span class="o">-&gt;</span><span class="nf">bind</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">path_data</span><span class="p">);</span>  <span class="c1">// 数据绑定
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1221,8 +1221,8 @@
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">layout_container_t</span> <span class="o">*</span><span class="n">container</span><span class="p">;</span>     <span class="c1">// 应用树容器
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">banner_carousel_t</span> <span class="o">*</span><span class="n">carousel</span><span class="p">;</span>       <span class="c1">// 控制器（不持有容器）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="kt">banner_component_t</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">banner_carousel_t</span> <span class="o">*</span><span class="n">carousel</span><span class="p">;</span>       <span class="c1">// 控制器（不持有容器）
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">banner_component_t</span><span class="p">;</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>以 banner 组件为例，<code>banner_component_create()</code> 的组装流程：</p>
@@ -1257,10 +1257,10 @@
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">banner_carousel</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">layout_container_t</span> <span class="o">*</span><span class="n">container</span><span class="p">;</span>    <span class="c1">// 引用，非拥有
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">lv_timer_t</span> <span class="o">*</span><span class="n">auto_scroll_timer</span><span class="p">;</span>   <span class="c1">// 自动滚动定时器
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">lv_obj_t</span> <span class="o">**</span><span class="n">dots</span><span class="p">;</span>                  <span class="c1">// 指示器圆点
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int32_t</span> <span class="n">last_scroll_x</span><span class="p">;</span>           <span class="c1">// 手势检测状态
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">bool</span> <span class="n">is_animating</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">lv_timer_t</span> <span class="o">*</span><span class="n">auto_scroll_timer</span><span class="p">;</span>   <span class="c1">// 自动滚动定时器
+</span></span></span><span class="line"><span class="cl">    <span class="kt">lv_obj_t</span> <span class="o">**</span><span class="n">dots</span><span class="p">;</span>                  <span class="c1">// 指示器圆点
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int32_t</span> <span class="n">last_scroll_x</span><span class="p">;</span>           <span class="c1">// 手势检测状态
+</span></span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">is_animating</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1303,26 +1303,26 @@
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">banner_carousel_update_data</span><span class="p">(</span><span class="kt">banner_carousel_t</span> <span class="o">*</span><span class="n">carousel</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">                                  <span class="k">const</span> <span class="kt">carousel_data_t</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// 1. 暂停自动滚动
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">lv_timer_pause</span><span class="p">(</span><span class="n">carousel</span><span class="o">-&gt;</span><span class="n">auto_scroll_timer</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">lv_timer_pause</span><span class="p">(</span><span class="n">carousel</span><span class="o">-&gt;</span><span class="n">auto_scroll_timer</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 2. 销毁旧指示器
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">destroy_dots</span><span class="p">(</span><span class="n">carousel</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">destroy_dots</span><span class="p">(</span><span class="n">carousel</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 3. 清空容器子节点（深度优先销毁所有旧 banner_item）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">carousel</span><span class="o">-&gt;</span><span class="n">container</span><span class="o">-&gt;</span><span class="nf">clear</span><span class="p">(</span><span class="n">carousel</span><span class="o">-&gt;</span><span class="n">container</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">carousel</span><span class="o">-&gt;</span><span class="n">container</span><span class="o">-&gt;</span><span class="nf">clear</span><span class="p">(</span><span class="n">carousel</span><span class="o">-&gt;</span><span class="n">container</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 4. 从新数据创建子控件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">data</span><span class="o">-&gt;</span><span class="n">count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="kt">widget_unit_t</span> <span class="o">*</span><span class="n">item</span> <span class="o">=</span> <span class="nf">widget_factory_create</span><span class="p">(</span><span class="s">&#34;banner_item&#34;</span><span class="p">,</span> <span class="p">...);</span>
 </span></span><span class="line"><span class="cl">        <span class="n">carousel</span><span class="o">-&gt;</span><span class="n">container</span><span class="o">-&gt;</span><span class="nf">add_child</span><span class="p">(</span><span class="n">carousel</span><span class="o">-&gt;</span><span class="n">container</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">item</span><span class="o">-&gt;</span><span class="n">base</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="n">item</span><span class="o">-&gt;</span><span class="nf">bind</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">path_data</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 5. 重建指示器（延迟 50ms 等 LVGL 布局完成）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">schedule_dots_init</span><span class="p">(</span><span class="n">carousel</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">schedule_dots_init</span><span class="p">(</span><span class="n">carousel</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 6. 恢复自动滚动
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">lv_timer_resume</span><span class="p">(</span><span class="n">carousel</span><span class="o">-&gt;</span><span class="n">auto_scroll_timer</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">lv_timer_resume</span><span class="p">(</span><span class="n">carousel</span><span class="o">-&gt;</span><span class="n">auto_scroll_timer</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1347,14 +1347,14 @@
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">enum</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="n">EVT_CART_ITEM_ADDED</span><span class="p">,</span>       <span class="c1">// 商品加购
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">EVT_CART_ITEM_REMOVED</span><span class="p">,</span>     <span class="c1">// 购物车移除
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">EVT_CART_COUNT_CHANGED</span><span class="p">,</span>    <span class="c1">// 数量变化
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">EVT_CART_PRICE_CHANGED</span><span class="p">,</span>    <span class="c1">// 价格变化
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">EVT_BANNER_CONFIG_CHANGED</span><span class="p">,</span> <span class="c1">// Banner 配置变更
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">EVT_COMMODITY_CONFIG_CHANGED</span><span class="p">,</span> <span class="c1">// 商品配置变更
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">EVT_NAVI_CONFIG_CHANGED</span><span class="p">,</span>   <span class="c1">// 导航配置变更
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">EVT_NAVI_ITEM_CLICKED</span><span class="p">,</span>     <span class="c1">// 导航点击
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="kt">event_type_t</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">EVT_CART_ITEM_REMOVED</span><span class="p">,</span>     <span class="c1">// 购物车移除
+</span></span></span><span class="line"><span class="cl">    <span class="n">EVT_CART_COUNT_CHANGED</span><span class="p">,</span>    <span class="c1">// 数量变化
+</span></span></span><span class="line"><span class="cl">    <span class="n">EVT_CART_PRICE_CHANGED</span><span class="p">,</span>    <span class="c1">// 价格变化
+</span></span></span><span class="line"><span class="cl">    <span class="n">EVT_BANNER_CONFIG_CHANGED</span><span class="p">,</span> <span class="c1">// Banner 配置变更
+</span></span></span><span class="line"><span class="cl">    <span class="n">EVT_COMMODITY_CONFIG_CHANGED</span><span class="p">,</span> <span class="c1">// 商品配置变更
+</span></span></span><span class="line"><span class="cl">    <span class="n">EVT_NAVI_CONFIG_CHANGED</span><span class="p">,</span>   <span class="c1">// 导航配置变更
+</span></span></span><span class="line"><span class="cl">    <span class="n">EVT_NAVI_ITEM_CLICKED</span><span class="p">,</span>     <span class="c1">// 导航点击
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">event_type_t</span><span class="p">;</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="72-配置热更新的完整链路">7.2 配置热更新的完整链路
@@ -1533,35 +1533,35 @@
 <h2 id="九内存管理策略">九、内存管理策略
 </h2><h3 id="91-对象池-vs-堆分配">9.1 对象池 vs 堆分配
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>对象</th>
-          <th>分配方式</th>
-          <th>原因</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>layout_container_t</code></td>
-          <td><code>rt_malloc</code></td>
-          <td>生命周期长，数量少（4个组件容器）</td>
-      </tr>
-      <tr>
-          <td><code>layout_node_t **children</code></td>
-          <td><code>rt_malloc</code></td>
-          <td>需倍增扩容，不适用固定大小池</td>
-      </tr>
-      <tr>
-          <td><code>widget_unit_t</code> + <code>priv</code></td>
-          <td><code>rt_mp_alloc</code></td>
-          <td>高频创建/销毁，需避免碎片</td>
-      </tr>
-      <tr>
-          <td><code>navi_click_ctx_t</code></td>
-          <td><code>rt_malloc</code></td>
-          <td>与事件回调生命周期绑定</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>对象</th>
+					<th>分配方式</th>
+					<th>原因</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>layout_container_t</code></td>
+					<td><code>rt_malloc</code></td>
+					<td>生命周期长，数量少（4个组件容器）</td>
+			</tr>
+			<tr>
+					<td><code>layout_node_t **children</code></td>
+					<td><code>rt_malloc</code></td>
+					<td>需倍增扩容，不适用固定大小池</td>
+			</tr>
+			<tr>
+					<td><code>widget_unit_t</code> + <code>priv</code></td>
+					<td><code>rt_mp_alloc</code></td>
+					<td>高频创建/销毁，需避免碎片</td>
+			</tr>
+			<tr>
+					<td><code>navi_click_ctx_t</code></td>
+					<td><code>rt_malloc</code></td>
+					<td>与事件回调生命周期绑定</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="92-对象池容量对齐">9.2 对象池容量对齐
 </h3><p>每个控件模块独立管理内存池，容量与业务上限对齐：</p>
@@ -1627,70 +1627,70 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>方向</th>
-          <th>CMD</th>
-          <th>名称</th>
-          <th>数据</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>PC → 设备</td>
-          <td>0x01</td>
-          <td>CMD_QR_URL</td>
-          <td>二维码 URL (UTF-8)</td>
-      </tr>
-      <tr>
-          <td>PC → 设备</td>
-          <td>0x02</td>
-          <td>CMD_PAY_STATUS</td>
-          <td>支付状态码 (1字节)</td>
-      </tr>
-      <tr>
-          <td>PC → 设备</td>
-          <td>0x03</td>
-          <td>CMD_ORDER_NO</td>
-          <td>订单号 (UTF-8)</td>
-      </tr>
-      <tr>
-          <td>PC → 设备</td>
-          <td>0x04</td>
-          <td>CMD_HEARTBEAT_ACK</td>
-          <td>心跳应答</td>
-      </tr>
-      <tr>
-          <td>设备 → PC</td>
-          <td>0x81</td>
-          <td>CMD_REQ_QR</td>
-          <td>name\0amount</td>
-      </tr>
-      <tr>
-          <td>设备 → PC</td>
-          <td>0x82</td>
-          <td>CMD_REQ_QUERY</td>
-          <td>空</td>
-      </tr>
-      <tr>
-          <td>设备 → PC</td>
-          <td>0x83</td>
-          <td>CMD_REQ_CLOSE</td>
-          <td>空</td>
-      </tr>
-      <tr>
-          <td>设备 → PC</td>
-          <td>0x84</td>
-          <td>CMD_HEARTBEAT</td>
-          <td>空</td>
-      </tr>
-      <tr>
-          <td>设备 → PC</td>
-          <td>0x85</td>
-          <td>CMD_BARCODE_PAY</td>
-          <td>auth_code\0[amount\0][subject]</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>方向</th>
+					<th>CMD</th>
+					<th>名称</th>
+					<th>数据</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>PC → 设备</td>
+					<td>0x01</td>
+					<td>CMD_QR_URL</td>
+					<td>二维码 URL (UTF-8)</td>
+			</tr>
+			<tr>
+					<td>PC → 设备</td>
+					<td>0x02</td>
+					<td>CMD_PAY_STATUS</td>
+					<td>支付状态码 (1字节)</td>
+			</tr>
+			<tr>
+					<td>PC → 设备</td>
+					<td>0x03</td>
+					<td>CMD_ORDER_NO</td>
+					<td>订单号 (UTF-8)</td>
+			</tr>
+			<tr>
+					<td>PC → 设备</td>
+					<td>0x04</td>
+					<td>CMD_HEARTBEAT_ACK</td>
+					<td>心跳应答</td>
+			</tr>
+			<tr>
+					<td>设备 → PC</td>
+					<td>0x81</td>
+					<td>CMD_REQ_QR</td>
+					<td>name\0amount</td>
+			</tr>
+			<tr>
+					<td>设备 → PC</td>
+					<td>0x82</td>
+					<td>CMD_REQ_QUERY</td>
+					<td>空</td>
+			</tr>
+			<tr>
+					<td>设备 → PC</td>
+					<td>0x83</td>
+					<td>CMD_REQ_CLOSE</td>
+					<td>空</td>
+			</tr>
+			<tr>
+					<td>设备 → PC</td>
+					<td>0x84</td>
+					<td>CMD_HEARTBEAT</td>
+					<td>空</td>
+			</tr>
+			<tr>
+					<td>设备 → PC</td>
+					<td>0x85</td>
+					<td>CMD_BARCODE_PAY</td>
+					<td>auth_code\0[amount\0][subject]</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="112-双支付模式">11.2 双支付模式
 </h3><p><strong>模式一：用户扫码</strong></p>
@@ -1741,65 +1741,65 @@
 </h3><p>设备启动 WiFi AP（SSID: <code>AIC-Banner-Config</code>，密码: <code>12345678</code>，信道 6），IP 地址 192.168.1.1，运行 DHCP 服务器，在 80 端口启动 Mongoose HTTP 服务器。</p>
 <h3 id="132-api-接口">13.2 API 接口
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>方法</th>
-          <th>路径</th>
-          <th>功能</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>GET</td>
-          <td><code>/</code></td>
-          <td>嵌入式 HTML 配置页面</td>
-      </tr>
-      <tr>
-          <td>GET</td>
-          <td><code>/api/config</code></td>
-          <td>获取 Banner 配置 JSON</td>
-      </tr>
-      <tr>
-          <td>GET</td>
-          <td><code>/api/commodity</code></td>
-          <td>获取商品配置 JSON</td>
-      </tr>
-      <tr>
-          <td>GET</td>
-          <td><code>/api/navi</code></td>
-          <td>获取导航配置 JSON</td>
-      </tr>
-      <tr>
-          <td>POST</td>
-          <td><code>/api/config</code></td>
-          <td>更新 Banner 配置</td>
-      </tr>
-      <tr>
-          <td>POST</td>
-          <td><code>/api/commodity</code></td>
-          <td>更新商品配置</td>
-      </tr>
-      <tr>
-          <td>POST</td>
-          <td><code>/api/navi</code></td>
-          <td>更新导航配置</td>
-      </tr>
-      <tr>
-          <td>POST</td>
-          <td><code>/api/reset</code></td>
-          <td>重置为默认配置</td>
-      </tr>
-      <tr>
-          <td>POST</td>
-          <td><code>/api/upload/{filename}</code></td>
-          <td>上传 Banner 图片（校验 494×78）</td>
-      </tr>
-      <tr>
-          <td>POST</td>
-          <td><code>/api/upload/commodity/{filename}</code></td>
-          <td>上传商品图片（校验 80×80）</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>方法</th>
+					<th>路径</th>
+					<th>功能</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>GET</td>
+					<td><code>/</code></td>
+					<td>嵌入式 HTML 配置页面</td>
+			</tr>
+			<tr>
+					<td>GET</td>
+					<td><code>/api/config</code></td>
+					<td>获取 Banner 配置 JSON</td>
+			</tr>
+			<tr>
+					<td>GET</td>
+					<td><code>/api/commodity</code></td>
+					<td>获取商品配置 JSON</td>
+			</tr>
+			<tr>
+					<td>GET</td>
+					<td><code>/api/navi</code></td>
+					<td>获取导航配置 JSON</td>
+			</tr>
+			<tr>
+					<td>POST</td>
+					<td><code>/api/config</code></td>
+					<td>更新 Banner 配置</td>
+			</tr>
+			<tr>
+					<td>POST</td>
+					<td><code>/api/commodity</code></td>
+					<td>更新商品配置</td>
+			</tr>
+			<tr>
+					<td>POST</td>
+					<td><code>/api/navi</code></td>
+					<td>更新导航配置</td>
+			</tr>
+			<tr>
+					<td>POST</td>
+					<td><code>/api/reset</code></td>
+					<td>重置为默认配置</td>
+			</tr>
+			<tr>
+					<td>POST</td>
+					<td><code>/api/upload/{filename}</code></td>
+					<td>上传 Banner 图片（校验 494×78）</td>
+			</tr>
+			<tr>
+					<td>POST</td>
+					<td><code>/api/upload/commodity/{filename}</code></td>
+					<td>上传商品图片（校验 80×80）</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="133-安全措施">13.3 安全措施
 </h3><ul>
@@ -2014,7 +2014,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_f8913fdcd1a8711e.png" 
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_796cd764b38bb6af.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -2038,7 +2038,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_989a706e6c4dfa57.png" 
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_246f581f8c773c70.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -2104,7 +2104,7 @@
             
                 
             
-        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 8 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 38.87 k ></span>字
+        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 8 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 38.86 k ></span>字
     </section>
     <section class="powerby">
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
@@ -2197,7 +2197,7 @@
                 src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
                 
                 >
-            </script><script type="text/javascript" src="/Hugo_Web/ts/main.99ce1801c4bad426a42fc436add4721e149159dbb598636e9578fd59cf778c83.js" defer></script> <script>
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
     (function () {
         const customFont = document.createElement('link');
         customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
@@ -2223,7 +2223,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "https://lingjia007.github.io/Hugo_Web/";
+  const staticDir = "http://localhost:6749/Hugo_Web/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -2470,7 +2470,7 @@
   });
 </script>
 
-<script src="https://lingjia007.github.io/Hugo_Web/js/topbar.min.js"></script>
+<script src="http://localhost:6749/Hugo_Web/js/topbar.min.js"></script>
 
 <script>
   
@@ -2499,12 +2499,12 @@
     
     path: {
       homePath: "/",
-      modelPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/live2d-moc3/",
-      cssPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/waifu.css",
-      tipsJsonPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/my-waifu-tips.json",
+      modelPath: "http:\/\/localhost:6749\/Hugo_Web\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:6749\/Hugo_Web\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:6749\/Hugo_Web\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/live2dcubismcore.js",
-      live2dSdkPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/live2d-sdk.js",
+      live2dCorePath: "http:\/\/localhost:6749\/Hugo_Web\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:6749\/Hugo_Web\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -2651,7 +2651,7 @@
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "https:\/\/lingjia007.github.io\/Hugo_Web\/icons/codeMore.png";
+      img.src = "http:\/\/localhost:6749\/Hugo_Web\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -2667,11 +2667,11 @@
 
 <div id="particles-js"></div>
 
-<script src="https://lingjia007.github.io/Hugo_Web/background/particles.min.js"></script>
+<script src="http://localhost:6749/Hugo_Web/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "https:\/\/lingjia007.github.io\/Hugo_Web\/background/particlesjs-config.json",
+    "http:\/\/localhost:6749\/Hugo_Web\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     },
@@ -2747,7 +2747,7 @@
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(https://lingjia007.github.io/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(http://localhost:6749/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -2766,7 +2766,7 @@
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("https://lingjia007.github.io/Hugo_Web/icons/backTop.svg");
+    background-image: url("http://localhost:6749/Hugo_Web/icons/backTop.svg");
   }
 </style>
 

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-    <head><meta charset='utf-8'>
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=6749&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Using the GCC linker script for STM32F407VGT6 as a real-world example, this post provides an in-depth analysis of GNU LD's MEMORY command, SECTIONS allocation, VMA/LMA address model, the cooperation between startup code and linker scripts, CCMRAM usage, TLS support, and other core technologies">
 <title>GNU LD Linker Script in Depth: Dissecting Embedded Memory Layout and Section Relocation via an STM32F407 Example</title>
 
-<link rel='canonical' href='https://lingjia007.github.io/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/'>
+<link rel='canonical' href='http://localhost:6749/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="GNU LD Linker Script in Depth: Dissecting Embedded Memory Layout and Section Relocation via an STM32F407 Example">
 <meta property='og:description' content="Using the GCC linker script for STM32F407VGT6 as a real-world example, this post provides an in-depth analysis of GNU LD's MEMORY command, SECTIONS allocation, VMA/LMA address model, the cooperation between startup code and linker scripts, CCMRAM usage, TLS support, and other core technologies">
-<meta property='og:url' content='https://lingjia007.github.io/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/'>
+<meta property='og:url' content='http://localhost:6749/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/'>
 <meta property='og:site_name' content='lingsir007'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='Linker-Script' /><meta property='article:tag' content='GNU-LD' /><meta property='article:tag' content='GCC' /><meta property='article:tag' content='Embedded' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T22:52:44&#43;08:00'/>
 <meta name="twitter:title" content="GNU LD Linker Script in Depth: Dissecting Embedded Memory Layout and Section Relocation via an STM32F407 Example">
@@ -58,7 +58,7 @@
                     
                     
                         
-                        <img src="/Hugo_Web/img/avatar_hu_6974417c8ac44e16.png" width="300"
+                        <img src="/Hugo_Web/img/avatar_hu_49d0a8f5a8c62cc5.png" width="300"
                             height="300" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -233,11 +233,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/" >简体中文</option>
+                                    <option value="http://localhost:6749/Hugo_Web/" >简体中文</option>
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/zh-hk/" >繁體中文</option>
+                                    <option value="http://localhost:6749/Hugo_Web/zh-hk/" >繁體中文</option>
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/en/" selected>English</option>
+                                    <option value="http://localhost:6749/Hugo_Web/en/" selected>English</option>
                                 
                             </select>
                         </li>
@@ -422,7 +422,7 @@
             </div><div id="wordCount">
             <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-file-word"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 12l1.333 5l1.667 -4l1.667 4l1.333 -5" /></svg>
             <time class="article-wordcount">
-                3276  words
+                3277  words
             </time>
         </div>
 
@@ -454,9 +454,9 @@
 
             <div>
                 
-                    <a href="https://lingjia007.github.io/Hugo_Web/p/gnu-ld-%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E8%AF%A6%E8%A7%A3%E4%BB%8E-stm32f407-%E5%AE%9E%E4%BE%8B%E5%89%96%E6%9E%90%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E6%AE%B5%E9%87%8D%E5%AE%9A%E4%BD%8D/" class="link">简体中文</a>
+                    <a href="http://localhost:6749/Hugo_Web/p/gnu-ld-%E9%93%BE%E6%8E%A5%E8%84%9A%E6%9C%AC%E8%AF%A6%E8%A7%A3%E4%BB%8E-stm32f407-%E5%AE%9E%E4%BE%8B%E5%89%96%E6%9E%90%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E6%AE%B5%E9%87%8D%E5%AE%9A%E4%BD%8D/" class="link">简体中文</a>
                 
-                    <a href="https://lingjia007.github.io/Hugo_Web/zh-hk/p/gnu-ld-%E9%8F%88%E7%B5%90%E8%85%B3%E6%9C%AC%E8%A9%B3%E8%A7%A3%E5%BE%9E-stm32f407-%E5%AF%A6%E4%BE%8B%E5%89%96%E6%9E%90%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%A8%98%E6%86%B6%E9%AB%94%E4%BD%88%E5%B1%80%E8%88%87%E6%AE%B5%E9%87%8D%E5%AE%9A%E4%BD%8D/" class="link">繁體中文</a>
+                    <a href="http://localhost:6749/Hugo_Web/zh-hk/p/gnu-ld-%E9%8F%88%E7%B5%90%E8%85%B3%E6%9C%AC%E8%A9%B3%E8%A7%A3%E5%BE%9E-stm32f407-%E5%AF%A6%E4%BE%8B%E5%89%96%E6%9E%90%E5%B5%8C%E5%85%A5%E5%BC%8F%E8%A8%98%E6%86%B6%E9%AB%94%E4%BD%88%E5%B1%80%E8%88%87%E6%AE%B5%E9%87%8D%E5%AE%9A%E4%BD%8D/" class="link">繁體中文</a>
                 
             </div>
         </footer>
@@ -476,30 +476,30 @@
 </h2><p>This example comes from a TensorFlow Lite Micro edge AI inference project running on <strong>STM32F407VGT6</strong>, built with CMake + Ninja + GCC Arm Embedded cross-compiler.</p>
 <p>Chip resources:</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Resource</th>
-          <th>Size</th>
-          <th>Start Address</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Flash</td>
-          <td>1024 KB</td>
-          <td><code>0x08000000</code></td>
-      </tr>
-      <tr>
-          <td>SRAM</td>
-          <td>112 KB</td>
-          <td><code>0x20000000</code></td>
-      </tr>
-      <tr>
-          <td>CCMRAM</td>
-          <td>64 KB</td>
-          <td><code>0x10000000</code></td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Resource</th>
+					<th>Size</th>
+					<th>Start Address</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Flash</td>
+					<td>1024 KB</td>
+					<td><code>0x08000000</code></td>
+			</tr>
+			<tr>
+					<td>SRAM</td>
+					<td>112 KB</td>
+					<td><code>0x20000000</code></td>
+			</tr>
+			<tr>
+					<td>CCMRAM</td>
+					<td>64 KB</td>
+					<td><code>0x10000000</code></td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="2-overall-structure-of-a-linker-script">2. Overall Structure of a Linker Script
@@ -564,40 +564,40 @@
 </div>
 </div><h3 id="42-attribute-letters">4.2 Attribute Letters
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Attribute</th>
-          <th>Meaning</th>
-          <th>Sections that can be placed</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>r</code></td>
-          <td>Read</td>
-          <td>Read-only data (.rodata)</td>
-      </tr>
-      <tr>
-          <td><code>w</code></td>
-          <td>Write</td>
-          <td>Writable data (.data, .bss)</td>
-      </tr>
-      <tr>
-          <td><code>x</code></td>
-          <td>eXecute</td>
-          <td>Executable code (.text)</td>
-      </tr>
-      <tr>
-          <td><code>a</code></td>
-          <td>Alloc</td>
-          <td>Allocatable (default for all sections)</td>
-      </tr>
-      <tr>
-          <td><code>i</code></td>
-          <td>Init</td>
-          <td>Initialized sections</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Attribute</th>
+					<th>Meaning</th>
+					<th>Sections that can be placed</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>r</code></td>
+					<td>Read</td>
+					<td>Read-only data (.rodata)</td>
+			</tr>
+			<tr>
+					<td><code>w</code></td>
+					<td>Write</td>
+					<td>Writable data (.data, .bss)</td>
+			</tr>
+			<tr>
+					<td><code>x</code></td>
+					<td>eXecute</td>
+					<td>Executable code (.text)</td>
+			</tr>
+			<tr>
+					<td><code>a</code></td>
+					<td>Alloc</td>
+					<td>Allocatable (default for all sections)</td>
+			</tr>
+			<tr>
+					<td><code>i</code></td>
+					<td>Init</td>
+					<td>Initialized sections</td>
+			</tr>
+	</tbody>
 </table></div>
 <p>In this example:</p>
 <ul>
@@ -609,35 +609,35 @@
 </h3><p>The CCMRAM on STM32F407 is a 64KB SRAM <strong>accessible only by the CPU</strong>; the DMA controller cannot access it. Setting its attribute to <code>xrw</code> allows code to be placed in CCMRAM for execution (performance-sensitive algorithms benefit from zero-wait states), but note that DMA cannot reach this memory.</p>
 <h3 id="44-address-space-layout-diagram">4.4 Address Space Layout Diagram
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Address Range</th>
-          <th>Region</th>
-          <th>Contents</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>0x00000000</code></td>
-          <td>Code Region</td>
-          <td>Aliased to Flash via SYSBOOT</td>
-      </tr>
-      <tr>
-          <td><code>0x08000000</code> - <code>0x080FFFFF</code></td>
-          <td><strong>FLASH (1024 KB)</strong></td>
-          <td><code>.isr_vector</code> → <code>.text</code> → <code>.rodata</code> → <code>.data (LMA)</code> → <code>.ccmram (LMA)</code></td>
-      </tr>
-      <tr>
-          <td><code>0x10000000</code> - <code>0x1000FFFF</code></td>
-          <td><strong>CCMRAM (64 KB)</strong></td>
-          <td><code>.ccmram (VMA)</code> — Copied from Flash at startup</td>
-      </tr>
-      <tr>
-          <td><code>0x20000000</code> - <code>0x2001BFFF</code></td>
-          <td><strong>RAM (112 KB)</strong></td>
-          <td><code>.data (VMA)</code> → <code>.bss</code> → Heap → Stack (stack grows from high to low addresses)</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Address Range</th>
+					<th>Region</th>
+					<th>Contents</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>0x00000000</code></td>
+					<td>Code Region</td>
+					<td>Aliased to Flash via SYSBOOT</td>
+			</tr>
+			<tr>
+					<td><code>0x08000000</code> - <code>0x080FFFFF</code></td>
+					<td><strong>FLASH (1024 KB)</strong></td>
+					<td><code>.isr_vector</code> → <code>.text</code> → <code>.rodata</code> → <code>.data (LMA)</code> → <code>.ccmram (LMA)</code></td>
+			</tr>
+			<tr>
+					<td><code>0x10000000</code> - <code>0x1000FFFF</code></td>
+					<td><strong>CCMRAM (64 KB)</strong></td>
+					<td><code>.ccmram (VMA)</code> — Copied from Flash at startup</td>
+			</tr>
+			<tr>
+					<td><code>0x20000000</code> - <code>0x2001BFFF</code></td>
+					<td><strong>RAM (112 KB)</strong></td>
+					<td><code>.data (VMA)</code> → <code>.bss</code> → Heap → Stack (stack grows from high to low addresses)</td>
+			</tr>
+	</tbody>
 </table></div>
 <p><strong>LMA vs VMA Copy Relationships</strong>:</p>
 <div class="highlight"><div class="chroma">
@@ -702,7 +702,9 @@
 <p>If <code>AT&gt;</code> is omitted, then LMA = VMA, and the section is both stored and runs in the same region.</p>
 <h3 id="53-formal-representation">5.3 Formal Representation
 </h3><p>For section $S$:</p>
-$$\text{VMA}(S) = \text{Addr}(S \text{ in target region})$$$$\text{LMA}(S) = \text{Addr}(S \text{ in load region})$$<p>Runtime invariant:</p>
+$$\text{VMA}(S) = \text{Addr}(S \text{ in target region})$$<p>
+</p>
+$$\text{LMA}(S) = \text{Addr}(S \text{ in load region})$$<p>Runtime invariant:</p>
 $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(x)] \text{ (after startup copy completes)}$$<hr>
 <h2 id="6-stack-and-heap-link-time-checking">6. Stack and Heap: Link-Time Checking
 </h2><div class="highlight"><div class="chroma">
@@ -802,40 +804,40 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </div><p><strong>Why must it be placed at the very beginning of Flash?</strong></p>
 <p>After power-on, the STM32 CPU begins fetching instructions from <code>0x00000000</code>. Address <code>0x00000000</code> is mapped (aliased) to the Flash start address <code>0x08000000</code> via SYSBOOT configuration. The CPU first reads:</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Offset</th>
-          <th>Content</th>
-          <th>Meaning</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>0x00</td>
-          <td>Initial SP</td>
-          <td>Main stack pointer initial value</td>
-      </tr>
-      <tr>
-          <td>0x04</td>
-          <td>ResetHandler</td>
-          <td>Reset vector, jumps to startup code</td>
-      </tr>
-      <tr>
-          <td>0x08</td>
-          <td>NMIHandler</td>
-          <td>Non-maskable interrupt</td>
-      </tr>
-      <tr>
-          <td>0x0C</td>
-          <td>HardFaultHandler</td>
-          <td>Hard fault</td>
-      </tr>
-      <tr>
-          <td>&hellip;</td>
-          <td>&hellip;</td>
-          <td>Other interrupts/exceptions</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Offset</th>
+					<th>Content</th>
+					<th>Meaning</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>0x00</td>
+					<td>Initial SP</td>
+					<td>Main stack pointer initial value</td>
+			</tr>
+			<tr>
+					<td>0x04</td>
+					<td>ResetHandler</td>
+					<td>Reset vector, jumps to startup code</td>
+			</tr>
+			<tr>
+					<td>0x08</td>
+					<td>NMIHandler</td>
+					<td>Non-maskable interrupt</td>
+			</tr>
+			<tr>
+					<td>0x0C</td>
+					<td>HardFaultHandler</td>
+					<td>Hard fault</td>
+			</tr>
+			<tr>
+					<td>&hellip;</td>
+					<td>&hellip;</td>
+					<td>Other interrupts/exceptions</td>
+			</tr>
+	</tbody>
 </table></div>
 <p><strong>Purpose of <code>KEEP</code></strong>: The <code>--gc-sections</code> optimization removes unreferenced sections, but entries in <code>.isr_vector</code> have no explicit references (the CPU hardware jumps to them automatically). <code>KEEP</code> prevents them from being optimized away.</p>
 <h3 id="72-code-section-text">7.2 Code Section (.text)
@@ -907,7 +909,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">msg</span> <span class="o">=</span> <span class="s">&#34;hello&#34;</span><span class="p">;</span>   <span class="c1">// &#34;hello&#34; is in .rodata, the msg pointer is in .data
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">const</span> <span class="kt">char</span> <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;hello&#34;</span><span class="p">;</span>  <span class="c1">// Everything is in .rodata, more optimal
+</span></span></span><span class="line"><span class="cl"><span class="k">const</span> <span class="kt">char</span> <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;hello&#34;</span><span class="p">;</span>  <span class="c1">// Everything is in .rodata, more optimal
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="74-c-related-sections">7.4 C++ Related Sections
@@ -928,30 +930,30 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Section</th>
-          <th>Purpose</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>.ARM.extab</code> / <code>.ARM</code></td>
-          <td>C++ exception handling unwind tables</td>
-      </tr>
-      <tr>
-          <td><code>.preinit_array</code></td>
-          <td>Earliest initialization function pointer array</td>
-      </tr>
-      <tr>
-          <td><code>.init_array</code></td>
-          <td>C++ global constructor function pointer array</td>
-      </tr>
-      <tr>
-          <td><code>.fini_array</code></td>
-          <td>C++ global destructor function pointer array</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Section</th>
+					<th>Purpose</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>.ARM.extab</code> / <code>.ARM</code></td>
+					<td>C++ exception handling unwind tables</td>
+			</tr>
+			<tr>
+					<td><code>.preinit_array</code></td>
+					<td>Earliest initialization function pointer array</td>
+			</tr>
+			<tr>
+					<td><code>.init_array</code></td>
+					<td>C++ global constructor function pointer array</td>
+			</tr>
+			<tr>
+					<td><code>.fini_array</code></td>
+					<td>C++ global destructor function pointer array</td>
+			</tr>
+	</tbody>
 </table></div>
 <p>The <code>READONLY</code> keyword is a GCC 11+ feature that tells the linker these sections are not writable. It must be removed when using GCC 10 or earlier.</p>
 <p><strong>Pure C projects</strong>: If there is no C++ code, these sections are typically empty. However, <code>KEEP</code> ensures they are not mistakenly deleted even with <code>--gc-sections</code>.</p>
@@ -1032,26 +1034,26 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </div>
 </div><p><strong>Exported symbols</strong>:</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Symbol</th>
-          <th>Meaning</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>_sidata</code></td>
-          <td>LMA start of <code>.data</code> (in Flash)</td>
-      </tr>
-      <tr>
-          <td><code>_sdata</code></td>
-          <td>VMA start of <code>.data</code> (in RAM)</td>
-      </tr>
-      <tr>
-          <td><code>_edata</code></td>
-          <td>VMA end of <code>.data</code> (defined at the end of the .tdata section)</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Symbol</th>
+					<th>Meaning</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>_sidata</code></td>
+					<td>LMA start of <code>.data</code> (in Flash)</td>
+			</tr>
+			<tr>
+					<td><code>_sdata</code></td>
+					<td>VMA start of <code>.data</code> (in RAM)</td>
+			</tr>
+			<tr>
+					<td><code>_edata</code></td>
+					<td>VMA end of <code>.data</code> (defined at the end of the .tdata section)</td>
+			</tr>
+	</tbody>
 </table></div>
 <p><strong>Startup copy pseudocode</strong>:</p>
 <div class="highlight"><div class="chroma">
@@ -1065,9 +1067,9 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Logic in startup_stm32f407xx.s
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">uint32_t</span> <span class="o">*</span><span class="n">src</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">_sidata</span><span class="p">;</span>        <span class="c1">// Source address in Flash
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">uint32_t</span> <span class="o">*</span><span class="n">dst</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">_sdata</span><span class="p">;</span>         <span class="c1">// Destination address in RAM
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">while</span> <span class="p">(</span><span class="n">dst</span> <span class="o">&lt;</span> <span class="o">&amp;</span><span class="n">_edata</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">uint32_t</span> <span class="o">*</span><span class="n">src</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">_sidata</span><span class="p">;</span>        <span class="c1">// Source address in Flash
+</span></span></span><span class="line"><span class="cl"><span class="kt">uint32_t</span> <span class="o">*</span><span class="n">dst</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">_sdata</span><span class="p">;</span>         <span class="c1">// Destination address in RAM
+</span></span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="n">dst</span> <span class="o">&lt;</span> <span class="o">&amp;</span><span class="n">_edata</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">dst</span><span class="o">++</span> <span class="o">=</span> <span class="o">*</span><span class="n">src</span><span class="o">++</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
@@ -1127,30 +1129,30 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </div><p>TLS is the underlying support for C11 <code>_Thread_local</code> / GCC <code>__thread</code>. It is rarely used in bare-metal embedded systems, but when using an RTOS, each thread may need its own copy of certain variables.</p>
 <p><strong>Exported symbols</strong>:</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Symbol</th>
-          <th>Meaning</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>__tdata_start</code> / <code>__tdata_end</code></td>
-          <td>VMA range of <code>.tdata</code></td>
-      </tr>
-      <tr>
-          <td><code>__tdata_source</code> / <code>__tdata_source_end</code></td>
-          <td>LMA range of <code>.tdata</code></td>
-      </tr>
-      <tr>
-          <td><code>__tls_size</code></td>
-          <td>Total TLS size</td>
-      </tr>
-      <tr>
-          <td><code>__tls_align</code></td>
-          <td>TLS alignment requirement</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Symbol</th>
+					<th>Meaning</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>__tdata_start</code> / <code>__tdata_end</code></td>
+					<td>VMA range of <code>.tdata</code></td>
+			</tr>
+			<tr>
+					<td><code>__tdata_source</code> / <code>__tdata_source_end</code></td>
+					<td>LMA range of <code>.tdata</code></td>
+			</tr>
+			<tr>
+					<td><code>__tls_size</code></td>
+					<td>Total TLS size</td>
+			</tr>
+			<tr>
+					<td><code>__tls_align</code></td>
+					<td>TLS alignment requirement</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="78-bss-section-bss">7.8 BSS Section (.bss)
 </h3><div class="highlight"><div class="chroma">
@@ -1190,7 +1192,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Startup code zeros BSS
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">uint32_t</span> <span class="o">*</span><span class="n">dst</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">_sbss</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">uint32_t</span> <span class="o">*</span><span class="n">dst</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">_sbss</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="n">dst</span> <span class="o">&lt;</span> <span class="o">&amp;</span><span class="n">_ebss</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="n">dst</span><span class="o">++</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
@@ -1247,22 +1249,22 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </div><p><code>PROVIDE</code> defines a <strong>weak symbol</strong>: it takes effect only when no other definition of the same symbol exists in the program. If the C code defines <code>__bss_end</code>, the linker uses the C code&rsquo;s definition and ignores the <code>PROVIDE</code>.</p>
 <p><strong>Difference from direct assignment</strong>:</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Syntax</th>
-          <th>Behavior</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>_sbss = .;</code></td>
-          <td>Forced definition; if the program also has a definition, a multiple definition error is reported</td>
-      </tr>
-      <tr>
-          <td><code>PROVIDE(_sbss = .);</code></td>
-          <td>Only provided when undefined; allows the program to override</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Syntax</th>
+					<th>Behavior</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>_sbss = .;</code></td>
+					<td>Forced definition; if the program also has a definition, a multiple definition error is reported</td>
+			</tr>
+			<tr>
+					<td><code>PROVIDE(_sbss = .);</code></td>
+					<td>Only provided when undefined; allows the program to override</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="10-keep-and-gc-sections">10. KEEP and &ndash;gc-sections
@@ -1366,18 +1368,18 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </span></span><span class="line"><span class="cl">    <span class="nf">cmp</span>  <span class="no">r0</span><span class="p">,</span> <span class="no">r1</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">ittt</span> <span class="no">lt</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">ldrlt</span> <span class="no">r3</span><span class="p">,</span> <span class="p">[</span><span class="no">r2</span><span class="p">],</span> <span class="c1">#4
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">strlt</span> <span class="no">r3</span><span class="p">,</span> <span class="p">[</span><span class="no">r0</span><span class="p">],</span> <span class="c1">#4
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">blt</span>  <span class="no">CopyData</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">strlt</span> <span class="no">r3</span><span class="p">,</span> <span class="p">[</span><span class="no">r0</span><span class="p">],</span> <span class="c1">#4
+</span></span></span><span class="line"><span class="cl">    <span class="nf">blt</span>  <span class="no">CopyData</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="cm">/* 3. Zero .bss */</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">ldr</span>  <span class="no">r0</span><span class="p">,</span> <span class="err">=</span><span class="no">_sbss</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">ldr</span>  <span class="no">r1</span><span class="p">,</span> <span class="err">=</span><span class="no">_ebss</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">movs</span> <span class="no">r2</span><span class="p">,</span> <span class="c1">#0
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nl">ClearBSS:</span>
+</span></span></span><span class="line"><span class="cl"><span class="nl">ClearBSS:</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">cmp</span>  <span class="no">r0</span><span class="p">,</span> <span class="no">r1</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">itt</span>  <span class="no">lt</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">strlt</span> <span class="no">r2</span><span class="p">,</span> <span class="p">[</span><span class="no">r0</span><span class="p">],</span> <span class="c1">#4
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">blt</span>  <span class="no">ClearBSS</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">blt</span>  <span class="no">ClearBSS</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="cm">/* 4. Call SystemInit() */</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">bl</span>   <span class="no">SystemInit</span>
@@ -1405,7 +1407,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// The .ccmram section is already defined in the linker script
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.ccmram&#34;</span><span class="p">)))</span> <span class="kt">int</span> <span class="n">ai_tensor_buf</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>  <span class="c1">// AI inference tensor buffer
+</span></span></span><span class="line"><span class="cl"><span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.ccmram&#34;</span><span class="p">)))</span> <span class="kt">int</span> <span class="n">ai_tensor_buf</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>  <span class="c1">// AI inference tensor buffer
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Placing AI inference tensor buffers in CCMRAM provides zero-wait-state access, improving inference speed.</p>
@@ -1417,7 +1419,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// The .RamFunc section is already defined in the linker script
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.RamFunc&#34;</span><span class="p">)))</span> <span class="kt">void</span> <span class="nf">flash_erase_and_write</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl"><span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.RamFunc&#34;</span><span class="p">)))</span> <span class="kt">void</span> <span class="nf">flash_erase_and_write</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>On STM32F407, Flash cannot be fetched from the same bank during erase/programming. Placing Flash operation functions in RAM avoids this issue.</p>
@@ -1429,7 +1431,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Variables not initialized by startup code (retain values after soft reset)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.bss.NoInit&#34;</span><span class="p">)))</span> <span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="n">update_flag</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl"><span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.bss.NoInit&#34;</span><span class="p">)))</span> <span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="n">update_flag</span><span class="p">;</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>When a Bootloader and App communicate via soft reset, <code>NoInit</code> variables are not zeroed by the startup code and can pass state across resets.</p>
@@ -1507,54 +1509,54 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 <hr>
 <h2 id="14-summary">14. Summary
 </h2><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Concept</th>
-          <th>Key Understanding</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>MEMORY</td>
-          <td>Declares the chip&rsquo;s physical memory regions and attributes</td>
-      </tr>
-      <tr>
-          <td>SECTIONS</td>
-          <td>Specifies the arrangement order and placement of each section</td>
-      </tr>
-      <tr>
-          <td>VMA / LMA</td>
-          <td>Runtime address vs load-time address; .data must be copied</td>
-      </tr>
-      <tr>
-          <td>&gt;RAM AT&gt; FLASH</td>
-          <td>VMA in RAM, LMA in Flash</td>
-      </tr>
-      <tr>
-          <td>ALIGN</td>
-          <td>Ensures hardware-required address alignment</td>
-      </tr>
-      <tr>
-          <td>KEEP</td>
-          <td>Prevents &ndash;gc-sections from mistakenly removing critical sections</td>
-      </tr>
-      <tr>
-          <td>PROVIDE</td>
-          <td>Weak symbol definition, allows program to override</td>
-      </tr>
-      <tr>
-          <td>_s*/_e* symbols</td>
-          <td>Boundary addresses exported for use by startup code</td>
-      </tr>
-      <tr>
-          <td>.bss (NOLOAD)</td>
-          <td>Generates no output, only allocates addresses; zeroed at startup</td>
-      </tr>
-      <tr>
-          <td>/DISCARD/</td>
-          <td>Discards unneeded standard library content</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Concept</th>
+					<th>Key Understanding</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>MEMORY</td>
+					<td>Declares the chip&rsquo;s physical memory regions and attributes</td>
+			</tr>
+			<tr>
+					<td>SECTIONS</td>
+					<td>Specifies the arrangement order and placement of each section</td>
+			</tr>
+			<tr>
+					<td>VMA / LMA</td>
+					<td>Runtime address vs load-time address; .data must be copied</td>
+			</tr>
+			<tr>
+					<td>&gt;RAM AT&gt; FLASH</td>
+					<td>VMA in RAM, LMA in Flash</td>
+			</tr>
+			<tr>
+					<td>ALIGN</td>
+					<td>Ensures hardware-required address alignment</td>
+			</tr>
+			<tr>
+					<td>KEEP</td>
+					<td>Prevents &ndash;gc-sections from mistakenly removing critical sections</td>
+			</tr>
+			<tr>
+					<td>PROVIDE</td>
+					<td>Weak symbol definition, allows program to override</td>
+			</tr>
+			<tr>
+					<td>_s*/_e* symbols</td>
+					<td>Boundary addresses exported for use by startup code</td>
+			</tr>
+			<tr>
+					<td>.bss (NOLOAD)</td>
+					<td>Generates no output, only allocates addresses; zeroed at startup</td>
+			</tr>
+			<tr>
+					<td>/DISCARD/</td>
+					<td>Discards unneeded standard library content</td>
+			</tr>
+	</tbody>
 </table></div>
 <p>A linker script is not a &ldquo;set it and forget it&rdquo; black box; it is the bridge connecting hardware memory topology, compiler output, and startup code. Understanding it empowers you to navigate memory optimization, multi-partition bootloaders, custom sections, and other advanced scenarios with ease.</p>
 <hr>
@@ -1689,7 +1691,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_f8913fdcd1a8711e.png" 
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_796cd764b38bb6af.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -1713,7 +1715,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_989a706e6c4dfa57.png" 
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_246f581f8c773c70.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -1737,7 +1739,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.7092acb7ea331869c1e1d1894091f36f_hu_26121de83b12f576.png" 
+                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.7092acb7ea331869c1e1d1894091f36f_hu_e021237e267cb631.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -1894,7 +1896,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
                 src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
                 
                 >
-            </script><script type="text/javascript" src="/Hugo_Web/ts/main.99ce1801c4bad426a42fc436add4721e149159dbb598636e9578fd59cf778c83.js" defer></script> <script>
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
     (function () {
         const customFont = document.createElement('link');
         customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
@@ -1920,7 +1922,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "https://lingjia007.github.io/Hugo_Web/en/";
+  const staticDir = "http://localhost:6749/Hugo_Web/en/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -2167,7 +2169,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
   });
 </script>
 
-<script src="https://lingjia007.github.io/Hugo_Web/en/js/topbar.min.js"></script>
+<script src="http://localhost:6749/Hugo_Web/en/js/topbar.min.js"></script>
 
 <script>
   
@@ -2196,12 +2198,12 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
     
     path: {
       homePath: "/",
-      modelPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/live2d-moc3/",
-      cssPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/waifu.css",
-      tipsJsonPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/my-waifu-tips.json",
+      modelPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/live2dcubismcore.js",
-      live2dSdkPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/live2d-sdk.js",
+      live2dCorePath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -2348,7 +2350,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/icons/codeMore.png";
+      img.src = "http:\/\/localhost:6749\/Hugo_Web\/en\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -2364,11 +2366,11 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 
 <div id="particles-js"></div>
 
-<script src="https://lingjia007.github.io/Hugo_Web/en/background/particles.min.js"></script>
+<script src="http://localhost:6749/Hugo_Web/en/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/background/particlesjs-config.json",
+    "http:\/\/localhost:6749\/Hugo_Web\/en\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     },
@@ -2444,7 +2446,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(https://lingjia007.github.io/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(http://localhost:6749/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -2463,7 +2465,7 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("https://lingjia007.github.io/Hugo_Web/en/icons/backTop.svg");
+    background-image: url("http://localhost:6749/Hugo_Web/en/icons/backTop.svg");
   }
 </style>
 

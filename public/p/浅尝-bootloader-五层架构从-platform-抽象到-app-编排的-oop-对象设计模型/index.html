@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh-cn" dir="ltr">
-    <head><meta charset='utf-8'>
+<html lang="en-us" dir="ltr">
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=6749&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="以 STM32F407 安全 Bootloader 为实例，浅尝 Impl/Platform/Service/Core/App + Drivers(Vendor) 五层架构的 C 面向对象设计模型：ops 虚函数表、container_of 向下转型、多重继承双基类、依赖注入容器、宏封装安全调用，与 oop-in-c-embedded 概念逐一映射">
 <title>浅尝 Bootloader 五层架构：从 Platform 抽象到 App 编排的 OOP 对象设计模型</title>
 
-<link rel='canonical' href='https://lingjia007.github.io/Hugo_Web/p/%E6%B5%85%E5%B0%9D-bootloader-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E4%BB%8E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%BC%96%E6%8E%92%E7%9A%84-oop-%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%9E%8B/'>
+<link rel='canonical' href='http://localhost:6749/Hugo_Web/p/%E6%B5%85%E5%B0%9D-bootloader-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E4%BB%8E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%BC%96%E6%8E%92%E7%9A%84-oop-%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%9E%8B/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="浅尝 Bootloader 五层架构：从 Platform 抽象到 App 编排的 OOP 对象设计模型">
 <meta property='og:description' content="以 STM32F407 安全 Bootloader 为实例，浅尝 Impl/Platform/Service/Core/App + Drivers(Vendor) 五层架构的 C 面向对象设计模型：ops 虚函数表、container_of 向下转型、多重继承双基类、依赖注入容器、宏封装安全调用，与 oop-in-c-embedded 概念逐一映射">
-<meta property='og:url' content='https://lingjia007.github.io/Hugo_Web/p/%E6%B5%85%E5%B0%9D-bootloader-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E4%BB%8E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%BC%96%E6%8E%92%E7%9A%84-oop-%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%9E%8B/'>
+<meta property='og:url' content='http://localhost:6749/Hugo_Web/p/%E6%B5%85%E5%B0%9D-bootloader-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E4%BB%8E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%BC%96%E6%8E%92%E7%9A%84-oop-%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%9E%8B/'>
 <meta property='og:site_name' content='lingsir007'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='Bootloader' /><meta property='article:tag' content='OOP-in-C' /><meta property='article:tag' content='分层架构' /><meta property='article:tag' content='面向对象' /><meta property='article:tag' content='平台抽象' /><meta property='article:published_time' content='2026-07-03T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-04T19:15:02&#43;08:00'/>
 <meta name="twitter:title" content="浅尝 Bootloader 五层架构：从 Platform 抽象到 App 编排的 OOP 对象设计模型">
@@ -58,7 +58,7 @@
                     
                     
                         
-                        <img src="/Hugo_Web/img/avatar_hu_6974417c8ac44e16.png" width="300"
+                        <img src="/Hugo_Web/img/avatar_hu_49d0a8f5a8c62cc5.png" width="300"
                             height="300" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -233,11 +233,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/" selected>简体中文</option>
+                                    <option value="http://localhost:6749/Hugo_Web/" selected>简体中文</option>
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/zh-hk/" >繁體中文</option>
+                                    <option value="http://localhost:6749/Hugo_Web/zh-hk/" >繁體中文</option>
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/en/" >English</option>
+                                    <option value="http://localhost:6749/Hugo_Web/en/" >English</option>
                                 
                             </select>
                         </li>
@@ -452,9 +452,9 @@
 
             <div>
                 
-                    <a href="https://lingjia007.github.io/Hugo_Web/zh-hk/p/%E6%B7%BA%E5%98%97-bootloader-%E4%BA%94%E5%B1%A4%E6%9E%B6%E6%A7%8B%E5%BE%9E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%B7%A8%E6%8E%92%E7%9A%84-oop-%E7%89%A9%E4%BB%B6%E8%A8%AD%E8%A8%88%E6%A8%A1%E5%9E%8B/" class="link">繁體中文</a>
+                    <a href="http://localhost:6749/Hugo_Web/zh-hk/p/%E6%B7%BA%E5%98%97-bootloader-%E4%BA%94%E5%B1%A4%E6%9E%B6%E6%A7%8B%E5%BE%9E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%B7%A8%E6%8E%92%E7%9A%84-oop-%E7%89%A9%E4%BB%B6%E8%A8%AD%E8%A8%88%E6%A8%A1%E5%9E%8B/" class="link">繁體中文</a>
                 
-                    <a href="https://lingjia007.github.io/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/" class="link">English</a>
+                    <a href="http://localhost:6749/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/" class="link">English</a>
                 
             </div>
         </footer>
@@ -474,52 +474,52 @@
 <h2 id="一五层架构总览">一、五层架构总览
 </h2><h3 id="11-分层图">1.1 分层图
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>层</th>
-          <th>目录</th>
-          <th>职责</th>
-          <th>OOP 概念映射</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><strong>App</strong></td>
-          <td><code>Core/Src/main.c</code></td>
-          <td>系统编排、启动流程、条件分支</td>
-          <td>顶层组合根 / main 编排</td>
-      </tr>
-      <tr>
-          <td><strong>Core</strong></td>
-          <td><code>Bootloader_Core/</code></td>
-          <td>固件下载引擎、A/B 分区、跳转逻辑</td>
-          <td>业务策略 / 状态机</td>
-      </tr>
-      <tr>
-          <td><strong>Service</strong></td>
-          <td><code>Service/</code></td>
-          <td>YMODEM、OTA、菜单、差分、解密、签名</td>
-          <td>服务对象 / 依赖注入消费者</td>
-      </tr>
-      <tr>
-          <td><strong>Platform</strong></td>
-          <td><code>Platform/Inc/</code></td>
-          <td>抽象接口定义（ops 虚表 + base 结构体 + 宏）</td>
-          <td>纯虚基类 / 接口</td>
-      </tr>
-      <tr>
-          <td><strong>Impl</strong></td>
-          <td><code>Impl/</code></td>
-          <td>STM32 / ESP8266 具体实现</td>
-          <td>派生类 / 虚表实例化</td>
-      </tr>
-      <tr>
-          <td><strong>Drivers</strong></td>
-          <td><code>Drivers/</code></td>
-          <td>HAL + Vendor 驱动（STM32 HAL、W25Q128、FatFs…）</td>
-          <td>硬件抽象层</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>层</th>
+					<th>目录</th>
+					<th>职责</th>
+					<th>OOP 概念映射</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>App</strong></td>
+					<td><code>Core/Src/main.c</code></td>
+					<td>系统编排、启动流程、条件分支</td>
+					<td>顶层组合根 / main 编排</td>
+			</tr>
+			<tr>
+					<td><strong>Core</strong></td>
+					<td><code>Bootloader_Core/</code></td>
+					<td>固件下载引擎、A/B 分区、跳转逻辑</td>
+					<td>业务策略 / 状态机</td>
+			</tr>
+			<tr>
+					<td><strong>Service</strong></td>
+					<td><code>Service/</code></td>
+					<td>YMODEM、OTA、菜单、差分、解密、签名</td>
+					<td>服务对象 / 依赖注入消费者</td>
+			</tr>
+			<tr>
+					<td><strong>Platform</strong></td>
+					<td><code>Platform/Inc/</code></td>
+					<td>抽象接口定义（ops 虚表 + base 结构体 + 宏）</td>
+					<td>纯虚基类 / 接口</td>
+			</tr>
+			<tr>
+					<td><strong>Impl</strong></td>
+					<td><code>Impl/</code></td>
+					<td>STM32 / ESP8266 具体实现</td>
+					<td>派生类 / 虚表实例化</td>
+			</tr>
+			<tr>
+					<td><strong>Drivers</strong></td>
+					<td><code>Drivers/</code></td>
+					<td>HAL + Vendor 驱动（STM32 HAL、W25Q128、FatFs…）</td>
+					<td>硬件抽象层</td>
+			</tr>
+	</tbody>
 </table></div>
 <p>调用方向：<strong>App → Core → Service → Platform ← Impl → Drivers</strong></p>
 <p>关键设计：<strong>Service 不依赖 Impl，只依赖 Platform 的抽象接口</strong>。Impl 通过 register 函数在启动时将具体实现&quot;注入&quot;Platform 的 base 实例——这就是 <a class="link" href="../oop-in-c-embedded/" >依赖注入</a> 在 C 中的落地。</p>
@@ -554,7 +554,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Platform/Inc/platform_led.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">on</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span> <span class="n">ctx</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">off</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span> <span class="n">ctx</span><span class="p">);</span>
@@ -568,7 +568,7 @@
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">platform_led_ops_t</span><span class="o">*</span> <span class="n">ops</span><span class="p">;</span>  <span class="c1">// 虚指针 (vptr)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">platform_led_type_t</span> <span class="n">type</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">platform_led_state_t</span> <span class="n">state</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">void</span><span class="o">*</span> <span class="n">user_data</span><span class="p">;</span>
@@ -577,77 +577,77 @@
 </div>
 </div><p><strong>模式映射</strong>：</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>C 写法</th>
-          <th>C++ 等价</th>
-          <th>oop-in-c-embedded 概念</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>platform_led_ops_t</code></td>
-          <td>纯虚类（abstract class）</td>
-          <td>ops 操作表</td>
-      </tr>
-      <tr>
-          <td><code>base.ops</code></td>
-          <td>vptr</td>
-          <td>虚指针</td>
-      </tr>
-      <tr>
-          <td><code>ops-&gt;on(ctx)</code></td>
-          <td><code>virtual on()</code></td>
-          <td>虚函数调用</td>
-      </tr>
-      <tr>
-          <td><code>const ops</code></td>
-          <td>不可覆写的虚表</td>
-          <td>静态虚表</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>C 写法</th>
+					<th>C++ 等价</th>
+					<th>oop-in-c-embedded 概念</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>platform_led_ops_t</code></td>
+					<td>纯虚类（abstract class）</td>
+					<td>ops 操作表</td>
+			</tr>
+			<tr>
+					<td><code>base.ops</code></td>
+					<td>vptr</td>
+					<td>虚指针</td>
+			</tr>
+			<tr>
+					<td><code>ops-&gt;on(ctx)</code></td>
+					<td><code>virtual on()</code></td>
+					<td>虚函数调用</td>
+			</tr>
+			<tr>
+					<td><code>const ops</code></td>
+					<td>不可覆写的虚表</td>
+					<td>静态虚表</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="22-六模块-ops-表对比">2.2 六模块 ops 表对比
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>模块</th>
-          <th>ops 函数数</th>
-          <th>特殊设计</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>platform_led_ops_t</code></td>
-          <td>8</td>
-          <td>亮度/RGB 为选填（NULL 表示不支持）</td>
-      </tr>
-      <tr>
-          <td><code>platform_internal_flash_ops_t</code></td>
-          <td>10</td>
-          <td>含保护状态读写</td>
-      </tr>
-      <tr>
-          <td><code>platform_uart_ops_t</code></td>
-          <td>13</td>
-          <td>含中断收发 + 字节级操作</td>
-      </tr>
-      <tr>
-          <td><code>platform_fs_ops_t</code> + <code>platform_fs_dir_ops_t</code></td>
-          <td>11 + 3</td>
-          <td><strong>双 ops 表</strong>：文件操作与目录操作分离</td>
-      </tr>
-      <tr>
-          <td><code>platform_mqtt_ops_t</code></td>
-          <td>12</td>
-          <td>发布/订阅/遗嘱</td>
-      </tr>
-      <tr>
-          <td><code>platform_tick_ops_t</code></td>
-          <td>2</td>
-          <td>无 ctx 参数（全局单例）</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>模块</th>
+					<th>ops 函数数</th>
+					<th>特殊设计</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>platform_led_ops_t</code></td>
+					<td>8</td>
+					<td>亮度/RGB 为选填（NULL 表示不支持）</td>
+			</tr>
+			<tr>
+					<td><code>platform_internal_flash_ops_t</code></td>
+					<td>10</td>
+					<td>含保护状态读写</td>
+			</tr>
+			<tr>
+					<td><code>platform_uart_ops_t</code></td>
+					<td>13</td>
+					<td>含中断收发 + 字节级操作</td>
+			</tr>
+			<tr>
+					<td><code>platform_fs_ops_t</code> + <code>platform_fs_dir_ops_t</code></td>
+					<td>11 + 3</td>
+					<td><strong>双 ops 表</strong>：文件操作与目录操作分离</td>
+			</tr>
+			<tr>
+					<td><code>platform_mqtt_ops_t</code></td>
+					<td>12</td>
+					<td>发布/订阅/遗嘱</td>
+			</tr>
+			<tr>
+					<td><code>platform_tick_ops_t</code></td>
+					<td>2</td>
+					<td>无 ctx 参数（全局单例）</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="23-宏封装安全调用--空指针防御">2.3 宏封装：安全调用 + 空指针防御
 </h3><div class="highlight"><div class="chroma">
@@ -694,10 +694,10 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Impl/Inc/platform_gpio_led_stm32_impl.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">platform_led_base_t</span> <span class="n">base</span><span class="p">;</span>   <span class="c1">// 内嵌基类（继承）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">GPIO_TypeDef</span> <span class="o">*</span><span class="n">port</span><span class="p">;</span>         <span class="c1">// STM32 特有数据
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint16_t</span> <span class="n">pin</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">GPIO_TypeDef</span> <span class="o">*</span><span class="n">port</span><span class="p">;</span>         <span class="c1">// STM32 特有数据
+</span></span></span><span class="line"><span class="cl">    <span class="kt">uint16_t</span> <span class="n">pin</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">gpio_led_stm32_t</span><span class="p">;</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -734,7 +734,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Impl/Src/platform_gpio_led_stm32_impl.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">gpio_led_on</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ctx</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">gpio_led_stm32_t</span> <span class="o">*</span><span class="n">self</span> <span class="o">=</span> <span class="nf">container_of</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">gpio_led_stm32_t</span><span class="p">,</span> <span class="n">base</span><span class="p">);</span>
@@ -746,8 +746,8 @@
 </span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">off</span>          <span class="o">=</span> <span class="n">gpio_led_off</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">toggle</span>       <span class="o">=</span> <span class="n">gpio_led_toggle</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">set_brightness</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span>     <span class="c1">// GPIO 不支持
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">.</span><span class="n">set_rgb</span>      <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span>       <span class="c1">// GPIO 不支持
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">.</span><span class="n">get_state</span>    <span class="o">=</span> <span class="n">gpio_led_get_state</span><span class="p">,</span>
+</span></span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">set_rgb</span>      <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span>       <span class="c1">// GPIO 不支持
+</span></span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">get_state</span>    <span class="o">=</span> <span class="n">gpio_led_get_state</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">get_brightness</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">get_rgb</span>      <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
@@ -764,30 +764,30 @@
 </div>
 </div><p><strong>三步模式</strong>：</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>步骤</th>
-          <th>代码</th>
-          <th>OOP 概念</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>1. container_of 向下转型</td>
-          <td><code>container_of(ctx, gpio_led_stm32_t, base)</code></td>
-          <td><code>dynamic_cast&lt;Derived*&gt;(base)</code></td>
-      </tr>
-      <tr>
-          <td>2. 静态虚表</td>
-          <td><code>static const platform_led_ops_t gpio_led_ops</code></td>
-          <td>虚表（vtable）实例化</td>
-      </tr>
-      <tr>
-          <td>3. register 构造函数</td>
-          <td><code>platform_gpio_led_stm32_register(...)</code></td>
-          <td>构造函数 + 依赖注入</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>步骤</th>
+					<th>代码</th>
+					<th>OOP 概念</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>1. container_of 向下转型</td>
+					<td><code>container_of(ctx, gpio_led_stm32_t, base)</code></td>
+					<td><code>dynamic_cast&lt;Derived*&gt;(base)</code></td>
+			</tr>
+			<tr>
+					<td>2. 静态虚表</td>
+					<td><code>static const platform_led_ops_t gpio_led_ops</code></td>
+					<td>虚表（vtable）实例化</td>
+			</tr>
+			<tr>
+					<td>3. register 构造函数</td>
+					<td><code>platform_gpio_led_stm32_register(...)</code></td>
+					<td>构造函数 + 依赖注入</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="32-internal-flash多重继承双基类">3.2 Internal Flash：多重继承双基类
 </h3><p>这是本架构最精妙的设计。<code>internal_flash_stm32_t</code> 同时内嵌 <code>flash_base</code> 和 <code>transport_base</code>，一个对象同时扮演两个角色。</p>
@@ -807,12 +807,12 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Impl/Inc/platform_internal_flash_stm32_impl.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">platform_internal_flash_base_t</span> <span class="n">flash_base</span><span class="p">;</span>      <span class="c1">// 基类1：Flash 操作
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">platform_transport_base_t</span>      <span class="n">transport_base</span><span class="p">;</span>   <span class="c1">// 基类2：传输目标
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">written_size</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">platform_transport_base_t</span>      <span class="n">transport_base</span><span class="p">;</span>   <span class="c1">// 基类2：传输目标
+</span></span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">written_size</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">relocate_offset</span><span class="p">;</span>      <span class="c1">// A/B 分区地址重定位偏移
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span>  <span class="n">pending_buf</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span>  <span class="n">pending_buf</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span>  <span class="n">pending_len</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span>  <span class="n">is_open</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span>  <span class="n">is_erased</span><span class="p">;</span>
@@ -821,25 +821,25 @@
 </div>
 </div><p><strong>两个虚表</strong>：</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>虚表</th>
-          <th>用途</th>
-          <th>container_of 基准</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>flash_base.ops</code>（<code>internal_flash_ops</code>）</td>
-          <td>Flash 直接读写/擦除</td>
-          <td><code>container_of(ctx, ..., flash_base)</code></td>
-      </tr>
-      <tr>
-          <td><code>transport_base.target_ops</code>（<code>internal_flash_target_ops</code>）</td>
-          <td>传输协议写入（含重定位）</td>
-          <td><code>container_of(ctx, ..., transport_base)</code></td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>虚表</th>
+					<th>用途</th>
+					<th>container_of 基准</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>flash_base.ops</code>（<code>internal_flash_ops</code>）</td>
+					<td>Flash 直接读写/擦除</td>
+					<td><code>container_of(ctx, ..., flash_base)</code></td>
+			</tr>
+			<tr>
+					<td><code>transport_base.target_ops</code>（<code>internal_flash_target_ops</code>）</td>
+					<td>传输协议写入（含重定位）</td>
+					<td><code>container_of(ctx, ..., transport_base)</code></td>
+			</tr>
+	</tbody>
 </table></div>
 <p>同一个物理 Flash，通过<strong>不同基类指针</strong>呈现不同接口——C++ 中称为<strong>多重继承的接口分离</strong>。</p>
 <div class="highlight"><div class="chroma">
@@ -857,15 +857,15 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 不同的 container_of 基准，不同的&#34;this&#34;恢复路径
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">int16_t</span> <span class="nf">internal_flash_read</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="p">...)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int16_t</span> <span class="nf">internal_flash_read</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="p">...)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">internal_flash_stm32_t</span> <span class="o">*</span><span class="n">self</span> <span class="o">=</span> <span class="nf">container_of</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">internal_flash_stm32_t</span><span class="p">,</span> <span class="n">flash_base</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int16_t</span> <span class="nf">internal_flash_tgt_write</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="p">...)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">internal_flash_stm32_t</span> <span class="o">*</span><span class="n">self</span> <span class="o">=</span> <span class="nf">container_of</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">internal_flash_stm32_t</span><span class="p">,</span> <span class="n">transport_base</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// 含地址重定位逻辑
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote class="alert alert-important">
@@ -886,10 +886,10 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Service/Inc/service_ymodem.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">platform_uart_base_t</span>      <span class="o">*</span><span class="n">uart</span><span class="p">;</span>       <span class="c1">// 依赖1：串口
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">transport</span><span class="p">;</span>  <span class="c1">// 依赖2：传输目标
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">max_size</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">transport</span><span class="p">;</span>  <span class="c1">// 依赖2：传输目标
+</span></span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">max_size</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">file_name</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">file_name_len</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">ymodem_config_t</span><span class="p">;</span>
@@ -906,10 +906,10 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// YMODEM 实际注入方式（main.c 中隐式）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">ymodem_config_t</span> <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">ymodem_config_t</span> <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">uart</span>      <span class="o">=</span> <span class="o">&amp;</span><span class="n">g_uart4_console</span><span class="p">.</span><span class="n">base</span><span class="p">,</span>     <span class="c1">// Platform 抽象
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">.</span><span class="n">transport</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">g_slot_a_flash</span><span class="p">.</span><span class="n">transport_base</span><span class="p">,</span>  <span class="c1">// Platform 抽象
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">transport</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">g_slot_a_flash</span><span class="p">.</span><span class="n">transport_base</span><span class="p">,</span>  <span class="c1">// Platform 抽象
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="42-onenet-ota-服务三依赖注入--策略回调">4.2 OneNet OTA 服务：三依赖注入 + 策略回调
@@ -927,41 +927,41 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Service/Inc/service_onenet_ota.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">platform_wifi_base_t</span> <span class="o">*</span><span class="n">wifi</span><span class="p">;</span>       <span class="c1">// 依赖1：WiFi
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">platform_rtc_base_t</span>  <span class="o">*</span><span class="n">rtc</span><span class="p">;</span>       <span class="c1">// 依赖2：RTC
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">platform_mqtt_base_t</span> <span class="o">*</span><span class="n">mqtt</span><span class="p">;</span>      <span class="c1">// 依赖3：MQTT
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">onenet_ota_progress_cb_t</span> <span class="n">progress_cb</span><span class="p">;</span>  <span class="c1">// 策略回调
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint8_t</span> <span class="n">target_type</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">platform_rtc_base_t</span>  <span class="o">*</span><span class="n">rtc</span><span class="p">;</span>       <span class="c1">// 依赖2：RTC
+</span></span></span><span class="line"><span class="cl">    <span class="kt">platform_mqtt_base_t</span> <span class="o">*</span><span class="n">mqtt</span><span class="p">;</span>      <span class="c1">// 依赖3：MQTT
+</span></span></span><span class="line"><span class="cl">    <span class="kt">onenet_ota_progress_cb_t</span> <span class="n">progress_cb</span><span class="p">;</span>  <span class="c1">// 策略回调
+</span></span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">target_type</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">firmware_version</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">onenet_ota_ctx_t</span><span class="p">;</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>依赖</th>
-          <th>注入实例</th>
-          <th>可替换为</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>wifi</code></td>
-          <td><code>g_esp8266_wifi</code></td>
-          <td>任何 <code>platform_wifi_base_t</code> 实现</td>
-      </tr>
-      <tr>
-          <td><code>rtc</code></td>
-          <td><code>g_rtc</code></td>
-          <td>DS3231 外部 RTC</td>
-      </tr>
-      <tr>
-          <td><code>mqtt</code></td>
-          <td><code>g_esp8266_mqtt</code></td>
-          <td>Mosquitto 嵌入式 MQTT</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>依赖</th>
+					<th>注入实例</th>
+					<th>可替换为</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>wifi</code></td>
+					<td><code>g_esp8266_wifi</code></td>
+					<td>任何 <code>platform_wifi_base_t</code> 实现</td>
+			</tr>
+			<tr>
+					<td><code>rtc</code></td>
+					<td><code>g_rtc</code></td>
+					<td>DS3231 外部 RTC</td>
+			</tr>
+			<tr>
+					<td><code>mqtt</code></td>
+					<td><code>g_esp8266_mqtt</code></td>
+					<td>Mosquitto 嵌入式 MQTT</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="43-菜单服务命令处理函数指针树">4.3 菜单服务：命令处理函数指针树
 </h3><div class="highlight"><div class="chroma">
@@ -981,7 +981,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Service/Inc/service_menu.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="kt">menu_handler_t</span><span class="p">)(</span><span class="kt">menu_ctx_t</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[]);</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="kt">menu_handler_t</span><span class="p">)(</span><span class="kt">menu_ctx_t</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[]);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">menu_item_s</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">key</span><span class="p">;</span>
@@ -989,9 +989,9 @@
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">description</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">menu_item_type_t</span> <span class="n">type</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">menu_handler_t</span> <span class="n">handler</span><span class="p">;</span>       <span class="c1">// 命令处理函数指针
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">const</span> <span class="kt">menu_item_t</span> <span class="o">*</span><span class="n">submenu</span><span class="p">;</span>   <span class="c1">// 子菜单（树形结构）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="kt">menu_item_t</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">menu_item_t</span> <span class="o">*</span><span class="n">submenu</span><span class="p">;</span>   <span class="c1">// 子菜单（树形结构）
+</span></span></span><span class="line"><span class="cl">    <span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">menu_item_t</span><span class="p">;</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>菜单系统用函数指针 + 嵌套数组实现<strong>命令模式 + 组合模式</strong>——每个菜单项要么是叶子命令（<code>handler</code>），要么是子菜单容器（<code>submenu</code>）。</p>
@@ -1019,15 +1019,15 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Bootloader_Core/bootloader_core.h
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 普通下载：直接搬运
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">bootloader_err_t</span> <span class="nf">bootloader_download</span><span class="p">(</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">bootloader_err_t</span> <span class="nf">bootloader_download</span><span class="p">(</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">src_transport</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">tgt_transport</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 安全下载：HMAC → HKDF → AES 解密 → Ed25519 验签 → 写入
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">bootloader_err_t</span> <span class="nf">bootloader_secure_download</span><span class="p">(</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">bootloader_err_t</span> <span class="nf">bootloader_secure_download</span><span class="p">(</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">src_transport</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">platform_transport_base_t</span> <span class="o">*</span><span class="n">tgt_transport</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span>
@@ -1044,7 +1044,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Bootloader_Core/bootloader_core.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="n">update_flag</span> <span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.bss.NoInit&#34;</span><span class="p">),</span> <span class="n">used</span><span class="p">));</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="n">update_flag</span> <span class="nf">__attribute__</span><span class="p">((</span><span class="nf">section</span><span class="p">(</span><span class="s">&#34;.bss.NoInit&#34;</span><span class="p">),</span> <span class="n">used</span><span class="p">));</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>update_flag</code> 放在 <code>.bss.NoInit</code> 段，启动代码不会清零它。App 写入 <code>UPDATE_FLAG_MAGIC</code> 后触发软复位，Bootloader 检测到后进入升级菜单——<strong>跨复位的状态机</strong>，无需持久化到 Flash。</p>
@@ -1116,7 +1116,7 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// Platform/Src/platform_config.c
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">void</span> <span class="nf">platform_config_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">platform_config_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">platform_gpio_led_stm32_register</span><span class="p">(</span><span class="o">&amp;</span><span class="n">g_status_led</span><span class="p">,</span> <span class="n">LED_GPIO_Port</span><span class="p">,</span> <span class="n">LED_Pin</span><span class="p">,</span> <span class="s">&#34;status_led&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
@@ -1160,70 +1160,70 @@
 <h2 id="七模式映射与-oop-in-c-embedded-的对话">七、模式映射：与 oop-in-c-embedded 的对话
 </h2><p>本项目的每个设计决策，都能在 <a class="link" href="../oop-in-c-embedded/" >oop-in-c-embedded</a> 中找到理论对应：</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>oop-in-c-embedded 概念</th>
-          <th>本项目实例</th>
-          <th>代码位置</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>struct + me 指针</td>
-          <td>每个 ops 函数的 <code>void *ctx</code></td>
-          <td>Platform/Inc/*.h</td>
-      </tr>
-      <tr>
-          <td>ops 操作表</td>
-          <td><code>platform_led_ops_t</code> 等 6 个虚表</td>
-          <td>Platform/Inc/*.h</td>
-      </tr>
-      <tr>
-          <td>struct 嵌套继承</td>
-          <td><code>gpio_led_stm32_t</code> 内嵌 <code>base</code></td>
-          <td>Impl/Inc/*_impl.h</td>
-      </tr>
-      <tr>
-          <td>container_of 向下转型</td>
-          <td><code>container_of(ctx, gpio_led_stm32_t, base)</code></td>
-          <td>Impl/Src/*_impl.c</td>
-      </tr>
-      <tr>
-          <td>虚指针 (vptr)</td>
-          <td><code>base.ops</code> 指向静态虚表</td>
-          <td>Platform/Inc/*.h</td>
-      </tr>
-      <tr>
-          <td>纯虚与选填策略</td>
-          <td>GPIO LED 的 <code>set_brightness = NULL</code></td>
-          <td>Impl/Src/platform_gpio_led_stm32_impl.c</td>
-      </tr>
-      <tr>
-          <td>多重继承</td>
-          <td><code>internal_flash_stm32_t</code> 双基类</td>
-          <td>Impl/Inc/platform_internal_flash_stm32_impl.h</td>
-      </tr>
-      <tr>
-          <td>register 构造函数</td>
-          <td><code>platform_gpio_led_stm32_register(...)</code></td>
-          <td>Impl/Src/*_impl.c</td>
-      </tr>
-      <tr>
-          <td>依赖注入容器</td>
-          <td><code>platform_config_init()</code> + 13 个全局实例</td>
-          <td>Platform/Src/platform_config.c</td>
-      </tr>
-      <tr>
-          <td>多态调用宏</td>
-          <td><code>LED_ON(led)</code> / <code>UART_TRANSMIT(uart, ...)</code></td>
-          <td>Platform/Inc/*.h</td>
-      </tr>
-      <tr>
-          <td>数据三级归位</td>
-          <td>HAL 句柄在 Drivers，业务数据在 Impl，抽象数据在 Platform</td>
-          <td>跨三层分布</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>oop-in-c-embedded 概念</th>
+					<th>本项目实例</th>
+					<th>代码位置</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>struct + me 指针</td>
+					<td>每个 ops 函数的 <code>void *ctx</code></td>
+					<td>Platform/Inc/*.h</td>
+			</tr>
+			<tr>
+					<td>ops 操作表</td>
+					<td><code>platform_led_ops_t</code> 等 6 个虚表</td>
+					<td>Platform/Inc/*.h</td>
+			</tr>
+			<tr>
+					<td>struct 嵌套继承</td>
+					<td><code>gpio_led_stm32_t</code> 内嵌 <code>base</code></td>
+					<td>Impl/Inc/*_impl.h</td>
+			</tr>
+			<tr>
+					<td>container_of 向下转型</td>
+					<td><code>container_of(ctx, gpio_led_stm32_t, base)</code></td>
+					<td>Impl/Src/*_impl.c</td>
+			</tr>
+			<tr>
+					<td>虚指针 (vptr)</td>
+					<td><code>base.ops</code> 指向静态虚表</td>
+					<td>Platform/Inc/*.h</td>
+			</tr>
+			<tr>
+					<td>纯虚与选填策略</td>
+					<td>GPIO LED 的 <code>set_brightness = NULL</code></td>
+					<td>Impl/Src/platform_gpio_led_stm32_impl.c</td>
+			</tr>
+			<tr>
+					<td>多重继承</td>
+					<td><code>internal_flash_stm32_t</code> 双基类</td>
+					<td>Impl/Inc/platform_internal_flash_stm32_impl.h</td>
+			</tr>
+			<tr>
+					<td>register 构造函数</td>
+					<td><code>platform_gpio_led_stm32_register(...)</code></td>
+					<td>Impl/Src/*_impl.c</td>
+			</tr>
+			<tr>
+					<td>依赖注入容器</td>
+					<td><code>platform_config_init()</code> + 13 个全局实例</td>
+					<td>Platform/Src/platform_config.c</td>
+			</tr>
+			<tr>
+					<td>多态调用宏</td>
+					<td><code>LED_ON(led)</code> / <code>UART_TRANSMIT(uart, ...)</code></td>
+					<td>Platform/Inc/*.h</td>
+			</tr>
+			<tr>
+					<td>数据三级归位</td>
+					<td>HAL 句柄在 Drivers，业务数据在 Impl，抽象数据在 Platform</td>
+					<td>跨三层分布</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="八container_of-深度剖析本架构的灵魂">八、container_of 深度剖析：本架构的灵魂
@@ -1246,87 +1246,89 @@
 </div><h3 id="82-内存布局推导">8.2 内存布局推导
 </h3><p><strong>gpio_led_stm32_t 实例内存布局</strong>：</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>字段</th>
-          <th>类型</th>
-          <th>说明</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>base.ops</code></td>
-          <td><code>const platform_led_ops_t*</code></td>
-          <td>虚指针，<code>&amp;instance.base</code> 是传入 ops 函数的 ctx</td>
-      </tr>
-      <tr>
-          <td><code>base.name</code></td>
-          <td><code>const char*</code></td>
-          <td>LED 名称</td>
-      </tr>
-      <tr>
-          <td><code>base.type</code></td>
-          <td><code>platform_led_type_t</code></td>
-          <td>LED 类型枚举</td>
-      </tr>
-      <tr>
-          <td><code>base.state</code></td>
-          <td><code>platform_led_state_t</code></td>
-          <td>当前状态</td>
-      </tr>
-      <tr>
-          <td><code>base.user_data</code></td>
-          <td><code>void*</code></td>
-          <td>用户数据指针</td>
-      </tr>
-      <tr>
-          <td><code>port</code></td>
-          <td><code>GPIO_TypeDef*</code></td>
-          <td>STM32 GPIO 端口（派生类特有）</td>
-      </tr>
-      <tr>
-          <td><code>pin</code></td>
-          <td><code>uint16_t</code></td>
-          <td>GPIO 引脚号（派生类特有）</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>字段</th>
+					<th>类型</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>base.ops</code></td>
+					<td><code>const platform_led_ops_t*</code></td>
+					<td>虚指针，<code>&amp;instance.base</code> 是传入 ops 函数的 ctx</td>
+			</tr>
+			<tr>
+					<td><code>base.name</code></td>
+					<td><code>const char*</code></td>
+					<td>LED 名称</td>
+			</tr>
+			<tr>
+					<td><code>base.type</code></td>
+					<td><code>platform_led_type_t</code></td>
+					<td>LED 类型枚举</td>
+			</tr>
+			<tr>
+					<td><code>base.state</code></td>
+					<td><code>platform_led_state_t</code></td>
+					<td>当前状态</td>
+			</tr>
+			<tr>
+					<td><code>base.user_data</code></td>
+					<td><code>void*</code></td>
+					<td>用户数据指针</td>
+			</tr>
+			<tr>
+					<td><code>port</code></td>
+					<td><code>GPIO_TypeDef*</code></td>
+					<td>STM32 GPIO 端口（派生类特有）</td>
+			</tr>
+			<tr>
+					<td><code>pin</code></td>
+					<td><code>uint16_t</code></td>
+					<td>GPIO 引脚号（派生类特有）</td>
+			</tr>
+	</tbody>
 </table></div>
 <blockquote>
-<p><code>base</code> 是第一个成员，偏移为 0，因此 <code>container_of(ctx, gpio_led_stm32_t, base)</code> 等价于 <code>(gpio_led_stm32_t*)ctx</code>。</p></blockquote>
+<p><code>base</code> 是第一个成员，偏移为 0，因此 <code>container_of(ctx, gpio_led_stm32_t, base)</code> 等价于 <code>(gpio_led_stm32_t*)ctx</code>。</p>
+</blockquote>
 <p>当 <code>base</code> 是第一个成员时，<code>container_of</code> 等价于强转。但 <strong>多重继承</strong> 时偏移不为零：</p>
 <p><strong>internal_flash_stm32_t 实例内存布局（双基类）</strong>：</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>基类</th>
-          <th>偏移</th>
-          <th>字段</th>
-          <th>container_of 基准</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>flash_base</code></td>
-          <td>0</td>
-          <td><code>ops</code>, <code>name</code>, <code>start_addr</code>&hellip;</td>
-          <td><code>container_of(ctx, ..., flash_base)</code> 偏移 0</td>
-      </tr>
-      <tr>
-          <td><code>transport_base</code></td>
-          <td>sizeof(flash_base)</td>
-          <td><code>source_ops</code>, <code>target_ops</code></td>
-          <td><code>container_of(ctx, ..., transport_base)</code> 偏移 &gt; 0</td>
-      </tr>
-      <tr>
-          <td>派生类特有</td>
-          <td>—</td>
-          <td><code>written_size</code>, <code>relocate_offset</code>&hellip;</td>
-          <td>—</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>基类</th>
+					<th>偏移</th>
+					<th>字段</th>
+					<th>container_of 基准</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>flash_base</code></td>
+					<td>0</td>
+					<td><code>ops</code>, <code>name</code>, <code>start_addr</code>&hellip;</td>
+					<td><code>container_of(ctx, ..., flash_base)</code> 偏移 0</td>
+			</tr>
+			<tr>
+					<td><code>transport_base</code></td>
+					<td>sizeof(flash_base)</td>
+					<td><code>source_ops</code>, <code>target_ops</code></td>
+					<td><code>container_of(ctx, ..., transport_base)</code> 偏移 &gt; 0</td>
+			</tr>
+			<tr>
+					<td>派生类特有</td>
+					<td>—</td>
+					<td><code>written_size</code>, <code>relocate_offset</code>&hellip;</td>
+					<td>—</td>
+			</tr>
+	</tbody>
 </table></div>
 <blockquote>
-<p>两个不同的 <code>container_of</code> 基准，从<strong>同一个实例的不同基类指针</strong>，恢复到<strong>同一个派生类实例</strong>——这正是 C++ 多重继承中 <code>dynamic_cast</code> 的工作原理。</p></blockquote>
+<p>两个不同的 <code>container_of</code> 基准，从<strong>同一个实例的不同基类指针</strong>，恢复到<strong>同一个派生类实例</strong>——这正是 C++ 多重继承中 <code>dynamic_cast</code> 的工作原理。</p>
+</blockquote>
 <hr>
 <h2 id="九依赖注入的链式组装">九、依赖注入的链式组装
 </h2><h3 id="91-依赖图">9.1 依赖图
@@ -1414,18 +1416,18 @@
 </span></span><span class="line"><span class="cl">    <span class="kt">int32_t</span> <span class="p">(</span><span class="o">*</span><span class="n">read</span><span class="p">)(...);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int32_t</span> <span class="p">(</span><span class="o">*</span><span class="n">write</span><span class="p">)(...);</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// ... 11 个文件操作
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="kt">platform_fs_ops_t</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">platform_fs_ops_t</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int16_t</span> <span class="p">(</span><span class="o">*</span><span class="n">open</span><span class="p">)(...);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int16_t</span> <span class="p">(</span><span class="o">*</span><span class="n">close</span><span class="p">)(...);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int16_t</span> <span class="p">(</span><span class="o">*</span><span class="n">read</span><span class="p">)(...);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">platform_fs_dir_ops_t</span><span class="p">;</span>    <span class="c1">// 3 个目录操作
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">platform_fs_base_s</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">platform_fs_ops_t</span>     <span class="o">*</span><span class="n">ops</span><span class="p">;</span>       <span class="c1">// 文件 ops
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">const</span> <span class="kt">platform_fs_dir_ops_t</span> <span class="o">*</span><span class="n">dir_ops</span><span class="p">;</span>   <span class="c1">// 目录 ops
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">platform_fs_dir_ops_t</span> <span class="o">*</span><span class="n">dir_ops</span><span class="p">;</span>   <span class="c1">// 目录 ops
+</span></span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="o">*</span><span class="n">user_data</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span></code></pre></td></tr></table>
@@ -1434,65 +1436,65 @@
 <hr>
 <h2 id="十一从理论到实战一张图总结">十一、从理论到实战：一张图总结
 </h2><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>设计维度</th>
-          <th>oop-in-c-embedded 理论</th>
-          <th>Bootloader 实战</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>封装</td>
-          <td><code>struct + me</code></td>
-          <td><code>base + ops + ctx</code></td>
-      </tr>
-      <tr>
-          <td>继承</td>
-          <td>struct 嵌套</td>
-          <td><code>gpio_led_stm32_t</code> 内嵌 <code>base</code></td>
-      </tr>
-      <tr>
-          <td>多态</td>
-          <td>ops 虚表 + vptr</td>
-          <td>6 个 ops 表 + 宏分发</td>
-      </tr>
-      <tr>
-          <td>向下转型</td>
-          <td><code>container_of</code></td>
-          <td>双基类双偏移恢复</td>
-      </tr>
-      <tr>
-          <td>多重继承</td>
-          <td>双基类嵌套</td>
-          <td><code>flash_base + transport_base</code></td>
-      </tr>
-      <tr>
-          <td>构造</td>
-          <td>register 函数</td>
-          <td>13 个 register 调用</td>
-      </tr>
-      <tr>
-          <td>依赖注入</td>
-          <td>platform_config 容器</td>
-          <td><code>platform_config_init()</code></td>
-      </tr>
-      <tr>
-          <td>安全调用</td>
-          <td>NULL 检查 + 宏</td>
-          <td><code>LED_ON</code> / <code>UART_TRANSMIT</code></td>
-      </tr>
-      <tr>
-          <td>接口分离</td>
-          <td>多 ops 表</td>
-          <td><code>fs_ops + dir_ops</code></td>
-      </tr>
-      <tr>
-          <td>选填策略</td>
-          <td>NULL 函数指针</td>
-          <td>GPIO LED 跳过 brightness/RGB</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>设计维度</th>
+					<th>oop-in-c-embedded 理论</th>
+					<th>Bootloader 实战</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>封装</td>
+					<td><code>struct + me</code></td>
+					<td><code>base + ops + ctx</code></td>
+			</tr>
+			<tr>
+					<td>继承</td>
+					<td>struct 嵌套</td>
+					<td><code>gpio_led_stm32_t</code> 内嵌 <code>base</code></td>
+			</tr>
+			<tr>
+					<td>多态</td>
+					<td>ops 虚表 + vptr</td>
+					<td>6 个 ops 表 + 宏分发</td>
+			</tr>
+			<tr>
+					<td>向下转型</td>
+					<td><code>container_of</code></td>
+					<td>双基类双偏移恢复</td>
+			</tr>
+			<tr>
+					<td>多重继承</td>
+					<td>双基类嵌套</td>
+					<td><code>flash_base + transport_base</code></td>
+			</tr>
+			<tr>
+					<td>构造</td>
+					<td>register 函数</td>
+					<td>13 个 register 调用</td>
+			</tr>
+			<tr>
+					<td>依赖注入</td>
+					<td>platform_config 容器</td>
+					<td><code>platform_config_init()</code></td>
+			</tr>
+			<tr>
+					<td>安全调用</td>
+					<td>NULL 检查 + 宏</td>
+					<td><code>LED_ON</code> / <code>UART_TRANSMIT</code></td>
+			</tr>
+			<tr>
+					<td>接口分离</td>
+					<td>多 ops 表</td>
+					<td><code>fs_ops + dir_ops</code></td>
+			</tr>
+			<tr>
+					<td>选填策略</td>
+					<td>NULL 函数指针</td>
+					<td>GPIO LED 跳过 brightness/RGB</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="十二浅尝之后的思考">十二、浅尝之后的思考
@@ -1511,30 +1513,30 @@
 </ul>
 <h3 id="123-适用边界">12.3 适用边界
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>场景</th>
-          <th>是否适用</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>MCU 资源极度紧张（&lt; 32KB Flash）</td>
-          <td>不适用——虚表和宏的代码膨胀可能超出预算</td>
-      </tr>
-      <tr>
-          <td>多平台/多硬件变体产品线</td>
-          <td>高度适用——一份 Service + N 份 Impl</td>
-      </tr>
-      <tr>
-          <td>需要单元测试的固件</td>
-          <td>高度适用——Mock 注入即可脱硬件测试</td>
-      </tr>
-      <tr>
-          <td>一次性原型/Demo</td>
-          <td>过度设计——直接调 HAL 更快</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>场景</th>
+					<th>是否适用</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>MCU 资源极度紧张（&lt; 32KB Flash）</td>
+					<td>不适用——虚表和宏的代码膨胀可能超出预算</td>
+			</tr>
+			<tr>
+					<td>多平台/多硬件变体产品线</td>
+					<td>高度适用——一份 Service + N 份 Impl</td>
+			</tr>
+			<tr>
+					<td>需要单元测试的固件</td>
+					<td>高度适用——Mock 注入即可脱硬件测试</td>
+			</tr>
+			<tr>
+					<td>一次性原型/Demo</td>
+					<td>过度设计——直接调 HAL 更快</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="十三扩展阅读">十三、扩展阅读
@@ -1653,7 +1655,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_989a706e6c4dfa57.png" 
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_246f581f8c773c70.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -1690,7 +1692,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_f8913fdcd1a8711e.png" 
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.bce3b53e3d529bb9662f75f33ad529b9_hu_796cd764b38bb6af.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -1714,7 +1716,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.7092acb7ea331869c1e1d1894091f36f_hu_26121de83b12f576.png" 
+                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.7092acb7ea331869c1e1d1894091f36f_hu_e021237e267cb631.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -1780,7 +1782,7 @@
             
                 
             
-        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 8 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 38.87 k ></span>字
+        本网站已稳定运行<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;总计<span id="articleCount">&lt; 8 ></span>篇文章 <span style="font-weight: bold;">·</span> 共<span id="articlewordCount">&lt; 38.86 k ></span>字
     </section>
     <section class="powerby">
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
@@ -1873,7 +1875,7 @@
                 src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
                 
                 >
-            </script><script type="text/javascript" src="/Hugo_Web/ts/main.99ce1801c4bad426a42fc436add4721e149159dbb598636e9578fd59cf778c83.js" defer></script> <script>
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
     (function () {
         const customFont = document.createElement('link');
         customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
@@ -1899,7 +1901,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "https://lingjia007.github.io/Hugo_Web/";
+  const staticDir = "http://localhost:6749/Hugo_Web/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -2146,7 +2148,7 @@
   });
 </script>
 
-<script src="https://lingjia007.github.io/Hugo_Web/js/topbar.min.js"></script>
+<script src="http://localhost:6749/Hugo_Web/js/topbar.min.js"></script>
 
 <script>
   
@@ -2175,12 +2177,12 @@
     
     path: {
       homePath: "/",
-      modelPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/live2d-moc3/",
-      cssPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/waifu.css",
-      tipsJsonPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/my-waifu-tips.json",
+      modelPath: "http:\/\/localhost:6749\/Hugo_Web\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:6749\/Hugo_Web\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:6749\/Hugo_Web\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/live2dcubismcore.js",
-      live2dSdkPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/js/live2d-sdk.js",
+      live2dCorePath: "http:\/\/localhost:6749\/Hugo_Web\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:6749\/Hugo_Web\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -2327,7 +2329,7 @@
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "https:\/\/lingjia007.github.io\/Hugo_Web\/icons/codeMore.png";
+      img.src = "http:\/\/localhost:6749\/Hugo_Web\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -2343,11 +2345,11 @@
 
 <div id="particles-js"></div>
 
-<script src="https://lingjia007.github.io/Hugo_Web/background/particles.min.js"></script>
+<script src="http://localhost:6749/Hugo_Web/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "https:\/\/lingjia007.github.io\/Hugo_Web\/background/particlesjs-config.json",
+    "http:\/\/localhost:6749\/Hugo_Web\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     },
@@ -2423,7 +2425,7 @@
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(https://lingjia007.github.io/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(http://localhost:6749/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -2442,7 +2444,7 @@
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("https://lingjia007.github.io/Hugo_Web/icons/backTop.svg");
+    background-image: url("http://localhost:6749/Hugo_Web/icons/backTop.svg");
   }
 </style>
 

@@ -1,5 +1,5 @@
 baseurl: https://lingjia007.github.io/Hugo_Web/
-languageCode: en-us
+locale: en-us
 theme: hugo-theme-stack
 title: lingsir007
 copyright: lingsir007
@@ -14,14 +14,14 @@ hasCJKLanguage: true
 
 languages:
   en:
-    languageName: English
+    label: English
     title: lingsir007
     weight: 3
     params:
       sidebar:
         subtitle: welcome to my website
   zh-cn:
-    languageName: 简体中文
+    label: 简体中文
     title: lingsir007
     weight: 1
     params:
@@ -29,7 +29,7 @@ languages:
         subtitle: 欢迎来到我的网站
 
   zh-hk:
-    languageName: 繁體中文
+    label: 繁體中文
     title: lingsir007
     weight: 2
     params:

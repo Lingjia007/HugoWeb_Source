@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  
-  <sitemap>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-cn/sitemap.xml</loc>
-    
-      <lastmod>2026-07-04T19:15:02+08:00</lastmod>
-    
-  </sitemap>
-  
-  <sitemap>
-    <loc>https://lingjia007.github.io/Hugo_Web/zh-hk/sitemap.xml</loc>
-    
-      <lastmod>2026-07-04T19:15:02+08:00</lastmod>
-    
-  </sitemap>
-  
-  <sitemap>
-    <loc>https://lingjia007.github.io/Hugo_Web/en/sitemap.xml</loc>
-    
-      <lastmod>2026-07-04T19:15:02+08:00</lastmod>
-    
-  </sitemap>
-  
+	
+		<sitemap>
+			<loc>http://localhost:6749/Hugo_Web/zh-cn/sitemap.xml</loc>
+			
+				<lastmod>2026-07-04T19:15:02+08:00</lastmod>
+			
+		</sitemap>
+	
+		<sitemap>
+			<loc>http://localhost:6749/Hugo_Web/zh-hk/sitemap.xml</loc>
+			
+				<lastmod>2026-07-04T19:15:02+08:00</lastmod>
+			
+		</sitemap>
+	
+		<sitemap>
+			<loc>http://localhost:6749/Hugo_Web/en/sitemap.xml</loc>
+			
+				<lastmod>2026-07-04T19:15:02+08:00</lastmod>
+			
+		</sitemap>
+	
 </sitemapindex>

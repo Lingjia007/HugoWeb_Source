@@ -2,54 +2,54 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Pages on lingsir007</title>
-        <link>https://lingjia007.github.io/Hugo_Web/page/</link>
+        <link>http://localhost:6749/Hugo_Web/page/</link>
         <description>Recent content in Pages on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
-        <language>zh-cn</language>
+        <language>en-us</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Wed, 01 Jul 2026 18:05:29 +0800</lastBuildDate><atom:link href="https://lingjia007.github.io/Hugo_Web/page/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Wed, 01 Jul 2026 18:05:29 +0800</lastBuildDate><atom:link href="http://localhost:6749/Hugo_Web/page/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>归档</title>
-        <link>https://lingjia007.github.io/Hugo_Web/archives/</link>
+        <link>http://localhost:6749/Hugo_Web/archives/</link>
         <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
         
-        <guid>https://lingjia007.github.io/Hugo_Web/archives/</guid>
+        <guid>http://localhost:6749/Hugo_Web/archives/</guid>
         <description></description>
         </item>
         <item>
         <title>关于</title>
-        <link>https://lingjia007.github.io/Hugo_Web/%E5%85%B3%E4%BA%8E/</link>
+        <link>http://localhost:6749/Hugo_Web/%E5%85%B3%E4%BA%8E/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>https://lingjia007.github.io/Hugo_Web/%E5%85%B3%E4%BA%8E/</guid>
+        <guid>http://localhost:6749/Hugo_Web/%E5%85%B3%E4%BA%8E/</guid>
         <description>&lt;p&gt;本站基于 &lt;a class=&#34;link&#34; href=&#34;https://gohugo.io/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Hugo&lt;/a&gt; 静态站点生成器构建，使用 &lt;a class=&#34;link&#34; href=&#34;https://github.com/CaiJimmy/hugo-theme-stack&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;hugo-theme-stack&lt;/a&gt; 主题，通过 GitHub Actions 工作流实现&lt;strong&gt;双平台自动部署&lt;/strong&gt;——推送到 &lt;code&gt;main&lt;/code&gt; 分支即触发构建与发布，无需手动操作。&lt;/p&gt;
 &lt;h2 id=&#34;部署架构&#34;&gt;部署架构
 &lt;/h2&gt;&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;部署目标&lt;/th&gt;
-          &lt;th&gt;访问地址&lt;/th&gt;
-          &lt;th&gt;发布分支&lt;/th&gt;
-          &lt;th&gt;说明&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;GitHub Pages&lt;/td&gt;
-          &lt;td&gt;&lt;a class=&#34;link&#34; href=&#34;https://lingjia007.github.io/Hugo_Web/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;部署目标&lt;/th&gt;
+					&lt;th&gt;访问地址&lt;/th&gt;
+					&lt;th&gt;发布分支&lt;/th&gt;
+					&lt;th&gt;说明&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;GitHub Pages&lt;/td&gt;
+					&lt;td&gt;&lt;a class=&#34;link&#34; href=&#34;https://lingjia007.github.io/Hugo_Web/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;https://lingjia007.github.io/Hugo_Web/&lt;/a&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;master&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;主站点，使用源仓库 &lt;code&gt;hugo.yaml&lt;/code&gt; 中的 baseURL&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;Netlify&lt;/td&gt;
-          &lt;td&gt;&lt;a class=&#34;link&#34; href=&#34;https://lingsir007.netlify.app/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+					&lt;td&gt;&lt;code&gt;master&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;主站点，使用源仓库 &lt;code&gt;hugo.yaml&lt;/code&gt; 中的 baseURL&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Netlify&lt;/td&gt;
+					&lt;td&gt;&lt;a class=&#34;link&#34; href=&#34;https://lingsir007.netlify.app/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;https://lingsir007.netlify.app/&lt;/a&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;netlify&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;镜像站点，工作流会自动改写 baseURL 以适配独立域名&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+					&lt;td&gt;&lt;code&gt;netlify&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;镜像站点，工作流会自动改写 baseURL 以适配独立域名&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;源代码仓库与发布仓库分离：构建产物被推送到外部仓库 &lt;code&gt;Lingjia007/Hugo_Web&lt;/code&gt; 的对应分支，由 GitHub Pages / Netlify 自动拉取发布。&lt;/p&gt;
 &lt;h2 id=&#34;工作流详解&#34;&gt;工作流详解
@@ -161,18 +161,18 @@
         </item>
         <item>
         <title>搜索</title>
-        <link>https://lingjia007.github.io/Hugo_Web/search/</link>
+        <link>http://localhost:6749/Hugo_Web/search/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>https://lingjia007.github.io/Hugo_Web/search/</guid>
+        <guid>http://localhost:6749/Hugo_Web/search/</guid>
         <description></description>
         </item>
         <item>
         <title>友情链接</title>
-        <link>https://lingjia007.github.io/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</link>
+        <link>http://localhost:6749/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>https://lingjia007.github.io/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</guid>
+        <guid>http://localhost:6749/Hugo_Web/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</guid>
         <description></description>
         </item>
         

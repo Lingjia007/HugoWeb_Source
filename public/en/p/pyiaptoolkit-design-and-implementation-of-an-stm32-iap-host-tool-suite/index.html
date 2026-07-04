@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-    <head><meta charset='utf-8'>
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=6749&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="An STM32 IAP host tool suite built on PyQt6 + Fluent Design, covering an AES-256 encryption + Ed25519 signing firmware packaging pipeline, HKDF device-bound key derivation, YMODEM serial transmission, PyOCD SWD flashing, a dual differential engine, LVGL resource extraction, and other core technologies">
 <title>PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite</title>
 
-<link rel='canonical' href='https://lingjia007.github.io/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/'>
+<link rel='canonical' href='http://localhost:6749/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite">
 <meta property='og:description' content="An STM32 IAP host tool suite built on PyQt6 + Fluent Design, covering an AES-256 encryption + Ed25519 signing firmware packaging pipeline, HKDF device-bound key derivation, YMODEM serial transmission, PyOCD SWD flashing, a dual differential engine, LVGL resource extraction, and other core technologies">
-<meta property='og:url' content='https://lingjia007.github.io/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/'>
+<meta property='og:url' content='http://localhost:6749/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/'>
 <meta property='og:site_name' content='lingsir007'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='IAP' /><meta property='article:tag' content='PyQt6' /><meta property='article:tag' content='AES-256' /><meta property='article:tag' content='Ed25519' /><meta property='article:tag' content='YMODEM' /><meta property='article:tag' content='OTA' /><meta property='article:tag' content='Differential Update' /><meta property='article:published_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-30T23:07:45&#43;08:00'/><meta property='og:image' content='https://lingjia007.github.io/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='IAP' /><meta property='article:tag' content='PyQt6' /><meta property='article:tag' content='AES-256' /><meta property='article:tag' content='Ed25519' /><meta property='article:tag' content='YMODEM' /><meta property='article:tag' content='OTA' /><meta property='article:tag' content='Differential Update' /><meta property='article:published_time' content='2026-06-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-06-30T23:07:45&#43;08:00'/><meta property='og:image' content='http://localhost:6749/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png' />
 <meta name="twitter:title" content="PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite">
 <meta name="twitter:description" content="An STM32 IAP host tool suite built on PyQt6 + Fluent Design, covering an AES-256 encryption + Ed25519 signing firmware packaging pipeline, HKDF device-bound key derivation, YMODEM serial transmission, PyOCD SWD flashing, a dual differential engine, LVGL resource extraction, and other core technologies"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://lingjia007.github.io/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png' />
+    <meta name="twitter:image" content='http://localhost:6749/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png' />
     <link rel="shortcut icon" href="/icons/favicon.ico" />
 
     </head>
@@ -59,7 +59,7 @@
                     
                     
                         
-                        <img src="/Hugo_Web/img/avatar_hu_6974417c8ac44e16.png" width="300"
+                        <img src="/Hugo_Web/img/avatar_hu_49d0a8f5a8c62cc5.png" width="300"
                             height="300" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -234,11 +234,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/" >简体中文</option>
+                                    <option value="http://localhost:6749/Hugo_Web/" >简体中文</option>
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/zh-hk/" >繁體中文</option>
+                                    <option value="http://localhost:6749/Hugo_Web/zh-hk/" >繁體中文</option>
                                 
-                                    <option value="https://lingjia007.github.io/Hugo_Web/en/" selected>English</option>
+                                    <option value="http://localhost:6749/Hugo_Web/en/" selected>English</option>
                                 
                             </select>
                         </li>
@@ -387,8 +387,8 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/">
-                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit_hu_ddb7f9f776002bc9.png"
-                        srcset="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit_hu_ddb7f9f776002bc9.png 800w, /Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit_hu_246c9597c3402105.png 1600w"
+                <img src="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit_hu_3bbb21f4e67dc207.png"
+                        srcset="/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit_hu_3bbb21f4e67dc207.png 800w, /Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit_hu_275d1a16dceac73e.png 1600w"
                         width="800" 
                         height="474" 
                         loading="lazy"
@@ -479,9 +479,9 @@
 
             <div>
                 
-                    <a href="https://lingjia007.github.io/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/" class="link">简体中文</a>
+                    <a href="http://localhost:6749/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/" class="link">简体中文</a>
                 
-                    <a href="https://lingjia007.github.io/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/" class="link">繁體中文</a>
+                    <a href="http://localhost:6749/Hugo_Web/zh-hk/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%A9%9F%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%A8%AD%E8%A8%88%E8%88%87%E5%AF%A6%E7%8F%BE/" class="link">繁體中文</a>
                 
             </div>
         </footer>
@@ -501,170 +501,170 @@
 <h2 id="project-overview">Project Overview
 </h2><h3 id="feature-matrix">Feature Matrix
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Feature</th>
-          <th>Description</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Serial Terminal</td>
-          <td>Multi-tab VT100 terminal with YMODEM firmware transfer support</td>
-      </tr>
-      <tr>
-          <td>AES Encrypt/Decrypt</td>
-          <td>5 modes (CBC/ECB/CTR/CFB/OFB), HKDF key derivation</td>
-      </tr>
-      <tr>
-          <td>Firmware Header Pack</td>
-          <td>64-byte binary header with version/algorithm/security counter/HMAC</td>
-      </tr>
-      <tr>
-          <td>Ed25519 Signing</td>
-          <td>Key pair generation, signing, verification, SHA-512 pre-hash</td>
-      </tr>
-      <tr>
-          <td>PyOCD Flashing</td>
-          <td>SWD debug probe firmware flashing, supports CMSIS Pack targets</td>
-      </tr>
-      <tr>
-          <td>Incremental Diff</td>
-          <td>bsdiff4 / HPatchLite dual engine, OTA incremental updates</td>
-      </tr>
-      <tr>
-          <td>HTML UI Extraction</td>
-          <td>Playwright screenshots to extract LVGL embedded display resources</td>
-      </tr>
-      <tr>
-          <td>Alipay Sandbox</td>
-          <td>IoT vending machine payment integration, custom serial protocol with STM32</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Feature</th>
+					<th>Description</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Serial Terminal</td>
+					<td>Multi-tab VT100 terminal with YMODEM firmware transfer support</td>
+			</tr>
+			<tr>
+					<td>AES Encrypt/Decrypt</td>
+					<td>5 modes (CBC/ECB/CTR/CFB/OFB), HKDF key derivation</td>
+			</tr>
+			<tr>
+					<td>Firmware Header Pack</td>
+					<td>64-byte binary header with version/algorithm/security counter/HMAC</td>
+			</tr>
+			<tr>
+					<td>Ed25519 Signing</td>
+					<td>Key pair generation, signing, verification, SHA-512 pre-hash</td>
+			</tr>
+			<tr>
+					<td>PyOCD Flashing</td>
+					<td>SWD debug probe firmware flashing, supports CMSIS Pack targets</td>
+			</tr>
+			<tr>
+					<td>Incremental Diff</td>
+					<td>bsdiff4 / HPatchLite dual engine, OTA incremental updates</td>
+			</tr>
+			<tr>
+					<td>HTML UI Extraction</td>
+					<td>Playwright screenshots to extract LVGL embedded display resources</td>
+			</tr>
+			<tr>
+					<td>Alipay Sandbox</td>
+					<td>IoT vending machine payment integration, custom serial protocol with STM32</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="tech-stack">Tech Stack
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Layer</th>
-          <th>Technology Choice</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Programming Language</td>
-          <td>Python 3</td>
-      </tr>
-      <tr>
-          <td>GUI Framework</td>
-          <td>PyQt6</td>
-      </tr>
-      <tr>
-          <td>UI Component Library</td>
-          <td>qfluentwidgets (Fluent Design style)</td>
-      </tr>
-      <tr>
-          <td>Serial Communication</td>
-          <td>pyserial</td>
-      </tr>
-      <tr>
-          <td>Terminal Emulation</td>
-          <td>pyte (VT100 parser)</td>
-      </tr>
-      <tr>
-          <td>Firmware Transfer</td>
-          <td>ymodem</td>
-      </tr>
-      <tr>
-          <td>Cryptography Library</td>
-          <td>pycryptodome (AES, HMAC, Ed25519)</td>
-      </tr>
-      <tr>
-          <td>Debug Flashing</td>
-          <td>pyocd (ARM Cortex SWD)</td>
-      </tr>
-      <tr>
-          <td>Incremental Diff</td>
-          <td>bsdiff4, hpatchlite</td>
-      </tr>
-      <tr>
-          <td>Browser Automation</td>
-          <td>playwright (Chromium headless)</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Layer</th>
+					<th>Technology Choice</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Programming Language</td>
+					<td>Python 3</td>
+			</tr>
+			<tr>
+					<td>GUI Framework</td>
+					<td>PyQt6</td>
+			</tr>
+			<tr>
+					<td>UI Component Library</td>
+					<td>qfluentwidgets (Fluent Design style)</td>
+			</tr>
+			<tr>
+					<td>Serial Communication</td>
+					<td>pyserial</td>
+			</tr>
+			<tr>
+					<td>Terminal Emulation</td>
+					<td>pyte (VT100 parser)</td>
+			</tr>
+			<tr>
+					<td>Firmware Transfer</td>
+					<td>ymodem</td>
+			</tr>
+			<tr>
+					<td>Cryptography Library</td>
+					<td>pycryptodome (AES, HMAC, Ed25519)</td>
+			</tr>
+			<tr>
+					<td>Debug Flashing</td>
+					<td>pyocd (ARM Cortex SWD)</td>
+			</tr>
+			<tr>
+					<td>Incremental Diff</td>
+					<td>bsdiff4, hpatchlite</td>
+			</tr>
+			<tr>
+					<td>Browser Automation</td>
+					<td>playwright (Chromium headless)</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="project-structure">Project Structure
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Module</th>
-          <th>File</th>
-          <th>LOC</th>
-          <th>Feature</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Entry</td>
-          <td><code>main.py</code></td>
-          <td>145</td>
-          <td>App launch, window setup</td>
-      </tr>
-      <tr>
-          <td>Serial Tools</td>
-          <td><code>serial_tools/serial_interface.py</code></td>
-          <td>2072</td>
-          <td>VT100 terminal + YMODEM</td>
-      </tr>
-      <tr>
-          <td>PyOCD Tools</td>
-          <td><code>pyocd_tools/pyocd_interface.py</code></td>
-          <td>945</td>
-          <td>SWD flashing</td>
-      </tr>
-      <tr>
-          <td>AES Tools</td>
-          <td><code>aes_tools/aes_interface.py</code></td>
-          <td>1099</td>
-          <td>Encrypt/decrypt + HKDF</td>
-      </tr>
-      <tr>
-          <td>BSDiff Tools</td>
-          <td><code>bsdiff_tools/bsdiff_interface.py</code></td>
-          <td>613</td>
-          <td>Incremental diff</td>
-      </tr>
-      <tr>
-          <td>HPatchLite Tools</td>
-          <td><code>hpatchlite_tools/hpatchlite_interface.py</code></td>
-          <td>863</td>
-          <td>Incremental diff</td>
-      </tr>
-      <tr>
-          <td>Firmware Header Tools</td>
-          <td><code>firmware_header_tools/header_interface.py</code></td>
-          <td>2129</td>
-          <td>Firmware packaging pipeline</td>
-      </tr>
-      <tr>
-          <td>Ed25519 Tools</td>
-          <td><code>ed25519_tools/ed25519_interface.py</code></td>
-          <td>936</td>
-          <td>Digital signature</td>
-      </tr>
-      <tr>
-          <td>HTML UI Extraction</td>
-          <td><code>html_ui_extract_tools/html_ui_extract_interface.py</code></td>
-          <td>985</td>
-          <td>LVGL resource extraction</td>
-      </tr>
-      <tr>
-          <td>Alipay Sandbox</td>
-          <td><code>alipay_sandbox_tools/alipay_sandbox_interface.py</code></td>
-          <td>1714</td>
-          <td>Payment integration</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Module</th>
+					<th>File</th>
+					<th>LOC</th>
+					<th>Feature</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Entry</td>
+					<td><code>main.py</code></td>
+					<td>145</td>
+					<td>App launch, window setup</td>
+			</tr>
+			<tr>
+					<td>Serial Tools</td>
+					<td><code>serial_tools/serial_interface.py</code></td>
+					<td>2072</td>
+					<td>VT100 terminal + YMODEM</td>
+			</tr>
+			<tr>
+					<td>PyOCD Tools</td>
+					<td><code>pyocd_tools/pyocd_interface.py</code></td>
+					<td>945</td>
+					<td>SWD flashing</td>
+			</tr>
+			<tr>
+					<td>AES Tools</td>
+					<td><code>aes_tools/aes_interface.py</code></td>
+					<td>1099</td>
+					<td>Encrypt/decrypt + HKDF</td>
+			</tr>
+			<tr>
+					<td>BSDiff Tools</td>
+					<td><code>bsdiff_tools/bsdiff_interface.py</code></td>
+					<td>613</td>
+					<td>Incremental diff</td>
+			</tr>
+			<tr>
+					<td>HPatchLite Tools</td>
+					<td><code>hpatchlite_tools/hpatchlite_interface.py</code></td>
+					<td>863</td>
+					<td>Incremental diff</td>
+			</tr>
+			<tr>
+					<td>Firmware Header Tools</td>
+					<td><code>firmware_header_tools/header_interface.py</code></td>
+					<td>2129</td>
+					<td>Firmware packaging pipeline</td>
+			</tr>
+			<tr>
+					<td>Ed25519 Tools</td>
+					<td><code>ed25519_tools/ed25519_interface.py</code></td>
+					<td>936</td>
+					<td>Digital signature</td>
+			</tr>
+			<tr>
+					<td>HTML UI Extraction</td>
+					<td><code>html_ui_extract_tools/html_ui_extract_interface.py</code></td>
+					<td>985</td>
+					<td>LVGL resource extraction</td>
+			</tr>
+			<tr>
+					<td>Alipay Sandbox</td>
+					<td><code>alipay_sandbox_tools/alipay_sandbox_interface.py</code></td>
+					<td>1714</td>
+					<td>Payment integration</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="application-architecture">Application Architecture
@@ -736,137 +736,137 @@
 </h2><p>This is the most central feature of the entire tool suite, taking raw firmware through a complete security processing chain to generate a deployable <code>.iap.bin</code> firmware package.</p>
 <h3 id="firmware-header-structure-64-bytes">Firmware Header Structure (64 bytes)
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Offset</th>
-          <th>Field</th>
-          <th>Size</th>
-          <th>Description</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>0x00</td>
-          <td>magic</td>
-          <td>4B</td>
-          <td><code>IAP\x01</code> magic number</td>
-      </tr>
-      <tr>
-          <td>0x04</td>
-          <td>header_version</td>
-          <td>1B</td>
-          <td>Header version number</td>
-      </tr>
-      <tr>
-          <td>0x05</td>
-          <td>firmware_version_major</td>
-          <td>1B</td>
-          <td>Firmware major version</td>
-      </tr>
-      <tr>
-          <td>0x06</td>
-          <td>firmware_version_minor</td>
-          <td>1B</td>
-          <td>Firmware minor version</td>
-      </tr>
-      <tr>
-          <td>0x07</td>
-          <td>firmware_version_patch</td>
-          <td>1B</td>
-          <td>Firmware patch version</td>
-      </tr>
-      <tr>
-          <td>0x08</td>
-          <td>total_payload_size</td>
-          <td>4B</td>
-          <td>Total size of encrypted payload</td>
-      </tr>
-      <tr>
-          <td>0x0C</td>
-          <td>image_type</td>
-          <td>1B</td>
-          <td>0x01=App, 0x02=Bootloader, 0x03=Resource</td>
-      </tr>
-      <tr>
-          <td>0x0D</td>
-          <td>encryption_algorithm</td>
-          <td>1B</td>
-          <td>0x00=None, 0x01=AES-256-CBC, 0x02=ECB, 0x03=CTR</td>
-      </tr>
-      <tr>
-          <td>0x0E</td>
-          <td>signature_algorithm</td>
-          <td>1B</td>
-          <td>0x00=None, 0x01=Ed25519</td>
-      </tr>
-      <tr>
-          <td>0x0F</td>
-          <td>hardware_compatibility</td>
-          <td>1B</td>
-          <td>Hardware compatibility flag</td>
-      </tr>
-      <tr>
-          <td>0x10</td>
-          <td>security_counter</td>
-          <td>4B</td>
-          <td>Security counter (anti-rollback)</td>
-      </tr>
-      <tr>
-          <td>0x14</td>
-          <td>build_timestamp</td>
-          <td>4B</td>
-          <td>Build timestamp</td>
-      </tr>
-      <tr>
-          <td>0x18</td>
-          <td>reserved</td>
-          <td>5B</td>
-          <td>Reserved field</td>
-      </tr>
-      <tr>
-          <td>0x1D</td>
-          <td>header_checksum</td>
-          <td>32B</td>
-          <td>HMAC-SHA256 verification (using DevKey)</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Offset</th>
+					<th>Field</th>
+					<th>Size</th>
+					<th>Description</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>0x00</td>
+					<td>magic</td>
+					<td>4B</td>
+					<td><code>IAP\x01</code> magic number</td>
+			</tr>
+			<tr>
+					<td>0x04</td>
+					<td>header_version</td>
+					<td>1B</td>
+					<td>Header version number</td>
+			</tr>
+			<tr>
+					<td>0x05</td>
+					<td>firmware_version_major</td>
+					<td>1B</td>
+					<td>Firmware major version</td>
+			</tr>
+			<tr>
+					<td>0x06</td>
+					<td>firmware_version_minor</td>
+					<td>1B</td>
+					<td>Firmware minor version</td>
+			</tr>
+			<tr>
+					<td>0x07</td>
+					<td>firmware_version_patch</td>
+					<td>1B</td>
+					<td>Firmware patch version</td>
+			</tr>
+			<tr>
+					<td>0x08</td>
+					<td>total_payload_size</td>
+					<td>4B</td>
+					<td>Total size of encrypted payload</td>
+			</tr>
+			<tr>
+					<td>0x0C</td>
+					<td>image_type</td>
+					<td>1B</td>
+					<td>0x01=App, 0x02=Bootloader, 0x03=Resource</td>
+			</tr>
+			<tr>
+					<td>0x0D</td>
+					<td>encryption_algorithm</td>
+					<td>1B</td>
+					<td>0x00=None, 0x01=AES-256-CBC, 0x02=ECB, 0x03=CTR</td>
+			</tr>
+			<tr>
+					<td>0x0E</td>
+					<td>signature_algorithm</td>
+					<td>1B</td>
+					<td>0x00=None, 0x01=Ed25519</td>
+			</tr>
+			<tr>
+					<td>0x0F</td>
+					<td>hardware_compatibility</td>
+					<td>1B</td>
+					<td>Hardware compatibility flag</td>
+			</tr>
+			<tr>
+					<td>0x10</td>
+					<td>security_counter</td>
+					<td>4B</td>
+					<td>Security counter (anti-rollback)</td>
+			</tr>
+			<tr>
+					<td>0x14</td>
+					<td>build_timestamp</td>
+					<td>4B</td>
+					<td>Build timestamp</td>
+			</tr>
+			<tr>
+					<td>0x18</td>
+					<td>reserved</td>
+					<td>5B</td>
+					<td>Reserved field</td>
+			</tr>
+			<tr>
+					<td>0x1D</td>
+					<td>header_checksum</td>
+					<td>32B</td>
+					<td>HMAC-SHA256 verification (using DevKey)</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="final-firmware-package-format">Final Firmware Package Format
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Region</th>
-          <th>Size</th>
-          <th>Description</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Header</td>
-          <td>64 bytes</td>
-          <td>Magic, version, encryption/signing algorithms</td>
-      </tr>
-      <tr>
-          <td>DynamicSalt</td>
-          <td>16 bytes</td>
-          <td>HKDF salt, unique per firmware</td>
-      </tr>
-      <tr>
-          <td>IV</td>
-          <td>16 bytes</td>
-          <td>AES initialization vector</td>
-      </tr>
-      <tr>
-          <td>Ciphertext</td>
-          <td>N bytes</td>
-          <td>AES-256 encrypted firmware + appended SHA-256</td>
-      </tr>
-      <tr>
-          <td>Signature</td>
-          <td>64 bytes</td>
-          <td>Ed25519 digital signature</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Region</th>
+					<th>Size</th>
+					<th>Description</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Header</td>
+					<td>64 bytes</td>
+					<td>Magic, version, encryption/signing algorithms</td>
+			</tr>
+			<tr>
+					<td>DynamicSalt</td>
+					<td>16 bytes</td>
+					<td>HKDF salt, unique per firmware</td>
+			</tr>
+			<tr>
+					<td>IV</td>
+					<td>16 bytes</td>
+					<td>AES initialization vector</td>
+			</tr>
+			<tr>
+					<td>Ciphertext</td>
+					<td>N bytes</td>
+					<td>AES-256 encrypted firmware + appended SHA-256</td>
+			</tr>
+			<tr>
+					<td>Signature</td>
+					<td>64 bytes</td>
+					<td>Ed25519 digital signature</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="packaging-thread-core-logic">Packaging Thread Core Logic
 </h3><div class="highlight"><div class="chroma">
@@ -925,34 +925,34 @@
     <p>Appending the SHA-256 hash before encryption is a key design decision. During decryption, the STM32 side first decrypts and removes padding, then verifies that the trailing 32-byte SHA-256 matches the front part of the decrypted data, achieving a <strong>decrypt-and-verify</strong> dual safeguard.</p></blockquote><h3 id="visual-comparison">Visual Comparison
 </h3><p>Once packaging is complete, <code>PackCompareDialog</code> displays each region of the firmware package using color coding:</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Color</th>
-          <th>Region</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Blue</td>
-          <td>Header (64B)</td>
-      </tr>
-      <tr>
-          <td>Red</td>
-          <td>DynamicSalt (16B)</td>
-      </tr>
-      <tr>
-          <td>Purple</td>
-          <td>IV (16B)</td>
-      </tr>
-      <tr>
-          <td>Green</td>
-          <td>Ciphertext (variable)</td>
-      </tr>
-      <tr>
-          <td>Orange</td>
-          <td>Signature (64B)</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Color</th>
+					<th>Region</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Blue</td>
+					<td>Header (64B)</td>
+			</tr>
+			<tr>
+					<td>Red</td>
+					<td>DynamicSalt (16B)</td>
+			</tr>
+			<tr>
+					<td>Purple</td>
+					<td>IV (16B)</td>
+			</tr>
+			<tr>
+					<td>Green</td>
+					<td>Ciphertext (variable)</td>
+			</tr>
+			<tr>
+					<td>Orange</td>
+					<td>Signature (64B)</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="hkdf-device-bound-key-derivation">HKDF Device-Bound Key Derivation
@@ -1001,70 +1001,70 @@
 </ol>
 <p>Roles of the three security elements:</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Element</th>
-          <th>Source</th>
-          <th>Role</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>DevKey (128-bit)</td>
-          <td>STM32 OTP fuses</td>
-          <td>Device key, unreadable</td>
-      </tr>
-      <tr>
-          <td>UID (96-bit)</td>
-          <td>STM32 chip unique ID</td>
-          <td>info parameter for HKDF-Expand, binding the key to the chip</td>
-      </tr>
-      <tr>
-          <td>DynamicSalt (128-bit)</td>
-          <td>Randomly generated per firmware version</td>
-          <td>Ensures different encryption keys across firmware versions on the same device</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Element</th>
+					<th>Source</th>
+					<th>Role</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>DevKey (128-bit)</td>
+					<td>STM32 OTP fuses</td>
+					<td>Device key, unreadable</td>
+			</tr>
+			<tr>
+					<td>UID (96-bit)</td>
+					<td>STM32 chip unique ID</td>
+					<td>info parameter for HKDF-Expand, binding the key to the chip</td>
+			</tr>
+			<tr>
+					<td>DynamicSalt (128-bit)</td>
+					<td>Randomly generated per firmware version</td>
+					<td>Ensures different encryption keys across firmware versions on the same device</td>
+			</tr>
+	</tbody>
 </table></div>
 <blockquote class="alert alert-important">
     <p>All three elements are indispensable: DevKey ensures only legitimate devices can decrypt, UID ensures the firmware package can only be decrypted by a specific chip, and DynamicSalt ensures each upgrade on the same device uses a different key. This is the core principle of <strong>device-bound encryption</strong>.</p></blockquote><hr>
 <h2 id="aes-256-encryption-module">AES-256 Encryption Module
 </h2><h3 id="supported-encryption-modes">Supported Encryption Modes
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Mode</th>
-          <th>Characteristics</th>
-          <th>Use Case</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>CBC</td>
-          <td>Requires IV, parallel decryption</td>
-          <td>Recommended default</td>
-      </tr>
-      <tr>
-          <td>ECB</td>
-          <td>No IV, identical plaintext → identical ciphertext</td>
-          <td>Not recommended (legacy compat only)</td>
-      </tr>
-      <tr>
-          <td>CTR</td>
-          <td>Stream cipher, no padding</td>
-          <td>High-performance scenarios</td>
-      </tr>
-      <tr>
-          <td>CFB</td>
-          <td>Stream cipher, self-synchronizing</td>
-          <td>Error-tolerant scenarios</td>
-      </tr>
-      <tr>
-          <td>OFB</td>
-          <td>Stream cipher, no error propagation</td>
-          <td>Noisy channel scenarios</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Mode</th>
+					<th>Characteristics</th>
+					<th>Use Case</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>CBC</td>
+					<td>Requires IV, parallel decryption</td>
+					<td>Recommended default</td>
+			</tr>
+			<tr>
+					<td>ECB</td>
+					<td>No IV, identical plaintext → identical ciphertext</td>
+					<td>Not recommended (legacy compat only)</td>
+			</tr>
+			<tr>
+					<td>CTR</td>
+					<td>Stream cipher, no padding</td>
+					<td>High-performance scenarios</td>
+			</tr>
+			<tr>
+					<td>CFB</td>
+					<td>Stream cipher, self-synchronizing</td>
+					<td>Error-tolerant scenarios</td>
+			</tr>
+			<tr>
+					<td>OFB</td>
+					<td>Stream cipher, no error propagation</td>
+					<td>Noisy channel scenarios</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="encryption-flow">Encryption Flow
 </h3><div class="highlight"><div class="chroma">
@@ -1147,30 +1147,30 @@
 </div>
 </div><h3 id="supported-key-formats">Supported Key Formats
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Format</th>
-          <th>Use Case</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>PEM</td>
-          <td>Standard storage format</td>
-      </tr>
-      <tr>
-          <td>Raw bytes</td>
-          <td>Used on the embedded side</td>
-      </tr>
-      <tr>
-          <td>Hex</td>
-          <td>Debug display</td>
-      </tr>
-      <tr>
-          <td>C array</td>
-          <td>Direct embedding in firmware source</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Format</th>
+					<th>Use Case</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>PEM</td>
+					<td>Standard storage format</td>
+			</tr>
+			<tr>
+					<td>Raw bytes</td>
+					<td>Used on the embedded side</td>
+			</tr>
+			<tr>
+					<td>Hex</td>
+					<td>Debug display</td>
+			</tr>
+			<tr>
+					<td>C array</td>
+					<td>Direct embedding in firmware source</td>
+			</tr>
+	</tbody>
 </table></div>
 <blockquote class="alert alert-tip">
     <p>Ed25519 public keys are only 32 bytes and signatures only 64 bytes, making it well suited for resource-constrained embedded scenarios. Compared to RSA-2048 (256-byte signatures), Ed25519 offers significant advantages in both security and efficiency.</p></blockquote><hr>
@@ -1277,79 +1277,79 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Feature</th>
-          <th>Description</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Probe auto-refresh</td>
-          <td>5-second interval, change detection</td>
-      </tr>
-      <tr>
-          <td>CMSIS Pack support</td>
-          <td>Scans .pack/.pdsc to obtain target MCU definitions</td>
-      </tr>
-      <tr>
-          <td>Default target</td>
-          <td><code>stm32f407vgtx</code></td>
-      </tr>
-      <tr>
-          <td>Erase modes</td>
-          <td>Full-chip erase / sector erase / no erase</td>
-      </tr>
-      <tr>
-          <td>Connect modes</td>
-          <td>halt / attach / pre-reset</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Feature</th>
+					<th>Description</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Probe auto-refresh</td>
+					<td>5-second interval, change detection</td>
+			</tr>
+			<tr>
+					<td>CMSIS Pack support</td>
+					<td>Scans .pack/.pdsc to obtain target MCU definitions</td>
+			</tr>
+			<tr>
+					<td>Default target</td>
+					<td><code>stm32f407vgtx</code></td>
+			</tr>
+			<tr>
+					<td>Erase modes</td>
+					<td>Full-chip erase / sector erase / no erase</td>
+			</tr>
+			<tr>
+					<td>Connect modes</td>
+					<td>halt / attach / pre-reset</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="dual-differential-engine">Dual Differential Engine
 </h2><p>Integrates both bsdiff4 and HPatchLite differential engines, providing options for different scenarios.</p>
 <h3 id="engine-comparison">Engine Comparison
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Feature</th>
-          <th>bsdiff4</th>
-          <th>HPatchLite</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Type</td>
-          <td>Python library</td>
-          <td>External executable</td>
-      </tr>
-      <tr>
-          <td>Compression algo</td>
-          <td>bzip2</td>
-          <td>tuz / zlib / lzma / lzma2</td>
-      </tr>
-      <tr>
-          <td>Integration</td>
-          <td><code>import bsdiff4</code></td>
-          <td>Subprocess call</td>
-      </tr>
-      <tr>
-          <td>Parallel support</td>
-          <td>None</td>
-          <td>Multi-threaded</td>
-      </tr>
-      <tr>
-          <td>In-place patching</td>
-          <td>Not supported</td>
-          <td>Supported</td>
-      </tr>
-      <tr>
-          <td>Use case</td>
-          <td>Simple and fast</td>
-          <td>Advanced options, embedded-side compatibility</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Feature</th>
+					<th>bsdiff4</th>
+					<th>HPatchLite</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Type</td>
+					<td>Python library</td>
+					<td>External executable</td>
+			</tr>
+			<tr>
+					<td>Compression algo</td>
+					<td>bzip2</td>
+					<td>tuz / zlib / lzma / lzma2</td>
+			</tr>
+			<tr>
+					<td>Integration</td>
+					<td><code>import bsdiff4</code></td>
+					<td>Subprocess call</td>
+			</tr>
+			<tr>
+					<td>Parallel support</td>
+					<td>None</td>
+					<td>Multi-threaded</td>
+			</tr>
+			<tr>
+					<td>In-place patching</td>
+					<td>Not supported</td>
+					<td>Supported</td>
+			</tr>
+			<tr>
+					<td>Use case</td>
+					<td>Simple and fast</td>
+					<td>Advanced options, embedded-side compatibility</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="differential-upgrade-effect">Differential Upgrade Effect
 </h3><p>Assume the old firmware is 384KB and the new firmware is 386KB; the diff file may only be 5-20KB. In bandwidth-constrained scenarios, differential upgrades can significantly reduce transfer time and data costs.</p>
@@ -1382,55 +1382,55 @@
 </div>
 </div><h3 id="command-set">Command Set
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Direction</th>
-          <th>CMD</th>
-          <th>Description</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>PC→STM32</td>
-          <td>0x01</td>
-          <td>Send QR code URL</td>
-      </tr>
-      <tr>
-          <td>PC→STM32</td>
-          <td>0x02</td>
-          <td>Payment status notification</td>
-      </tr>
-      <tr>
-          <td>PC→STM32</td>
-          <td>0x03</td>
-          <td>Send transaction ID</td>
-      </tr>
-      <tr>
-          <td>PC→STM32</td>
-          <td>0x04</td>
-          <td>Heartbeat response</td>
-      </tr>
-      <tr>
-          <td>STM32→PC</td>
-          <td>0x81</td>
-          <td>Request QR code</td>
-      </tr>
-      <tr>
-          <td>STM32→PC</td>
-          <td>0x82</td>
-          <td>Query payment status</td>
-      </tr>
-      <tr>
-          <td>STM32→PC</td>
-          <td>0x83</td>
-          <td>Close order</td>
-      </tr>
-      <tr>
-          <td>STM32→PC</td>
-          <td>0x84</td>
-          <td>Heartbeat</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Direction</th>
+					<th>CMD</th>
+					<th>Description</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>PC→STM32</td>
+					<td>0x01</td>
+					<td>Send QR code URL</td>
+			</tr>
+			<tr>
+					<td>PC→STM32</td>
+					<td>0x02</td>
+					<td>Payment status notification</td>
+			</tr>
+			<tr>
+					<td>PC→STM32</td>
+					<td>0x03</td>
+					<td>Send transaction ID</td>
+			</tr>
+			<tr>
+					<td>PC→STM32</td>
+					<td>0x04</td>
+					<td>Heartbeat response</td>
+			</tr>
+			<tr>
+					<td>STM32→PC</td>
+					<td>0x81</td>
+					<td>Request QR code</td>
+			</tr>
+			<tr>
+					<td>STM32→PC</td>
+					<td>0x82</td>
+					<td>Query payment status</td>
+			</tr>
+			<tr>
+					<td>STM32→PC</td>
+					<td>0x83</td>
+					<td>Close order</td>
+			</tr>
+			<tr>
+					<td>STM32→PC</td>
+					<td>0x84</td>
+					<td>Heartbeat</td>
+			</tr>
+	</tbody>
 </table></div>
 <blockquote class="alert alert-note">
     <p>Command encoding rule: <code>0x0x</code> is PC→STM32, <code>0x8x</code> is STM32→PC; the highest bit distinguishes direction. The receive thread <code>SerialReceiveThread</code> parses the <code>0xAA 0x55</code> frame header and extracts the command code and data payload.</p></blockquote><hr>
@@ -1465,50 +1465,50 @@
 </ol>
 <p><strong>Layered security defense:</strong></p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Layer</th>
-          <th>Mechanism</th>
-          <th>Problem Solved</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Authenticity</td>
-          <td>Ed25519 signature</td>
-          <td>Who signed it?</td>
-      </tr>
-      <tr>
-          <td>Header integrity</td>
-          <td>HMAC-SHA256</td>
-          <td>Header tampered?</td>
-      </tr>
-      <tr>
-          <td>Confidentiality</td>
-          <td>AES-256 encryption</td>
-          <td>Content confidentiality</td>
-      </tr>
-      <tr>
-          <td>Payload integrity</td>
-          <td>SHA-256 hash</td>
-          <td>Is data correct?</td>
-      </tr>
-      <tr>
-          <td>Anti-rollback</td>
-          <td>Security Counter</td>
-          <td>Old version?</td>
-      </tr>
-      <tr>
-          <td>Key isolation</td>
-          <td>HKDF derivation</td>
-          <td>Different keys on same device</td>
-      </tr>
-      <tr>
-          <td>Chip binding</td>
-          <td>UID binding</td>
-          <td>Key tied to chip</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Layer</th>
+					<th>Mechanism</th>
+					<th>Problem Solved</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Authenticity</td>
+					<td>Ed25519 signature</td>
+					<td>Who signed it?</td>
+			</tr>
+			<tr>
+					<td>Header integrity</td>
+					<td>HMAC-SHA256</td>
+					<td>Header tampered?</td>
+			</tr>
+			<tr>
+					<td>Confidentiality</td>
+					<td>AES-256 encryption</td>
+					<td>Content confidentiality</td>
+			</tr>
+			<tr>
+					<td>Payload integrity</td>
+					<td>SHA-256 hash</td>
+					<td>Is data correct?</td>
+			</tr>
+			<tr>
+					<td>Anti-rollback</td>
+					<td>Security Counter</td>
+					<td>Old version?</td>
+			</tr>
+			<tr>
+					<td>Key isolation</td>
+					<td>HKDF derivation</td>
+					<td>Different keys on same device</td>
+			</tr>
+			<tr>
+					<td>Chip binding</td>
+					<td>UID binding</td>
+					<td>Key tied to chip</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="nuitka-packaging-and-deployment">Nuitka Packaging and Deployment
@@ -1535,81 +1535,81 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nuitka <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --standalone <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --onefile-no-compression <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --lto<span class="o">=</span>yes <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --show-memory <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --show-progress <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --windows-console-mode<span class="o">=</span>disable <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --enable-plugin<span class="o">=</span>pyqt6 <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --enable-plugin<span class="o">=</span>upx <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --output-dir<span class="o">=</span>out <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --include-data-dir<span class="o">=</span>settings/resource<span class="o">=</span>settings/resource <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --include-data-file<span class="o">=</span>settings/config/config.json<span class="o">=</span>settings/config/config.json <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --include-data-file<span class="o">=</span>hpatchlite_tools/hdiffi.exe<span class="o">=</span>hpatchlite_tools/hdiffi.exe <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --include-data-file<span class="o">=</span>hpatchlite_tools/hpatchi.exe<span class="o">=</span>hpatchlite_tools/hpatchi.exe <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --windows-icon-from-ico<span class="o">=</span>settings/resource/images/logo.ico <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  main.py
+</span></span></span><span class="line"><span class="cl">  --standalone <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --onefile-no-compression <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --lto<span class="o">=</span>yes <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --show-memory <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --show-progress <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --windows-console-mode<span class="o">=</span>disable <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --enable-plugin<span class="o">=</span>pyqt6 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --enable-plugin<span class="o">=</span>upx <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --output-dir<span class="o">=</span>out <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --include-data-dir<span class="o">=</span>settings/resource<span class="o">=</span>settings/resource <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --include-data-file<span class="o">=</span>settings/config/config.json<span class="o">=</span>settings/config/config.json <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --include-data-file<span class="o">=</span>hpatchlite_tools/hdiffi.exe<span class="o">=</span>hpatchlite_tools/hdiffi.exe <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --include-data-file<span class="o">=</span>hpatchlite_tools/hpatchi.exe<span class="o">=</span>hpatchlite_tools/hpatchi.exe <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --windows-icon-from-ico<span class="o">=</span>settings/resource/images/logo.ico <span class="se">\
+</span></span></span><span class="line"><span class="cl">  main.py
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="parameter-description">Parameter Description
 </h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Parameter</th>
-          <th>Description</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>--standalone</code></td>
-          <td>Generate standalone executable, independent of local Python</td>
-      </tr>
-      <tr>
-          <td><code>--onefile-no-compression</code></td>
-          <td>Single-file output, no compression (faster startup)</td>
-      </tr>
-      <tr>
-          <td><code>--lto=yes</code></td>
-          <td>Enable Link Time Optimization, reducing size</td>
-      </tr>
-      <tr>
-          <td><code>--show-memory</code></td>
-          <td>Show memory usage</td>
-      </tr>
-      <tr>
-          <td><code>--show-progress</code></td>
-          <td>Show compile progress</td>
-      </tr>
-      <tr>
-          <td><code>--windows-console-mode=disable</code></td>
-          <td>Hide console window (GUI app)</td>
-      </tr>
-      <tr>
-          <td><code>--enable-plugin=pyqt6</code></td>
-          <td>Enable PyQt6 plugin support</td>
-      </tr>
-      <tr>
-          <td><code>--enable-plugin=upx</code></td>
-          <td>Enable UPX compression to further reduce size</td>
-      </tr>
-      <tr>
-          <td><code>--output-dir=out</code></td>
-          <td>Output directory</td>
-      </tr>
-      <tr>
-          <td><code>--include-data-dir</code></td>
-          <td>Include resource directory (icons, translations, etc.)</td>
-      </tr>
-      <tr>
-          <td><code>--include-data-file</code></td>
-          <td>Include individual data files (config, external tools)</td>
-      </tr>
-      <tr>
-          <td><code>--windows-icon-from-ico</code></td>
-          <td>Set application icon</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Parameter</th>
+					<th>Description</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>--standalone</code></td>
+					<td>Generate standalone executable, independent of local Python</td>
+			</tr>
+			<tr>
+					<td><code>--onefile-no-compression</code></td>
+					<td>Single-file output, no compression (faster startup)</td>
+			</tr>
+			<tr>
+					<td><code>--lto=yes</code></td>
+					<td>Enable Link Time Optimization, reducing size</td>
+			</tr>
+			<tr>
+					<td><code>--show-memory</code></td>
+					<td>Show memory usage</td>
+			</tr>
+			<tr>
+					<td><code>--show-progress</code></td>
+					<td>Show compile progress</td>
+			</tr>
+			<tr>
+					<td><code>--windows-console-mode=disable</code></td>
+					<td>Hide console window (GUI app)</td>
+			</tr>
+			<tr>
+					<td><code>--enable-plugin=pyqt6</code></td>
+					<td>Enable PyQt6 plugin support</td>
+			</tr>
+			<tr>
+					<td><code>--enable-plugin=upx</code></td>
+					<td>Enable UPX compression to further reduce size</td>
+			</tr>
+			<tr>
+					<td><code>--output-dir=out</code></td>
+					<td>Output directory</td>
+			</tr>
+			<tr>
+					<td><code>--include-data-dir</code></td>
+					<td>Include resource directory (icons, translations, etc.)</td>
+			</tr>
+			<tr>
+					<td><code>--include-data-file</code></td>
+					<td>Include individual data files (config, external tools)</td>
+			</tr>
+			<tr>
+					<td><code>--windows-icon-from-ico</code></td>
+					<td>Set application icon</td>
+			</tr>
+	</tbody>
 </table></div>
 <h3 id="pyqt6-packaging-notes">PyQt6 Packaging Notes
 </h3><blockquote class="alert alert-warning">
@@ -1670,114 +1670,114 @@
 <h2 id="configuration-system">Configuration System
 </h2><p>Based on qfluentwidgets&rsquo; <code>QConfig</code> framework, supports persistent storage:</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Config Item</th>
-          <th>Group</th>
-          <th>Default</th>
-          <th>Description</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>serialFontSize</code></td>
-          <td>Serial</td>
-          <td>12</td>
-          <td>Terminal font size</td>
-      </tr>
-      <tr>
-          <td><code>serialFontFamily</code></td>
-          <td>Serial</td>
-          <td>Consolas</td>
-          <td>Terminal font</td>
-      </tr>
-      <tr>
-          <td><code>serialDTR</code></td>
-          <td>Serial</td>
-          <td>True</td>
-          <td>DTR signal</td>
-      </tr>
-      <tr>
-          <td><code>serialRTS</code></td>
-          <td>Serial</td>
-          <td>True</td>
-          <td>RTS signal</td>
-      </tr>
-      <tr>
-          <td><code>pyocdFirmwarePath</code></td>
-          <td>PyOCD</td>
-          <td>&quot;&quot;</td>
-          <td>Firmware path</td>
-      </tr>
-      <tr>
-          <td><code>pyocdTrustCRC</code></td>
-          <td>PyOCD</td>
-          <td>True</td>
-          <td>Trust CRC</td>
-      </tr>
-      <tr>
-          <td><code>cmPackPath</code></td>
-          <td>PyOCD</td>
-          <td>&quot;&quot;</td>
-          <td>CMSIS Pack path</td>
-      </tr>
-      <tr>
-          <td><code>language</code></td>
-          <td>MainWindow</td>
-          <td>Auto</td>
-          <td>UI language</td>
-      </tr>
-      <tr>
-          <td><code>dpiScale</code></td>
-          <td>MainWindow</td>
-          <td>Auto</td>
-          <td>DPI scaling</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Config Item</th>
+					<th>Group</th>
+					<th>Default</th>
+					<th>Description</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>serialFontSize</code></td>
+					<td>Serial</td>
+					<td>12</td>
+					<td>Terminal font size</td>
+			</tr>
+			<tr>
+					<td><code>serialFontFamily</code></td>
+					<td>Serial</td>
+					<td>Consolas</td>
+					<td>Terminal font</td>
+			</tr>
+			<tr>
+					<td><code>serialDTR</code></td>
+					<td>Serial</td>
+					<td>True</td>
+					<td>DTR signal</td>
+			</tr>
+			<tr>
+					<td><code>serialRTS</code></td>
+					<td>Serial</td>
+					<td>True</td>
+					<td>RTS signal</td>
+			</tr>
+			<tr>
+					<td><code>pyocdFirmwarePath</code></td>
+					<td>PyOCD</td>
+					<td>&quot;&quot;</td>
+					<td>Firmware path</td>
+			</tr>
+			<tr>
+					<td><code>pyocdTrustCRC</code></td>
+					<td>PyOCD</td>
+					<td>True</td>
+					<td>Trust CRC</td>
+			</tr>
+			<tr>
+					<td><code>cmPackPath</code></td>
+					<td>PyOCD</td>
+					<td>&quot;&quot;</td>
+					<td>CMSIS Pack path</td>
+			</tr>
+			<tr>
+					<td><code>language</code></td>
+					<td>MainWindow</td>
+					<td>Auto</td>
+					<td>UI language</td>
+			</tr>
+			<tr>
+					<td><code>dpiScale</code></td>
+					<td>MainWindow</td>
+					<td>Auto</td>
+					<td>DPI scaling</td>
+			</tr>
+	</tbody>
 </table></div>
 <hr>
 <h2 id="collaboration-with-the-bootloader">Collaboration with the Bootloader
 </h2><p>PyIAPToolKit and the STM32F407 Bootloader form a complete IAP system:</p>
 <div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>Stage</th>
-          <th>Host (PyIAPToolKit)</th>
-          <th>Device (Bootloader)</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Firmware packaging</td>
-          <td>AES encryption + Ed25519 signing + Header</td>
-          <td>—</td>
-      </tr>
-      <tr>
-          <td>Key derivation</td>
-          <td>HKDF (Salt + DevKey + UID)</td>
-          <td>HKDF (Salt + DevKey + UID)</td>
-      </tr>
-      <tr>
-          <td>Firmware transfer</td>
-          <td>YMODEM send / PyOCD flash</td>
-          <td>YMODEM receive / SWD write</td>
-      </tr>
-      <tr>
-          <td>Firmware verification</td>
-          <td>—</td>
-          <td>HMAC → anti-rollback → AES decrypt → signature verification</td>
-      </tr>
-      <tr>
-          <td>Partition management</td>
-          <td>—</td>
-          <td>A/B dual partition + auto rollback</td>
-      </tr>
-      <tr>
-          <td>Differential update</td>
-          <td>bsdiff4 / HPatchLite generate diff pack</td>
-          <td>HPatchLite apply diff pack</td>
-      </tr>
-  </tbody>
+	<thead>
+			<tr>
+					<th>Stage</th>
+					<th>Host (PyIAPToolKit)</th>
+					<th>Device (Bootloader)</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Firmware packaging</td>
+					<td>AES encryption + Ed25519 signing + Header</td>
+					<td>—</td>
+			</tr>
+			<tr>
+					<td>Key derivation</td>
+					<td>HKDF (Salt + DevKey + UID)</td>
+					<td>HKDF (Salt + DevKey + UID)</td>
+			</tr>
+			<tr>
+					<td>Firmware transfer</td>
+					<td>YMODEM send / PyOCD flash</td>
+					<td>YMODEM receive / SWD write</td>
+			</tr>
+			<tr>
+					<td>Firmware verification</td>
+					<td>—</td>
+					<td>HMAC → anti-rollback → AES decrypt → signature verification</td>
+			</tr>
+			<tr>
+					<td>Partition management</td>
+					<td>—</td>
+					<td>A/B dual partition + auto rollback</td>
+			</tr>
+			<tr>
+					<td>Differential update</td>
+					<td>bsdiff4 / HPatchLite generate diff pack</td>
+					<td>HPatchLite apply diff pack</td>
+			</tr>
+	</tbody>
 </table></div>
 <blockquote class="alert alert-tip">
     <p>The host and device sides use the <strong>exact same key derivation algorithm</strong> (HKDF) to ensure the derived AES keys match. On the device side, DevKey is stored in OTP; on the host side, it is imported by the user. UID is read from a register on the device side, and entered by the user or auto-fetched from the device on the host side.</p></blockquote><hr>
@@ -1910,7 +1910,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_989a706e6c4dfa57.png" 
+                <img src="/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.7c8335e5345c22f2e144305e64572346_hu_246f581f8c773c70.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -1973,7 +1973,7 @@
         
         
             <div class="article-image">
-                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.7092acb7ea331869c1e1d1894091f36f_hu_26121de83b12f576.png" 
+                <img src="/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.7092acb7ea331869c1e1d1894091f36f_hu_e021237e267cb631.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -2130,7 +2130,7 @@
                 src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
                 
                 >
-            </script><script type="text/javascript" src="/Hugo_Web/ts/main.99ce1801c4bad426a42fc436add4721e149159dbb598636e9578fd59cf778c83.js" defer></script> <script>
+            </script><script type="text/javascript" src="/Hugo_Web/ts/main.d8155041a8c35eaca7a7bbabfb2c7d9894e8cc566f4c6f2ac315c3e870660ea0.js" defer></script> <script>
     (function () {
         const customFont = document.createElement('link');
         customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
@@ -2156,7 +2156,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "https://lingjia007.github.io/Hugo_Web/en/";
+  const staticDir = "http://localhost:6749/Hugo_Web/en/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -2403,7 +2403,7 @@
   });
 </script>
 
-<script src="https://lingjia007.github.io/Hugo_Web/en/js/topbar.min.js"></script>
+<script src="http://localhost:6749/Hugo_Web/en/js/topbar.min.js"></script>
 
 <script>
   
@@ -2432,12 +2432,12 @@
     
     path: {
       homePath: "/",
-      modelPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/live2d-moc3/",
-      cssPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/waifu.css",
-      tipsJsonPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/my-waifu-tips.json",
+      modelPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/live2dcubismcore.js",
-      live2dSdkPath: "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/js/live2d-sdk.js",
+      live2dCorePath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -2584,7 +2584,7 @@
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/icons/codeMore.png";
+      img.src = "http:\/\/localhost:6749\/Hugo_Web\/en\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -2600,11 +2600,11 @@
 
 <div id="particles-js"></div>
 
-<script src="https://lingjia007.github.io/Hugo_Web/en/background/particles.min.js"></script>
+<script src="http://localhost:6749/Hugo_Web/en/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "https:\/\/lingjia007.github.io\/Hugo_Web\/en\/background/particlesjs-config.json",
+    "http:\/\/localhost:6749\/Hugo_Web\/en\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     },
@@ -2680,7 +2680,7 @@
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(https://lingjia007.github.io/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(http://localhost:6749/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -2699,7 +2699,7 @@
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("https://lingjia007.github.io/Hugo_Web/en/icons/backTop.svg");
+    background-image: url("http://localhost:6749/Hugo_Web/en/icons/backTop.svg");
   }
 </style>
 
