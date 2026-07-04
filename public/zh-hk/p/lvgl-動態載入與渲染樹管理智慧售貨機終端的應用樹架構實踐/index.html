@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-hk" dir="ltr">
-    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=6749&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=10776&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="基於 ArtInChip + LVGL v9 + RT-Thread 的智慧售貨機終端，深入剖析應用樹（layout_node）如何管理 LVGL 渲染樹，涵蓋組合模式雙樹映射、Wrap 橋接機制、策略驅動的 Flex/Grid 佈局、控件工廠動態創建、事件驅動熱更新、靜態骨架到動態元件的替換流程等核心技術詳解">
 <title>LVGL 動態載入與渲染樹管理：智慧售貨機終端的應用樹架構實踐</title>
 
-<link rel='canonical' href='http://localhost:6749/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/'>
+<link rel='canonical' href='http://localhost:10776/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="LVGL 動態載入與渲染樹管理：智慧售貨機終端的應用樹架構實踐">
 <meta property='og:description' content="基於 ArtInChip + LVGL v9 + RT-Thread 的智慧售貨機終端，深入剖析應用樹（layout_node）如何管理 LVGL 渲染樹，涵蓋組合模式雙樹映射、Wrap 橋接機制、策略驅動的 Flex/Grid 佈局、控件工廠動態創建、事件驅動熱更新、靜態骨架到動態元件的替換流程等核心技術詳解">
-<meta property='og:url' content='http://localhost:6749/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/'>
+<meta property='og:url' content='http://localhost:10776/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/'>
 <meta property='og:site_name' content='lingsir007'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='售貨機' /><meta property='article:tag' content='嵌入式UI' /><meta property='article:tag' content='設計模式' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T22:52:44&#43;08:00'/><meta property='og:image' content='http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='售貨機' /><meta property='article:tag' content='嵌入式UI' /><meta property='article:tag' content='設計模式' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T22:52:44&#43;08:00'/><meta property='og:image' content='http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
 <meta name="twitter:title" content="LVGL 動態載入與渲染樹管理：智慧售貨機終端的應用樹架構實踐">
 <meta name="twitter:description" content="基於 ArtInChip + LVGL v9 + RT-Thread 的智慧售貨機終端，深入剖析應用樹（layout_node）如何管理 LVGL 渲染樹，涵蓋組合模式雙樹映射、Wrap 橋接機制、策略驅動的 Flex/Grid 佈局、控件工廠動態創建、事件驅動熱更新、靜態骨架到動態元件的替換流程等核心技術詳解"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
+    <meta name="twitter:image" content='http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
     <link rel="shortcut icon" href="/icons/favicon.ico" />
 
     </head>
@@ -234,11 +234,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="http://localhost:6749/Hugo_Web/" >简体中文</option>
+                                    <option value="http://localhost:10776/Hugo_Web/" >简体中文</option>
                                 
-                                    <option value="http://localhost:6749/Hugo_Web/zh-hk/" selected>繁體中文</option>
+                                    <option value="http://localhost:10776/Hugo_Web/zh-hk/" selected>繁體中文</option>
                                 
-                                    <option value="http://localhost:6749/Hugo_Web/en/" >English</option>
+                                    <option value="http://localhost:10776/Hugo_Web/en/" >English</option>
                                 
                             </select>
                         </li>
@@ -488,9 +488,9 @@
 
             <div>
                 
-                    <a href="http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/" class="link">简体中文</a>
+                    <a href="http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/" class="link">简体中文</a>
                 
-                    <a href="http://localhost:6749/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/" class="link">English</a>
+                    <a href="http://localhost:10776/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/" class="link">English</a>
                 
             </div>
         </footer>
@@ -1987,9 +1987,20 @@
 
             
                 
-<article class="">
+<article class="has-image">
     <a href="/Hugo_Web/zh-hk/p/%E6%B7%BA%E5%98%97-bootloader-%E4%BA%94%E5%B1%A4%E6%9E%B6%E6%A7%8B%E5%BE%9E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%B7%A8%E6%8E%92%E7%9A%84-oop-%E7%89%A9%E4%BB%B6%E8%A8%AD%E8%A8%88%E6%A8%A1%E5%9E%8B/">
         
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/%E6%B5%85%E5%B0%9D-bootloader-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E4%BB%8E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%BC%96%E6%8E%92%E7%9A%84-oop-%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%9E%8B/C%E8%AF%AD%E8%A8%80%E7%BB%93%E6%9E%84%E4%BD%93%E6%8C%87%E9%92%88%E5%8D%9A%E5%AE%A2%E5%B0%81%E9%9D%A2.bc913b6a996b7421fe3ea97f79ea25e3_hu_b1e5a0a00e8e56e1.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post 淺嘗 Bootloader 五層架構：從 Platform 抽象到 App 編排的 OOP 物件設計模型"
+                        
+                        data-hash="md5-vJE7aplrdCH&#43;Pql/eeol4w==">
+                
+            </div>
         
 
         <div class="article-details">
@@ -2225,7 +2236,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "http://localhost:6749/Hugo_Web/zh-hk/";
+  const staticDir = "http://localhost:10776/Hugo_Web/zh-hk/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -2472,7 +2483,7 @@
   });
 </script>
 
-<script src="http://localhost:6749/Hugo_Web/zh-hk/js/topbar.min.js"></script>
+<script src="http://localhost:10776/Hugo_Web/zh-hk/js/topbar.min.js"></script>
 
 <script>
   
@@ -2501,12 +2512,12 @@
     
     path: {
       homePath: "/",
-      modelPath: "http:\/\/localhost:6749\/Hugo_Web\/zh-hk\/live2d-moc3/",
-      cssPath: "http:\/\/localhost:6749\/Hugo_Web\/zh-hk\/js/waifu.css",
-      tipsJsonPath: "http:\/\/localhost:6749\/Hugo_Web\/zh-hk\/js/my-waifu-tips.json",
+      modelPath: "http:\/\/localhost:10776\/Hugo_Web\/zh-hk\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:10776\/Hugo_Web\/zh-hk\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:10776\/Hugo_Web\/zh-hk\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "http:\/\/localhost:6749\/Hugo_Web\/zh-hk\/js/live2dcubismcore.js",
-      live2dSdkPath: "http:\/\/localhost:6749\/Hugo_Web\/zh-hk\/js/live2d-sdk.js",
+      live2dCorePath: "http:\/\/localhost:10776\/Hugo_Web\/zh-hk\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:10776\/Hugo_Web\/zh-hk\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -2653,7 +2664,7 @@
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "http:\/\/localhost:6749\/Hugo_Web\/zh-hk\/icons/codeMore.png";
+      img.src = "http:\/\/localhost:10776\/Hugo_Web\/zh-hk\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -2669,11 +2680,11 @@
 
 <div id="particles-js"></div>
 
-<script src="http://localhost:6749/Hugo_Web/zh-hk/background/particles.min.js"></script>
+<script src="http://localhost:10776/Hugo_Web/zh-hk/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "http:\/\/localhost:6749\/Hugo_Web\/zh-hk\/background/particlesjs-config.json",
+    "http:\/\/localhost:10776\/Hugo_Web\/zh-hk\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     },
@@ -2749,7 +2760,7 @@
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(http://localhost:6749/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(http://localhost:10776/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -2768,7 +2779,7 @@
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("http://localhost:6749/Hugo_Web/zh-hk/icons/backTop.svg");
+    background-image: url("http://localhost:10776/Hugo_Web/zh-hk/icons/backTop.svg");
   }
 </style>
 

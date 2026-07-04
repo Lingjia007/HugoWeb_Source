@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Linker-Script on lingsir007</title>
-        <link>http://localhost:6749/Hugo_Web/en/tags/linker-script/</link>
+        <link>http://localhost:10776/Hugo_Web/en/tags/linker-script/</link>
         <description>Recent content in Linker-Script on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Thu, 02 Jul 2026 22:52:44 +0800</lastBuildDate><atom:link href="http://localhost:6749/Hugo_Web/en/tags/linker-script/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 02 Jul 2026 22:52:44 +0800</lastBuildDate><atom:link href="http://localhost:10776/Hugo_Web/en/tags/linker-script/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>GNU LD Linker Script in Depth: Dissecting Embedded Memory Layout and Section Relocation via an STM32F407 Example</title>
-        <link>http://localhost:6749/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/</link>
+        <link>http://localhost:10776/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6749/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/</guid>
+        <guid>http://localhost:10776/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/</guid>
         <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction
 &lt;/h2&gt;&lt;p&gt;A linker script (&lt;code&gt;.ld&lt;/code&gt;) is one of the most overlooked yet critical files in embedded development. It tells the linker where the program&amp;rsquo;s code and data should be placed in memory, the arrangement order of each section, and which data needs to be copied from Flash to RAM at startup.&lt;/p&gt;
 &lt;p&gt;This article uses a real project&amp;rsquo;s STM32F407VGT6 linker script as an example, walking through every syntactic element of a GNU LD linker script line by line, and providing an in-depth explanation of the VMA/LMA address model and the cooperation mechanism between startup code and the linker script.&lt;/p&gt;

@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=6749&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
+    <head><script src="/Hugo_Web/livereload.js?mindelay=10&amp;v=2&amp;port=10776&amp;path=Hugo_Web/livereload" data-no-instant defer></script><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Based on ArtInChip + LVGL v9 + RT-Thread smart vending terminal, an in-depth analysis of how the application tree (layout_node) manages the LVGL render tree, covering Composite pattern dual-tree mapping, Wrap bridging mechanism, strategy-driven Flex/Grid layout, widget factory dynamic creation, event-driven hot updates, and the replacement flow from static skeleton to dynamic components">
 <title>LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal</title>
 
-<link rel='canonical' href='http://localhost:6749/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/'>
+<link rel='canonical' href='http://localhost:10776/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/'>
 
 <link rel="stylesheet" href="/Hugo_Web/scss/style.min.553d9fc5cc86a8c9deb4211c02fd07c2210fc13d76ef772a58388b83939349ab.css"><meta property='og:title' content="LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal">
 <meta property='og:description' content="Based on ArtInChip + LVGL v9 + RT-Thread smart vending terminal, an in-depth analysis of how the application tree (layout_node) manages the LVGL render tree, covering Composite pattern dual-tree mapping, Wrap bridging mechanism, strategy-driven Flex/Grid layout, widget factory dynamic creation, event-driven hot updates, and the replacement flow from static skeleton to dynamic components">
-<meta property='og:url' content='http://localhost:6749/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/'>
+<meta property='og:url' content='http://localhost:10776/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/'>
 <meta property='og:site_name' content='lingsir007'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='Vending Machine' /><meta property='article:tag' content='Embedded UI' /><meta property='article:tag' content='Design Patterns' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T22:52:44&#43;08:00'/><meta property='og:image' content='http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='LVGL' /><meta property='article:tag' content='RT-Thread' /><meta property='article:tag' content='ArtInChip' /><meta property='article:tag' content='Vending Machine' /><meta property='article:tag' content='Embedded UI' /><meta property='article:tag' content='Design Patterns' /><meta property='article:published_time' content='2026-07-02T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2026-07-02T22:52:44&#43;08:00'/><meta property='og:image' content='http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
 <meta name="twitter:title" content="LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal">
 <meta name="twitter:description" content="Based on ArtInChip + LVGL v9 + RT-Thread smart vending terminal, an in-depth analysis of how the application tree (layout_node) manages the LVGL render tree, covering Composite pattern dual-tree mapping, Wrap bridging mechanism, strategy-driven Flex/Grid layout, widget factory dynamic creation, event-driven hot updates, and the replacement flow from static skeleton to dynamic components"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
+    <meta name="twitter:image" content='http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png' />
     <link rel="shortcut icon" href="/icons/favicon.ico" />
 
     </head>
@@ -234,11 +234,11 @@
 
                             <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                                 
-                                    <option value="http://localhost:6749/Hugo_Web/" >简体中文</option>
+                                    <option value="http://localhost:10776/Hugo_Web/" >简体中文</option>
                                 
-                                    <option value="http://localhost:6749/Hugo_Web/zh-hk/" >繁體中文</option>
+                                    <option value="http://localhost:10776/Hugo_Web/zh-hk/" >繁體中文</option>
                                 
-                                    <option value="http://localhost:6749/Hugo_Web/en/" selected>English</option>
+                                    <option value="http://localhost:10776/Hugo_Web/en/" selected>English</option>
                                 
                             </select>
                         </li>
@@ -488,9 +488,9 @@
 
             <div>
                 
-                    <a href="http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/" class="link">简体中文</a>
+                    <a href="http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/" class="link">简体中文</a>
                 
-                    <a href="http://localhost:6749/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/" class="link">繁體中文</a>
+                    <a href="http://localhost:10776/Hugo_Web/zh-hk/p/lvgl-%E5%8B%95%E6%85%8B%E8%BC%89%E5%85%A5%E8%88%87%E6%B8%B2%E6%9F%93%E6%A8%B9%E7%AE%A1%E7%90%86%E6%99%BA%E6%85%A7%E5%94%AE%E8%B2%A8%E6%A9%9F%E7%B5%82%E7%AB%AF%E7%9A%84%E6%87%89%E7%94%A8%E6%A8%B9%E6%9E%B6%E6%A7%8B%E5%AF%A6%E8%B8%90/" class="link">繁體中文</a>
                 
             </div>
         </footer>
@@ -1970,9 +1970,20 @@
         <div class="flex article-list--tile">
             
                 
-<article class="">
+<article class="has-image">
     <a href="/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/">
         
+        
+            <div class="article-image">
+                <img src="/Hugo_Web/p/%E6%B5%85%E5%B0%9D-bootloader-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E4%BB%8E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%BC%96%E6%8E%92%E7%9A%84-oop-%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%9E%8B/C%E8%AF%AD%E8%A8%80%E7%BB%93%E6%9E%84%E4%BD%93%E6%8C%87%E9%92%88%E5%8D%9A%E5%AE%A2%E5%B0%81%E9%9D%A2.bc913b6a996b7421fe3ea97f79ea25e3_hu_b1e5a0a00e8e56e1.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post A Taste of Bootloader Five-Layer Architecture: OOP Object Design Model from Platform Abstraction to App Orchestration"
+                        
+                        data-hash="md5-vJE7aplrdCH&#43;Pql/eeol4w==">
+                
+            </div>
         
 
         <div class="article-details">
@@ -2102,7 +2113,7 @@
             
                 
             
-        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 7 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 22.88 k ></span> words
+        This website has been running stably<span id="runningdays" class="running-days"></span>&nbsp; | &nbsp;A total of <span id="articleCount">&lt; 7 ></span> articles <span style="font-weight: bold;">·</span> Total <span id="articlewordCount">&lt; 23.36 k ></span> words
     </section>
     <section class="powerby">
         Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
@@ -2221,7 +2232,7 @@
 <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
 
 <script>
-  const staticDir = "http://localhost:6749/Hugo_Web/en/";
+  const staticDir = "http://localhost:10776/Hugo_Web/en/";
   const ap = new APlayer({
     container: document.getElementById("aplayer"),
     audio: [
@@ -2468,7 +2479,7 @@
   });
 </script>
 
-<script src="http://localhost:6749/Hugo_Web/en/js/topbar.min.js"></script>
+<script src="http://localhost:10776/Hugo_Web/en/js/topbar.min.js"></script>
 
 <script>
   
@@ -2497,12 +2508,12 @@
     
     path: {
       homePath: "/",
-      modelPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/live2d-moc3/",
-      cssPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/waifu.css",
-      tipsJsonPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/my-waifu-tips.json",
+      modelPath: "http:\/\/localhost:10776\/Hugo_Web\/en\/live2d-moc3/",
+      cssPath: "http:\/\/localhost:10776\/Hugo_Web\/en\/js/waifu.css",
+      tipsJsonPath: "http:\/\/localhost:10776\/Hugo_Web\/en\/js/my-waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/live2dcubismcore.js",
-      live2dSdkPath: "http:\/\/localhost:6749\/Hugo_Web\/en\/js/live2d-sdk.js",
+      live2dCorePath: "http:\/\/localhost:10776\/Hugo_Web\/en\/js/live2dcubismcore.js",
+      live2dSdkPath: "http:\/\/localhost:10776\/Hugo_Web\/en\/js/live2d-sdk.js",
     },
     
     tools: [
@@ -2649,7 +2660,7 @@
       
       let img = document.createElement("img");
       img.classList.add("code-more-img");
-      img.src = "http:\/\/localhost:6749\/Hugo_Web\/en\/icons/codeMore.png";
+      img.src = "http:\/\/localhost:10776\/Hugo_Web\/en\/icons/codeMore.png";
       
       codeMoreBtn.appendChild(img);
       codeMoreBox.appendChild(codeMoreBtn);
@@ -2665,11 +2676,11 @@
 
 <div id="particles-js"></div>
 
-<script src="http://localhost:6749/Hugo_Web/en/background/particles.min.js"></script>
+<script src="http://localhost:10776/Hugo_Web/en/background/particles.min.js"></script>
 <script>
   particlesJS.load(
     "particles-js",
-    "http:\/\/localhost:6749\/Hugo_Web\/en\/background/particlesjs-config.json",
+    "http:\/\/localhost:10776\/Hugo_Web\/en\/background/particlesjs-config.json",
     function () {
       console.log("particles.js loaded - callback");
     },
@@ -2745,7 +2756,7 @@
 <style>
   @font-face {
     font-family: "AlibabaPuHuiTi-3-65-Medium";
-    src: url(http://localhost:6749/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
+    src: url(http://localhost:10776/Hugo_Web/font/AlibabaPuHuiTi-3-65-Medium.ttf)
       format("truetype");
   }
 
@@ -2764,7 +2775,7 @@
     cursor: pointer;
     width: 30px;
     height: 30px;
-    background-image: url("http://localhost:6749/Hugo_Web/en/icons/backTop.svg");
+    background-image: url("http://localhost:10776/Hugo_Web/en/icons/backTop.svg");
   }
 </style>
 

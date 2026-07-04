@@ -2,6 +2,7 @@
 title: "淺嘗 Bootloader 五層架構：從 Platform 抽象到 App 編排的 OOP 物件設計模型"
 date: 2026-07-03
 description: "以 STM32F407 安全 Bootloader 為實例，淺嘗 Impl/Platform/Service/Core/App + Drivers(Vendor) 五層架構的 C 物件導向設計模型：ops 虛函式表、container_of 向下轉型、多重繼承雙基類、依賴注入容器、宏封裝安全呼叫，與 oop-in-c-embedded 概念逐一映射"
+image: C语言结构体指针博客封面.png
 categories:
   - "嵌入式"
 tags:
@@ -29,14 +30,14 @@ math: true
 
 ### 1.1 分層圖
 
-| 層 | 目錄 | 職責 | OOP 概念映射 |
-|----|------|------|--------------|
-| **App** | `Core/Src/main.c` | 系統編排、啟動流程、條件分支 | 頂層組合根 / main 編排 |
-| **Core** | `Bootloader_Core/` | 韌體下載引擎、A/B 分區、跳轉邏輯 | 業務策略 / 狀態機 |
-| **Service** | `Service/` | YMODEM、OTA、選單、差分、解密、簽章 | 服務物件 / 依賴注入消費者 |
-| **Platform** | `Platform/Inc/` | 抽象介面定義（ops 虛表 + base 結構體 + 宏） | 純虛基類 / 介面 |
-| **Impl** | `Impl/` | STM32 / ESP8266 具體實作 | 衍生類 / 虛表實例化 |
-| **Drivers** | `Drivers/` | HAL + Vendor 驅動（STM32 HAL、W25Q128、FatFs…） | 硬體抽象層 |
+| 層           | 目錄               | 職責                                            | OOP 概念映射              |
+| ------------ | ------------------ | ----------------------------------------------- | ------------------------- |
+| **App**      | `Core/Src/main.c`  | 系統編排、啟動流程、條件分支                    | 頂層組合根 / main 編排    |
+| **Core**     | `Bootloader_Core/` | 韌體下載引擎、A/B 分區、跳轉邏輯                | 業務策略 / 狀態機         |
+| **Service**  | `Service/`         | YMODEM、OTA、選單、差分、解密、簽章             | 服務物件 / 依賴注入消費者 |
+| **Platform** | `Platform/Inc/`    | 抽象介面定義（ops 虛表 + base 結構體 + 宏）     | 純虛基類 / 介面           |
+| **Impl**     | `Impl/`            | STM32 / ESP8266 具體實作                        | 衍生類 / 虛表實例化       |
+| **Drivers**  | `Drivers/`         | HAL + Vendor 驅動（STM32 HAL、W25Q128、FatFs…） | 硬體抽象層                |
 
 呼叫方向：**App → Core → Service → Platform ← Impl → Drivers**
 
@@ -79,23 +80,23 @@ typedef struct {
 
 **模式映射**：
 
-| C 寫法 | C++ 等價 | oop-in-c-embedded 概念 |
-|--------|----------|----------------------|
-| `platform_led_ops_t` | 純虛類（abstract class） | ops 操作表 |
-| `base.ops` | vptr | 虛指標 |
-| `ops->on(ctx)` | `virtual on()` | 虛函式呼叫 |
-| `const ops` | 不可覆寫的虛表 | 靜態虛表 |
+| C 寫法               | C++ 等價                 | oop-in-c-embedded 概念 |
+| -------------------- | ------------------------ | ---------------------- |
+| `platform_led_ops_t` | 純虛類（abstract class） | ops 操作表             |
+| `base.ops`           | vptr                     | 虛指標                 |
+| `ops->on(ctx)`       | `virtual on()`           | 虛函式呼叫             |
+| `const ops`          | 不可覆寫的虛表           | 靜態虛表               |
 
 ### 2.2 六模組 ops 表對比
 
-| 模組 | ops 函式數 | 特殊設計 |
-|------|-----------|---------|
-| `platform_led_ops_t` | 8 | 亮度/RGB 為選填（NULL 表示不支援） |
-| `platform_internal_flash_ops_t` | 10 | 含保護狀態讀寫 |
-| `platform_uart_ops_t` | 13 | 含中斷收發 + 位元組級操作 |
-| `platform_fs_ops_t` + `platform_fs_dir_ops_t` | 11 + 3 | **雙 ops 表**：檔案操作與目錄操作分離 |
-| `platform_mqtt_ops_t` | 12 | 發布/訂閱/遺囑 |
-| `platform_tick_ops_t` | 2 | 無 ctx 參數（全域單例） |
+| 模組                                          | ops 函式數 | 特殊設計                              |
+| --------------------------------------------- | ---------- | ------------------------------------- |
+| `platform_led_ops_t`                          | 8          | 亮度/RGB 為選填（NULL 表示不支援）    |
+| `platform_internal_flash_ops_t`               | 10         | 含保護狀態讀寫                        |
+| `platform_uart_ops_t`                         | 13         | 含中斷收發 + 位元組級操作             |
+| `platform_fs_ops_t` + `platform_fs_dir_ops_t` | 11 + 3     | **雙 ops 表**：檔案操作與目錄操作分離 |
+| `platform_mqtt_ops_t`                         | 12         | 發布/訂閱/遺囑                        |
+| `platform_tick_ops_t`                         | 2          | 無 ctx 參數（全域單例）               |
 
 ### 2.3 宏封裝：安全呼叫 + 空指標防禦
 
@@ -170,11 +171,11 @@ void platform_gpio_led_stm32_register(gpio_led_stm32_t *led,
 
 **三步模式**：
 
-| 步驟 | 程式碼 | OOP 概念 |
-|------|--------|---------|
-| 1. container_of 向下轉型 | `container_of(ctx, gpio_led_stm32_t, base)` | `dynamic_cast<Derived*>(base)` |
-| 2. 靜態虛表 | `static const platform_led_ops_t gpio_led_ops` | 虛表（vtable）實例化 |
-| 3. register 建構函式 | `platform_gpio_led_stm32_register(...)` | 建構函式 + 依賴注入 |
+| 步驟                     | 程式碼                                         | OOP 概念                       |
+| ------------------------ | ---------------------------------------------- | ------------------------------ |
+| 1. container_of 向下轉型 | `container_of(ctx, gpio_led_stm32_t, base)`    | `dynamic_cast<Derived*>(base)` |
+| 2. 靜態虛表              | `static const platform_led_ops_t gpio_led_ops` | 虛表（vtable）實例化           |
+| 3. register 建構函式     | `platform_gpio_led_stm32_register(...)`        | 建構函式 + 依賴注入            |
 
 ### 3.2 Internal Flash：多重繼承雙基類
 
@@ -196,9 +197,9 @@ typedef struct {
 
 **兩個虛表**：
 
-| 虛表 | 用途 | container_of 基準 |
-|------|------|------------------|
-| `flash_base.ops`（`internal_flash_ops`） | Flash 直接讀寫/抹除 | `container_of(ctx, ..., flash_base)` |
+| 虛表                                                       | 用途                     | container_of 基準                        |
+| ---------------------------------------------------------- | ------------------------ | ---------------------------------------- |
+| `flash_base.ops`（`internal_flash_ops`）                   | Flash 直接讀寫/抹除      | `container_of(ctx, ..., flash_base)`     |
 | `transport_base.target_ops`（`internal_flash_target_ops`） | 傳輸協定寫入（含重定位） | `container_of(ctx, ..., transport_base)` |
 
 同一個物理 Flash，透過**不同基類指標**呈現不同介面——C++ 中稱為**多重繼承的介面分離**。
@@ -262,11 +263,11 @@ typedef struct {
 } onenet_ota_ctx_t;
 ```
 
-| 依賴 | 注入實例 | 可替換為 |
-|------|---------|---------|
+| 依賴   | 注入實例         | 可替換為                         |
+| ------ | ---------------- | -------------------------------- |
 | `wifi` | `g_esp8266_wifi` | 任何 `platform_wifi_base_t` 實作 |
-| `rtc` | `g_rtc` | DS3231 外部 RTC |
-| `mqtt` | `g_esp8266_mqtt` | Mosquitto 嵌入式 MQTT |
+| `rtc`  | `g_rtc`          | DS3231 外部 RTC                  |
+| `mqtt` | `g_esp8266_mqtt` | Mosquitto 嵌入式 MQTT            |
 
 ### 4.3 選單服務：命令處理函式指標樹
 
@@ -395,19 +396,19 @@ void platform_config_init(void)
 
 本專案的每個設計決策，都能在 [oop-in-c-embedded](../oop-in-c-embedded/) 中找到理論對應：
 
-| oop-in-c-embedded 概念 | 本專案實例 | 程式碼位置 |
-|------------------------|-----------|---------|
-| struct + me 指標 | 每個 ops 函式的 `void *ctx` | Platform/Inc/*.h |
-| ops 操作表 | `platform_led_ops_t` 等 6 個虛表 | Platform/Inc/*.h |
-| struct 巢套繼承 | `gpio_led_stm32_t` 內嵌 `base` | Impl/Inc/*_impl.h |
-| container_of 向下轉型 | `container_of(ctx, gpio_led_stm32_t, base)` | Impl/Src/*_impl.c |
-| 虛指標 (vptr) | `base.ops` 指向靜態虛表 | Platform/Inc/*.h |
-| 純虛與選填策略 | GPIO LED 的 `set_brightness = NULL` | Impl/Src/platform_gpio_led_stm32_impl.c |
-| 多重繼承 | `internal_flash_stm32_t` 雙基類 | Impl/Inc/platform_internal_flash_stm32_impl.h |
-| register 建構函式 | `platform_gpio_led_stm32_register(...)` | Impl/Src/*_impl.c |
-| 依賴注入容器 | `platform_config_init()` + 13 個全域實例 | Platform/Src/platform_config.c |
-| 多型呼叫宏 | `LED_ON(led)` / `UART_TRANSMIT(uart, ...)` | Platform/Inc/*.h |
-| 資料三級歸位 | HAL 柄在 Drivers，業務資料在 Impl，抽象資料在 Platform | 跨三層分佈 |
+| oop-in-c-embedded 概念 | 本專案實例                                             | 程式碼位置                                    |
+| ---------------------- | ------------------------------------------------------ | --------------------------------------------- |
+| struct + me 指標       | 每個 ops 函式的 `void *ctx`                            | Platform/Inc/\*.h                             |
+| ops 操作表             | `platform_led_ops_t` 等 6 個虛表                       | Platform/Inc/\*.h                             |
+| struct 巢套繼承        | `gpio_led_stm32_t` 內嵌 `base`                         | Impl/Inc/\*\_impl.h                           |
+| container_of 向下轉型  | `container_of(ctx, gpio_led_stm32_t, base)`            | Impl/Src/\*\_impl.c                           |
+| 虛指標 (vptr)          | `base.ops` 指向靜態虛表                                | Platform/Inc/\*.h                             |
+| 純虛與選填策略         | GPIO LED 的 `set_brightness = NULL`                    | Impl/Src/platform_gpio_led_stm32_impl.c       |
+| 多重繼承               | `internal_flash_stm32_t` 雙基類                        | Impl/Inc/platform_internal_flash_stm32_impl.h |
+| register 建構函式      | `platform_gpio_led_stm32_register(...)`                | Impl/Src/\*\_impl.c                           |
+| 依賴注入容器           | `platform_config_init()` + 13 個全域實例               | Platform/Src/platform_config.c                |
+| 多型呼叫宏             | `LED_ON(led)` / `UART_TRANSMIT(uart, ...)`             | Platform/Inc/\*.h                             |
+| 資料三級歸位           | HAL 柄在 Drivers，業務資料在 Impl，抽象資料在 Platform | 跨三層分佈                                    |
 
 ---
 
@@ -428,15 +429,15 @@ void platform_config_init(void)
 
 **gpio_led_stm32_t 實例記憶體佈局**：
 
-| 字段 | 類型 | 說明 |
-|------|------|------|
-| `base.ops` | `const platform_led_ops_t*` | 虛指標，`&instance.base` 是傳入 ops 函式的 ctx |
-| `base.name` | `const char*` | LED 名稱 |
-| `base.type` | `platform_led_type_t` | LED 類型枚舉 |
-| `base.state` | `platform_led_state_t` | 目前狀態 |
-| `base.user_data` | `void*` | 使用者資料指標 |
-| `port` | `GPIO_TypeDef*` | STM32 GPIO 端口（衡生類特有） |
-| `pin` | `uint16_t` | GPIO 引腳號（衡生類特有） |
+| 字段             | 類型                        | 說明                                           |
+| ---------------- | --------------------------- | ---------------------------------------------- |
+| `base.ops`       | `const platform_led_ops_t*` | 虛指標，`&instance.base` 是傳入 ops 函式的 ctx |
+| `base.name`      | `const char*`               | LED 名稱                                       |
+| `base.type`      | `platform_led_type_t`       | LED 類型枚舉                                   |
+| `base.state`     | `platform_led_state_t`      | 目前狀態                                       |
+| `base.user_data` | `void*`                     | 使用者資料指標                                 |
+| `port`           | `GPIO_TypeDef*`             | STM32 GPIO 端口（衡生類特有）                  |
+| `pin`            | `uint16_t`                  | GPIO 引腳號（衡生類特有）                      |
 
 > `base` 是第一個成員，偏移為 0，因此 `container_of(ctx, gpio_led_stm32_t, base)` 等價於 `(gpio_led_stm32_t*)ctx`。
 
@@ -444,11 +445,11 @@ void platform_config_init(void)
 
 **internal_flash_stm32_t 實例記憶體佈局（雙基類）**：
 
-| 基類 | 偏移 | 字段 | container_of 基準 |
-|------|------|------|------------------|
-| `flash_base` | 0 | `ops`, `name`, `start_addr`... | `container_of(ctx, ..., flash_base)` 偏移 0 |
-| `transport_base` | sizeof(flash_base) | `source_ops`, `target_ops` | `container_of(ctx, ..., transport_base)` 偏移 > 0 |
-| 衡生類特有 | — | `written_size`, `relocate_offset`... | — |
+| 基類             | 偏移               | 字段                                 | container_of 基準                                 |
+| ---------------- | ------------------ | ------------------------------------ | ------------------------------------------------- |
+| `flash_base`     | 0                  | `ops`, `name`, `start_addr`...       | `container_of(ctx, ..., flash_base)` 偏移 0       |
+| `transport_base` | sizeof(flash_base) | `source_ops`, `target_ops`           | `container_of(ctx, ..., transport_base)` 偏移 > 0 |
+| 衡生類特有       | —                  | `written_size`, `relocate_offset`... | —                                                 |
 
 > 兩個不同的 `container_of` 基準，從**同一個實例的不同基類指標**，恢復到**同一個衡生類實例**——這正是 C++ 多重繼承中 `dynamic_cast` 的運作原理。
 
@@ -523,18 +524,18 @@ struct platform_fs_base_s {
 
 ## 十一、從理論到實戰：一張圖總結
 
-| 設計維度 | oop-in-c-embedded 理論 | Bootloader 實戰 |
-|---------|----------------------|----------------|
-| 封裝 | `struct + me` | `base + ops + ctx` |
-| 繼承 | struct 巢套 | `gpio_led_stm32_t` 內嵌 `base` |
-| 多型 | ops 虛表 + vptr | 6 個 ops 表 + 宏分發 |
-| 向下轉型 | `container_of` | 雙基類雙偏移恢復 |
-| 多重繼承 | 雙基類巢套 | `flash_base + transport_base` |
-| 建構 | register 函式 | 13 個 register 呼叫 |
-| 依賴注入 | platform_config 容器 | `platform_config_init()` |
-| 安全呼叫 | NULL 檢查 + 宏 | `LED_ON` / `UART_TRANSMIT` |
-| 介面分離 | 多 ops 表 | `fs_ops + dir_ops` |
-| 選填策略 | NULL 函式指標 | GPIO LED 跳過 brightness/RGB |
+| 設計維度 | oop-in-c-embedded 理論 | Bootloader 實戰                |
+| -------- | ---------------------- | ------------------------------ |
+| 封裝     | `struct + me`          | `base + ops + ctx`             |
+| 繼承     | struct 巢套            | `gpio_led_stm32_t` 內嵌 `base` |
+| 多型     | ops 虛表 + vptr        | 6 個 ops 表 + 宏分發           |
+| 向下轉型 | `container_of`         | 雙基類雙偏移恢復               |
+| 多重繼承 | 雙基類巢套             | `flash_base + transport_base`  |
+| 建構     | register 函式          | 13 個 register 呼叫            |
+| 依賴注入 | platform_config 容器   | `platform_config_init()`       |
+| 安全呼叫 | NULL 檢查 + 宏         | `LED_ON` / `UART_TRANSMIT`     |
+| 介面分離 | 多 ops 表              | `fs_ops + dir_ops`             |
+| 選填策略 | NULL 函式指標          | GPIO LED 跳過 brightness/RGB   |
 
 ---
 
@@ -555,12 +556,12 @@ struct platform_fs_base_s {
 
 ### 12.3 適用邊界
 
-| 場景 | 是否適用 |
-|------|---------|
+| 場景                             | 是否適用                                 |
+| -------------------------------- | ---------------------------------------- |
 | MCU 資源極度緊張（< 32KB Flash） | 不適用——虛表和宏的程式碼膨脹可能超出預算 |
-| 多平台/多硬體變體產品線 | 高度適用——一份 Service + N 份 Impl |
-| 需要單元測試的韌體 | 高度適用——Mock 注入即可脫硬體測試 |
-| 一次性原型/Demo | 過度設計——直接調 HAL 更快 |
+| 多平台/多硬體變體產品線          | 高度適用——一份 Service + N 份 Impl       |
+| 需要單元測試的韌體               | 高度適用——Mock 注入即可脫硬體測試        |
+| 一次性原型/Demo                  | 過度設計——直接調 HAL 更快                |
 
 ---
 

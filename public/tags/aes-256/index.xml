@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>AES-256 on lingsir007</title>
-        <link>http://localhost:6749/Hugo_Web/tags/aes-256/</link>
+        <link>http://localhost:10776/Hugo_Web/tags/aes-256/</link>
         <description>Recent content in AES-256 on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Tue, 30 Jun 2026 23:07:45 +0800</lastBuildDate><atom:link href="http://localhost:6749/Hugo_Web/tags/aes-256/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 30 Jun 2026 23:07:45 +0800</lastBuildDate><atom:link href="http://localhost:10776/Hugo_Web/tags/aes-256/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>PyIAPToolKit：STM32 IAP 上位机工具套件设计与实现</title>
-        <link>http://localhost:6749/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/</link>
+        <link>http://localhost:10776/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/</link>
         <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6749/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/</guid>
-        <description>&lt;img src="http://localhost:6749/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png" alt="Featured image of post PyIAPToolKit：STM32 IAP 上位机工具套件设计与实现" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+        <guid>http://localhost:10776/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/</guid>
+        <description>&lt;img src="http://localhost:10776/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png" alt="Featured image of post PyIAPToolKit：STM32 IAP 上位机工具套件设计与实现" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;在上一篇 &lt;a class=&#34;link&#34; href=&#34;../stm32f407-secure-bootloader/&#34; &gt;STM32F407 安全 Bootloader 设计&lt;/a&gt; 中，我们详细剖析了设备端的 A/B 双分区、加密签名与多渠道升级机制。然而，一个完整的 IAP 系统还需要&lt;strong&gt;上位机工具&lt;/strong&gt;来完成固件打包、加密签名、传输烧录等环节。本文将介绍 &lt;strong&gt;PyIAPToolKit&lt;/strong&gt; —— 一个基于 PyQt6 + Fluent Design 的 STM32 IAP 上位机工具套件，它是 Bootloader 项目在 PC 端的配套工具。&lt;/p&gt;
 &lt;blockquote class=&#34;alert alert-note&#34;&gt;
     &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/Lingjia007/PyIAPToolKit/releases/tag/v1.0.0&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;

@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Bootloader on lingsir007</title>
-        <link>http://localhost:6749/Hugo_Web/en/tags/bootloader/</link>
+        <link>http://localhost:10776/Hugo_Web/en/tags/bootloader/</link>
         <description>Recent content in Bootloader on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Sat, 04 Jul 2026 19:15:02 +0800</lastBuildDate><atom:link href="http://localhost:6749/Hugo_Web/en/tags/bootloader/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sat, 04 Jul 2026 19:15:02 +0800</lastBuildDate><atom:link href="http://localhost:10776/Hugo_Web/en/tags/bootloader/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>A Taste of Bootloader Five-Layer Architecture: OOP Object Design Model from Platform Abstraction to App Orchestration</title>
-        <link>http://localhost:6749/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/</link>
+        <link>http://localhost:10776/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/</link>
         <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6749/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/</guid>
-        <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction
+        <guid>http://localhost:10776/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/</guid>
+        <description>&lt;img src="http://localhost:10776/Hugo_Web/p/%E6%B5%85%E5%B0%9D-bootloader-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E4%BB%8E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%BC%96%E6%8E%92%E7%9A%84-oop-%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%9E%8B/C%E8%AF%AD%E8%A8%80%E7%BB%93%E6%9E%84%E4%BD%93%E6%8C%87%E9%92%88%E5%8D%9A%E5%AE%A2%E5%B0%81%E9%9D%A2.png" alt="Featured image of post A Taste of Bootloader Five-Layer Architecture: OOP Object Design Model from Platform Abstraction to App Orchestration" /&gt;&lt;h2 id=&#34;introduction&#34;&gt;Introduction
 &lt;/h2&gt;&lt;p&gt;In the previous post &lt;a class=&#34;link&#34; href=&#34;../oop-in-c-embedded/&#34; &gt;The Essence of C: Structs and Pointers&lt;/a&gt;, we started from &lt;code&gt;struct + me&lt;/code&gt; and walked all the way to Linux kernel-style &lt;code&gt;gpio_chip&lt;/code&gt; + initcall auto-registration. The theory is there, but what about practice?&lt;/p&gt;
 &lt;p&gt;This post uses the real code from the &lt;a class=&#34;link&#34; href=&#34;../stm32f407-secure-bootloader/&#34; &gt;STM32F407 Secure Bootloader&lt;/a&gt; project as an example, taking a &lt;strong&gt;taste&lt;/strong&gt; of its five-layer architecture object design model—seeing how the essence of OOP in C takes root in an industrial-grade Bootloader.&lt;/p&gt;
 &lt;blockquote class=&#34;alert alert-note&#34;&gt;
@@ -1097,11 +1097,11 @@
         </item>
         <item>
         <title>STM32F407 Secure Bootloader Design: A/B Dual Partition, Encryption/Signing, and Multi-Channel Upgrade</title>
-        <link>http://localhost:6749/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/</link>
+        <link>http://localhost:10776/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/</link>
         <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6749/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/</guid>
-        <description>&lt;img src="http://localhost:6749/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.png" alt="Featured image of post STM32F407 Secure Bootloader Design: A/B Dual Partition, Encryption/Signing, and Multi-Channel Upgrade" /&gt;&lt;h2 id=&#34;preface&#34;&gt;Preface
+        <guid>http://localhost:10776/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/</guid>
+        <description>&lt;img src="http://localhost:10776/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.png" alt="Featured image of post STM32F407 Secure Bootloader Design: A/B Dual Partition, Encryption/Signing, and Multi-Channel Upgrade" /&gt;&lt;h2 id=&#34;preface&#34;&gt;Preface
 &lt;/h2&gt;&lt;p&gt;In the IoT and embedded device domain, firmware upgrade (OTA) is an indispensable part of the product lifecycle. However, issues during the upgrade process such as &lt;strong&gt;power-loss crashes, firmware tampering, and version rollback&lt;/strong&gt; often give developers headaches. This article details a secure Bootloader project based on the STM32F407VGT6, which systematically solves these pain points through mechanisms like &lt;strong&gt;A/B dual-partition&lt;/strong&gt;, &lt;strong&gt;secure firmware packages&lt;/strong&gt;, and &lt;strong&gt;address relocation&lt;/strong&gt;.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;1-what-problem-does-it-solve&#34;&gt;1. What Problem Does It Solve?

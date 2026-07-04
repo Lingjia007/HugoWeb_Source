@@ -2,6 +2,7 @@
 title: "浅尝 Bootloader 五层架构：从 Platform 抽象到 App 编排的 OOP 对象设计模型"
 date: 2026-07-03
 description: "以 STM32F407 安全 Bootloader 为实例，浅尝 Impl/Platform/Service/Core/App + Drivers(Vendor) 五层架构的 C 面向对象设计模型：ops 虚函数表、container_of 向下转型、多重继承双基类、依赖注入容器、宏封装安全调用，与 oop-in-c-embedded 概念逐一映射"
+image: C语言结构体指针博客封面.png
 categories:
   - "嵌入式"
 tags:

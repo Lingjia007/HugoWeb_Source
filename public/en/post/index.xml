@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Posts on lingsir007</title>
-        <link>http://localhost:6749/Hugo_Web/en/post/</link>
+        <link>http://localhost:10776/Hugo_Web/en/post/</link>
         <description>Recent content in Posts on lingsir007</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en</language>
         <copyright>lingsir007</copyright>
-        <lastBuildDate>Sat, 04 Jul 2026 19:15:02 +0800</lastBuildDate><atom:link href="http://localhost:6749/Hugo_Web/en/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sat, 04 Jul 2026 19:15:02 +0800</lastBuildDate><atom:link href="http://localhost:10776/Hugo_Web/en/post/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>A Taste of Bootloader Five-Layer Architecture: OOP Object Design Model from Platform Abstraction to App Orchestration</title>
-        <link>http://localhost:6749/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/</link>
+        <link>http://localhost:10776/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/</link>
         <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6749/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/</guid>
-        <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction
+        <guid>http://localhost:10776/Hugo_Web/en/p/a-taste-of-bootloader-five-layer-architecture-oop-object-design-model-from-platform-abstraction-to-app-orchestration/</guid>
+        <description>&lt;img src="http://localhost:10776/Hugo_Web/p/%E6%B5%85%E5%B0%9D-bootloader-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E4%BB%8E-platform-%E6%8A%BD%E8%B1%A1%E5%88%B0-app-%E7%BC%96%E6%8E%92%E7%9A%84-oop-%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%9E%8B/C%E8%AF%AD%E8%A8%80%E7%BB%93%E6%9E%84%E4%BD%93%E6%8C%87%E9%92%88%E5%8D%9A%E5%AE%A2%E5%B0%81%E9%9D%A2.png" alt="Featured image of post A Taste of Bootloader Five-Layer Architecture: OOP Object Design Model from Platform Abstraction to App Orchestration" /&gt;&lt;h2 id=&#34;introduction&#34;&gt;Introduction
 &lt;/h2&gt;&lt;p&gt;In the previous post &lt;a class=&#34;link&#34; href=&#34;../oop-in-c-embedded/&#34; &gt;The Essence of C: Structs and Pointers&lt;/a&gt;, we started from &lt;code&gt;struct + me&lt;/code&gt; and walked all the way to Linux kernel-style &lt;code&gt;gpio_chip&lt;/code&gt; + initcall auto-registration. The theory is there, but what about practice?&lt;/p&gt;
 &lt;p&gt;This post uses the real code from the &lt;a class=&#34;link&#34; href=&#34;../stm32f407-secure-bootloader/&#34; &gt;STM32F407 Secure Bootloader&lt;/a&gt; project as an example, taking a &lt;strong&gt;taste&lt;/strong&gt; of its five-layer architecture object design model—seeing how the essence of OOP in C takes root in an industrial-grade Bootloader.&lt;/p&gt;
 &lt;blockquote class=&#34;alert alert-note&#34;&gt;
@@ -1097,10 +1097,10 @@
         </item>
         <item>
         <title>The Essence of C: Structs and Pointers — Embedded Object-Oriented Platform-Agnostic Layered Design</title>
-        <link>http://localhost:6749/Hugo_Web/en/p/the-essence-of-c-structs-and-pointers-embedded-object-oriented-platform-agnostic-layered-design/</link>
+        <link>http://localhost:10776/Hugo_Web/en/p/the-essence-of-c-structs-and-pointers-embedded-object-oriented-platform-agnostic-layered-design/</link>
         <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6749/Hugo_Web/en/p/the-essence-of-c-structs-and-pointers-embedded-object-oriented-platform-agnostic-layered-design/</guid>
+        <guid>http://localhost:10776/Hugo_Web/en/p/the-essence-of-c-structs-and-pointers-embedded-object-oriented-platform-agnostic-layered-design/</guid>
         <description>&lt;h2 id=&#34;preface&#34;&gt;Preface
 &lt;/h2&gt;&lt;p&gt;C has no &lt;code&gt;class&lt;/code&gt;, no &lt;code&gt;virtual&lt;/code&gt;, no &lt;code&gt;interface&lt;/code&gt;, yet large-scale projects like the Linux kernel, GObject, and Zephyr RTOS all build complete object-oriented systems in C. Their weapons are just two: &lt;strong&gt;structs&lt;/strong&gt; and &lt;strong&gt;pointers&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;This article follows the progressive refactoring of an embedded LED driver as its main thread, starting from the most primitive &lt;code&gt;struct + me&lt;/code&gt; and going all the way to Linux kernel-style &lt;code&gt;gpio_chip&lt;/code&gt; + initcall auto-registration, using a single LED to explain the full essence of embedded C object-oriented programming.&lt;/p&gt;
@@ -2122,10 +2122,10 @@
         </item>
         <item>
         <title>GNU LD Linker Script in Depth: Dissecting Embedded Memory Layout and Section Relocation via an STM32F407 Example</title>
-        <link>http://localhost:6749/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/</link>
+        <link>http://localhost:10776/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6749/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/</guid>
+        <guid>http://localhost:10776/Hugo_Web/en/p/gnu-ld-linker-script-in-depth-dissecting-embedded-memory-layout-and-section-relocation-via-an-stm32f407-example/</guid>
         <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction
 &lt;/h2&gt;&lt;p&gt;A linker script (&lt;code&gt;.ld&lt;/code&gt;) is one of the most overlooked yet critical files in embedded development. It tells the linker where the program&amp;rsquo;s code and data should be placed in memory, the arrangement order of each section, and which data needs to be copied from Flash to RAM at startup.&lt;/p&gt;
 &lt;p&gt;This article uses a real project&amp;rsquo;s STM32F407VGT6 linker script as an example, walking through every syntactic element of a GNU LD linker script line by line, and providing an in-depth explanation of the VMA/LMA address model and the cooperation mechanism between startup code and the linker script.&lt;/p&gt;
@@ -3233,11 +3233,11 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
         </item>
         <item>
         <title>LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal</title>
-        <link>http://localhost:6749/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/</link>
+        <link>http://localhost:10776/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/</link>
         <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6749/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/</guid>
-        <description>&lt;img src="http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png" alt="Featured image of post LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal" /&gt;&lt;h2 id=&#34;preface&#34;&gt;Preface
+        <guid>http://localhost:10776/Hugo_Web/en/p/lvgl-dynamic-loading-and-render-tree-management-application-tree-architecture-practices-for-smart-vending-terminal/</guid>
+        <description>&lt;img src="http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/smart-vending-terminal.png" alt="Featured image of post LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal" /&gt;&lt;h2 id=&#34;preface&#34;&gt;Preface
 &lt;/h2&gt;&lt;p&gt;As the most active graphics library in the embedded space, LVGL&amp;rsquo;s core is a tree-structured &lt;strong&gt;render tree&lt;/strong&gt; (&lt;code&gt;lv_obj_t&lt;/code&gt; object tree), where all visible widgets are nodes of this tree. However, in real-world applications, directly manipulating the render tree faces several problems: &lt;strong&gt;static layouts cannot be dynamically updated&lt;/strong&gt;, &lt;strong&gt;widget lifecycles are difficult to manage uniformly&lt;/strong&gt;, and &lt;strong&gt;components are tightly coupled&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;This article uses a smart vending terminal based on &lt;strong&gt;ArtInChip + LVGL v9 + RT-Thread&lt;/strong&gt; as a practical vehicle, providing an in-depth analysis of how to build an &lt;strong&gt;application tree&lt;/strong&gt; (&lt;code&gt;layout_node&lt;/code&gt; framework) on top of the LVGL render tree. Through the coordination of the Composite, Factory, Strategy, and Publish-Subscribe patterns, it enables dynamic loading, hot updates, and lifecycle management of the UI.&lt;/p&gt;
 &lt;hr&gt;
@@ -3258,10 +3258,10 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;// ...fixed quantity, fixed data, no runtime add/remove
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder.png&#34;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder.png&#34;
 	width=&#34;2557&#34;
 	height=&#34;1437&#34;
-	srcset=&#34;http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_d09a34aa53e12595.png 480w, http://localhost:6749/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_3fe0f6e08b5cac61.png 1024w&#34;
+	srcset=&#34;http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_d09a34aa53e12595.png 480w, http://localhost:10776/Hugo_Web/p/lvgl-%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E4%B8%8E%E6%B8%B2%E6%9F%93%E6%A0%91%E7%AE%A1%E7%90%86%E6%99%BA%E8%83%BD%E5%94%AE%E8%B4%A7%E6%9C%BA%E7%BB%88%E7%AB%AF%E7%9A%84%E5%BA%94%E7%94%A8%E6%A0%91%E6%9E%B6%E6%9E%84%E5%AE%9E%E8%B7%B5/uibuilder_hu_3fe0f6e08b5cac61.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;AiUIBuilder Static UI Skeleton&#34;
@@ -4618,11 +4618,11 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
         </item>
         <item>
         <title>PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite</title>
-        <link>http://localhost:6749/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/</link>
+        <link>http://localhost:10776/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/</link>
         <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6749/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/</guid>
-        <description>&lt;img src="http://localhost:6749/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png" alt="Featured image of post PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite" /&gt;&lt;h2 id=&#34;foreword&#34;&gt;Foreword
+        <guid>http://localhost:10776/Hugo_Web/en/p/pyiaptoolkit-design-and-implementation-of-an-stm32-iap-host-tool-suite/</guid>
+        <description>&lt;img src="http://localhost:10776/Hugo_Web/p/pyiaptoolkitstm32-iap-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%B7%A5%E5%85%B7%E5%A5%97%E4%BB%B6%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/PyIAPToolKit.png" alt="Featured image of post PyIAPToolKit: Design and Implementation of an STM32 IAP Host Tool Suite" /&gt;&lt;h2 id=&#34;foreword&#34;&gt;Foreword
 &lt;/h2&gt;&lt;p&gt;In the previous post &lt;a class=&#34;link&#34; href=&#34;../stm32f407-secure-bootloader/&#34; &gt;STM32F407 Secure Bootloader Design&lt;/a&gt;, we examined the device-side A/B dual-partition, encryption/signing, and multi-channel upgrade mechanisms in detail. However, a complete IAP system also requires &lt;strong&gt;host-side tools&lt;/strong&gt; to handle firmware packaging, encryption/signing, transmission/flashing, and other steps. This article introduces &lt;strong&gt;PyIAPToolKit&lt;/strong&gt; — an STM32 IAP host tool suite based on PyQt6 + Fluent Design, which serves as the PC-side companion tool for the Bootloader project.&lt;/p&gt;
 &lt;blockquote class=&#34;alert alert-note&#34;&gt;
     &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/Lingjia007/PyIAPToolKit/releases/tag/v1.0.0&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -5943,11 +5943,11 @@ $$\forall x \in \text{.data}, \text{Mem}[\text{VMA}(x)] = \text{Mem}[\text{LMA}(
         </item>
         <item>
         <title>STM32F407 Secure Bootloader Design: A/B Dual Partition, Encryption/Signing, and Multi-Channel Upgrade</title>
-        <link>http://localhost:6749/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/</link>
+        <link>http://localhost:10776/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/</link>
         <pubDate>Sat, 20 Jun 2026 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6749/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/</guid>
-        <description>&lt;img src="http://localhost:6749/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.png" alt="Featured image of post STM32F407 Secure Bootloader Design: A/B Dual Partition, Encryption/Signing, and Multi-Channel Upgrade" /&gt;&lt;h2 id=&#34;preface&#34;&gt;Preface
+        <guid>http://localhost:10776/Hugo_Web/en/p/stm32f407-secure-bootloader-design-a/b-dual-partition-encryption/signing-and-multi-channel-upgrade/</guid>
+        <description>&lt;img src="http://localhost:10776/Hugo_Web/p/stm32f407-%E5%AE%89%E5%85%A8-bootloader-%E8%AE%BE%E8%AE%A1a/b-%E5%8F%8C%E5%88%86%E5%8C%BA%E5%8A%A0%E5%AF%86%E7%AD%BE%E5%90%8D%E4%B8%8E%E5%A4%9A%E6%B8%A0%E9%81%93%E5%8D%87%E7%BA%A7/STM32F407%E5%AE%89%E5%85%A8Bootloader%E8%AE%BE%E8%AE%A1.png" alt="Featured image of post STM32F407 Secure Bootloader Design: A/B Dual Partition, Encryption/Signing, and Multi-Channel Upgrade" /&gt;&lt;h2 id=&#34;preface&#34;&gt;Preface
 &lt;/h2&gt;&lt;p&gt;In the IoT and embedded device domain, firmware upgrade (OTA) is an indispensable part of the product lifecycle. However, issues during the upgrade process such as &lt;strong&gt;power-loss crashes, firmware tampering, and version rollback&lt;/strong&gt; often give developers headaches. This article details a secure Bootloader project based on the STM32F407VGT6, which systematically solves these pain points through mechanisms like &lt;strong&gt;A/B dual-partition&lt;/strong&gt;, &lt;strong&gt;secure firmware packages&lt;/strong&gt;, and &lt;strong&gt;address relocation&lt;/strong&gt;.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;1-what-problem-does-it-solve&#34;&gt;1. What Problem Does It Solve?
@@ -8369,11 +8369,11 @@ $$V_{\text{total}} = \text{PASS} \iff \forall i, V_i = \text{PASS}$$&lt;table&gt
         </item>
         <item>
         <title>Markdown Syntax Guide</title>
-        <link>http://localhost:6749/Hugo_Web/en/p/markdown-syntax-guide/</link>
+        <link>http://localhost:10776/Hugo_Web/en/p/markdown-syntax-guide/</link>
         <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:6749/Hugo_Web/en/p/markdown-syntax-guide/</guid>
-        <description>&lt;img src="http://localhost:6749/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown Syntax Guide" /&gt;&lt;p&gt;This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p&gt;
+        <guid>http://localhost:10776/Hugo_Web/en/p/markdown-syntax-guide/</guid>
+        <description>&lt;img src="http://localhost:10776/Hugo_Web/p/markdown%E8%AF%AD%E6%B3%95%E7%A4%BA%E4%BE%8B/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown Syntax Guide" /&gt;&lt;p&gt;This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p&gt;
 &lt;h2 id=&#34;headings&#34;&gt;Headings
 &lt;/h2&gt;&lt;p&gt;The following HTML &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt;—&lt;code&gt;&amp;lt;h6&amp;gt;&lt;/code&gt; elements represent six levels of section headings. &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt; is the highest section level while &lt;code&gt;&amp;lt;h6&amp;gt;&lt;/code&gt; is the lowest.&lt;/p&gt;
 &lt;h1 id=&#34;h1&#34;&gt;H1
