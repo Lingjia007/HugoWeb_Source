@@ -146,9 +146,9 @@ params:
 
     giscus:
       repo: "Lingjia007/Hugo_Web" # 替换为你自己的GitHub仓库路径
-      repoId: "R_kgDOOH5NOA" # 你的仓库ID
+      repoId: "R_kgDOTNf24g" # 你的仓库ID
       category: "Announcements" # 讨论类别
-      categoryId: "DIC_kwDOOH5NOM4Cn-zx" # 讨论类别ID
+      categoryId: "DIC_kwDOTNf24s4DAe9e" # 讨论类别ID
       mapping: "title" # 映射方式可以是"url", "title", 或 "pathname"
       reactionsEnabled: "1" # 启用反应按钮
       emitMetadata: "0" # 是否发送元数据
