@@ -314,3 +314,16 @@
 		transform: translate(0, 0) rotate(0);
 	}
 }
+
+/* Mobile: auto-collapse waifu */
+@media (max-width: 768px) {
+	#waifu {
+		display: none !important;
+	}
+	#waifu-toggle {
+		margin-right: -40px !important;
+	}
+	#waifu-toggle:hover {
+		margin-right: -20px !important;
+	}
+}
