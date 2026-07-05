@@ -2,7 +2,7 @@
 title: "A Taste of Bootloader Five-Layer Architecture: OOP Object Design Model from Platform Abstraction to App Orchestration"
 date: 2026-07-03
 description: "Using the STM32F407 Secure Bootloader as a real-world example, this post explores the five-layer Impl/Platform/Service/Core/App + Drivers(Vendor) architecture's C object-oriented design model: ops virtual function tables, container_of downcasting, multiple inheritance with dual base classes, dependency injection containers, macro-wrapped safe calls, mapped one-to-one to oop-in-c-embedded concepts"
-image: C语言结构体指针博客封面.png
+image: bootloader-five-layer-oop.png
 categories:
   - "Embedded"
 tags:

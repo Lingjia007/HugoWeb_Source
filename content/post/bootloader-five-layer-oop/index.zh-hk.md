@@ -2,7 +2,7 @@
 title: "淺嘗 Bootloader 五層架構：從 Platform 抽象到 App 編排的 OOP 物件設計模型"
 date: 2026-07-03
 description: "以 STM32F407 安全 Bootloader 為實例，淺嘗 Impl/Platform/Service/Core/App + Drivers(Vendor) 五層架構的 C 物件導向設計模型：ops 虛函式表、container_of 向下轉型、多重繼承雙基類、依賴注入容器、宏封裝安全呼叫，與 oop-in-c-embedded 概念逐一映射"
-image: C语言结构体指针博客封面.png
+image: bootloader-five-layer-oop.png
 categories:
   - "嵌入式"
 tags:
