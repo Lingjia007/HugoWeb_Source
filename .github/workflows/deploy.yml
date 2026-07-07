@@ -88,15 +88,6 @@ jobs:
           # 验证文件创建
           cat public/.github/workflows/pages.yml
 
-      - name: Verify public directory structure
-        run: |
-          echo "=== Listing public directory ==="
-          ls -la public/
-          echo "=== Listing .github directory ==="
-          ls -la public/.github/
-          echo "=== Listing workflows directory ==="
-          ls -la public/.github/workflows/
-
       - name: Deploy to Hugo_Web repository
         run: |
           # 配置 git
