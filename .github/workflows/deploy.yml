@@ -97,14 +97,30 @@ jobs:
           echo "=== Listing workflows directory ==="
           ls -la public/.github/workflows/
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          PERSONAL_TOKEN: ${{ secrets.TOKEN }}
-          EXTERNAL_REPOSITORY: Lingjia007/Hugo_Web
-          PUBLISH_BRANCH: master
-          PUBLISH_DIR: ./public
-          commit_message: ${{ github.event.head_commit.message }}
+      - name: Deploy to Hugo_Web repository
+        run: |
+          # 配置 git
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+          # 克隆目标仓库
+          git clone https://x-access-token:${{ secrets.TOKEN }}@github.com/Lingjia007/Hugo_Web.git hugo_web
+          cd hugo_web
+
+          # 切换到 master 分支
+          git checkout master || git checkout -b master
+
+          # 清空现有内容（保留 .git 目录）
+          find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
+
+          # 复制构建内容（包括 .github 目录）
+          cp -r ../public/* .
+          cp -r ../public/.github .
+
+          # 推送更改
+          git add -A
+          git commit -m "${{ github.event.head_commit.message }}" || echo "No changes to commit"
+          git push origin master --force
 
   deploy-to-netlify:
     runs-on: ubuntu-latest
