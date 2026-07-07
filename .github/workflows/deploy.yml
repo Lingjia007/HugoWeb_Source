@@ -48,45 +48,45 @@ jobs:
       - name: Create Hugo_Web Pages deployment workflow
         run: |
           mkdir -p public/.github/workflows
-          cat > public/.github/workflows/pages.yml << 'EOF'
-          name: Deploy Pages with Retry
-
-          on:
-            push:
-              branches:
-                - master  # Hugo_Web 仓库接收推送的分支
-
-          permissions:
-            contents: read
-            pages: write
-            id-token: write
-
-          concurrency:
-            group: "pages"
-            cancel-in-progress: false
-
-          jobs:
-            deploy:
-              runs-on: ubuntu-latest
-              steps:
-                - name: Checkout
-                  uses: actions/checkout@v5
-
-                - name: Setup Pages
-                  uses: actions/configure-pages@v5
-
-                - name: Upload artifact
-                  uses: actions/upload-pages-artifact@v3
-                  with:
-                    path: '.'  # 将整个根目录（即被推送过来的 public 内容）打包
-
-                - name: Deploy to GitHub Pages
-                  uses: Wandalen/wretry.action@v3
-                  with:
-                    action: actions/deploy-pages@v4
-                    attempt_limit: 5           # 最多重试 5 次
-                    attempt_delay: 30000       # 每次重试间隔 30 秒
-          EOF
+          echo 'name: Deploy Pages with Retry' > public/.github/workflows/pages.yml
+          echo '' >> public/.github/workflows/pages.yml
+          echo 'on:' >> public/.github/workflows/pages.yml
+          echo '  push:' >> public/.github/workflows/pages.yml
+          echo '    branches:' >> public/.github/workflows/pages.yml
+          echo '      - master' >> public/.github/workflows/pages.yml
+          echo '' >> public/.github/workflows/pages.yml
+          echo 'permissions:' >> public/.github/workflows/pages.yml
+          echo '  contents: read' >> public/.github/workflows/pages.yml
+          echo '  pages: write' >> public/.github/workflows/pages.yml
+          echo '  id-token: write' >> public/.github/workflows/pages.yml
+          echo '' >> public/.github/workflows/pages.yml
+          echo 'concurrency:' >> public/.github/workflows/pages.yml
+          echo '  group: "pages"' >> public/.github/workflows/pages.yml
+          echo '  cancel-in-progress: false' >> public/.github/workflows/pages.yml
+          echo '' >> public/.github/workflows/pages.yml
+          echo 'jobs:' >> public/.github/workflows/pages.yml
+          echo '  deploy:' >> public/.github/workflows/pages.yml
+          echo '    runs-on: ubuntu-latest' >> public/.github/workflows/pages.yml
+          echo '    steps:' >> public/.github/workflows/pages.yml
+          echo '      - name: Checkout' >> public/.github/workflows/pages.yml
+          echo '        uses: actions/checkout@v5' >> public/.github/workflows/pages.yml
+          echo '' >> public/.github/workflows/pages.yml
+          echo '      - name: Setup Pages' >> public/.github/workflows/pages.yml
+          echo '        uses: actions/configure-pages@v5' >> public/.github/workflows/pages.yml
+          echo '' >> public/.github/workflows/pages.yml
+          echo '      - name: Upload artifact' >> public/.github/workflows/pages.yml
+          echo '        uses: actions/upload-pages-artifact@v3' >> public/.github/workflows/pages.yml
+          echo '        with:' >> public/.github/workflows/pages.yml
+          echo '          path: "."' >> public/.github/workflows/pages.yml
+          echo '' >> public/.github/workflows/pages.yml
+          echo '      - name: Deploy to GitHub Pages' >> public/.github/workflows/pages.yml
+          echo '        uses: Wandalen/wretry.action@v3' >> public/.github/workflows/pages.yml
+          echo '        with:' >> public/.github/workflows/pages.yml
+          echo '          action: actions/deploy-pages@v4' >> public/.github/workflows/pages.yml
+          echo '          attempt_limit: 5' >> public/.github/workflows/pages.yml
+          echo '          attempt_delay: 30000' >> public/.github/workflows/pages.yml
+          # 验证文件创建
+          cat public/.github/workflows/pages.yml
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
