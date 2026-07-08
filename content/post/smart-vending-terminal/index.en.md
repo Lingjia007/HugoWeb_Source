@@ -26,7 +26,7 @@ This article uses a smart vending terminal based on **ArtInChip + LVGL v9 + RT-T
 
 ### 1.1 Problem Background
 
-The project uses AiUIBuilder v2.0.2 to generate a static UI skeleton (`ui_builder/screen.c`), creating widgets such as banner images, commodity cards, cart rows, and navigation buttons on an 800×480 screen. However, these widgets are **hard-coded static objects**:
+The project uses AiUIBuilder v2.0.2 to generate a static UI skeleton (`ui_builder/screen.c`), creating widgets such as banner images, commodity cards, cart rows, and navigation buttons on an 800x480 screen. However, these widgets are **hard-coded static objects**:
 
 ```c
 // screen.c (AiUIBuilder generated)
@@ -43,6 +43,37 @@ Business requirements demand **runtime dynamic addition and removal of widgets**
 - Inability to batch-destroy subtrees
 - Layout parameters hard-coded, no unified adjustment
 - Direct calls between components, tight coupling
+
+#### 1.1.1 Four Limitations of Native LVGL
+
+LVGL is an excellent lightweight embedded graphics library, but its native design reveals the following limitations when dealing with complex, dynamic, multi-layered UI applications:
+
+| Limitation Dimension | Manifestation | Pain Point of Native Approach |
+| --- | --- | --- |
+| **Render State vs Business State** | `lv_obj_t` stores render state (coordinates, size, color) but has no knowledge of business semantics (e.g., whether a cart count of "3" means "3 items" or "3 yuan total") | `lv_label_set_text(cart_label, "3")` tightly couples business logic with UI rendering; once the object is destroyed, dangling pointers result |
+| **Static Configuration vs Dynamic Lifecycle** | LVGL encourages static configuration at startup, but modern embedded UIs are highly dynamic (product lists come from the network, quantities change at any time) | Manually looping `lv_obj_create`, manually calculating coordinates, numerous `lv_obj_del` calls causing memory fragmentation and stuttering from frequent creation/destruction |
+| **Hard-Coded Layout vs Strategy-Driven Layout** | Flex/Grid are only basic typesetting; complex business rules (grey out when out of stock, change from 3 to 5 items per row in landscape) are difficult to configure | Business code filled with `if (stock==0) lv_obj_add_state(card, LV_STATE_DISABLED)`, scattered everywhere and extremely hard to maintain |
+| **Single-Page Thinking vs Page Stack State Machine** | No routing/page stack concept; switching pages means `lv_obj_clean` and rebuild, with no way to preserve state (scroll position lost when returning to a list page) | Rebuilding from scratch every time; all user interaction state is completely lost |
+
+#### 1.1.2 An Intuitive Analogy
+
+Think of developing an embedded UI like building a house:
+
+- **LVGL is the bricks, cement, and paint**. Directly calling `lv_obj_create` is laying bricks one by one.
+- **Simple UI (a doghouse)**: A few buttons and labels — laying bricks directly is the fastest and most appropriate approach; no architecture needed.
+- **Complex UI (a 30-story commercial building)**: A smart terminal with multiple pages, dynamic network data refresh, and various interaction states — if you insist on laying bricks one by one, it will eventually collapse. You need **architectural blueprints and a construction framework** (the application tree). The blueprint defines where the restrooms are, where the load-bearing walls go (business structure), and exactly how to lay the bricks is carried out by the construction crew (LVGL rendering engine) according to the blueprint.
+
+#### 1.1.3 The Gap Filled by the Application Tree
+
+LVGL itself does not provide a complete application framework for managing complex UI states and business logic. The application tree (`layout_node` + `layout_strategy`) fills this gap:
+
+- **Structural**: Organizes the UI in a tree form, clearly expressing interface hierarchy
+- **Strategy-Driven**: Abstracts layout algorithms into replaceable strategies
+- **Component-Based**: Efficiently manages components through factories and object pools
+- **Asynchronous**: Loads resources in the background, ensuring smoothness
+- **Decoupled**: Uses an event bus for loose coupling between business logic and UI communication
+
+Thus, LVGL is elevated from a mere "drawing tool" into a development framework capable of supporting large, complex, and maintainable embedded UI applications.
 
 ### 1.2 Solution: Application Tree
 
@@ -112,7 +143,61 @@ struct widget_unit {
 };
 ```
 
-### 2.2 Depth-First Destruction
+### 2.2 Composite Component Block Granularity
+
+The granularity of application tree nodes is **business-level composite component blocks**, rarely corresponding to LVGL's native base objects (such as a single `lv_label` or `lv_btn`).
+
+#### What Is a Composite Component Block?
+
+Take the vending machine's "commodity card" as an example. In native LVGL, it consists of the following 5 objects:
+
+- 1 `lv_obj` (outermost container)
+- 1 `lv_img` (product image)
+- 2 `lv_label` (name, price)
+- 1 `lv_btn` (purchase button)
+
+The application tree approach:
+
+```c
+// Application tree node (composite component)
+widget_unit_t *card = widget_factory_create("commodity_card", parent);
+card->base.obj = container;  // Points to the outermost container of the composite component
+card->priv = &card_data;     // Business data (product ID, price, stock)
+```
+
+A single `widget_unit_t` node, with its `obj` pointer pointing to the outermost container — the component factory internally creates all 5 `lv_obj_t` objects and assembles them in one go.
+
+#### Block-Level Destruction and Safe Reclamation
+
+When a page switch or list scroll causes a product card to move off screen:
+
+| Native Approach | Application Tree Approach |
+| --- | --- |
+| Manually find img, label1, label2, btn and call `lv_obj_del()` on each; extremely easy to miss one | Simply destroy the `layout_node`; the framework calls `lv_obj_del(node->obj)`, and LVGL automatically recursively deletes all child objects |
+| Business code may still reference deleted objects, causing dangling pointer crashes | The application tree clears `node->obj`; the business layer can no longer accidentally touch the underlying UI |
+
+#### Suspend/Activate Mechanism: Business State Preservation and Body Rebuilding
+
+On memory-constrained MCUs, a long list with 100 products cannot create 100 `lv_obj` blocks (memory would overflow). The application tree works with an async loader to achieve:
+
+- **Preserve 100 `layout_node` instances** (storing only a few bytes of business data, minimal memory usage)
+- **Only create 5 `lv_obj` blocks visible on screen**
+
+When the user scrolls the screen:
+
+```
+Block scrolled off screen:
+  Application tree calls lv_obj_del() to destroy the LVGL body → frees display memory
+  But the layout_node's business data (scroll offset, selection state) is preserved
+
+Block scrolled onto screen:
+  Application tree uses the existing layout_node → calls factory to lv_obj_create a new body
+  Uses the preserved business data to restore the interface state
+```
+
+This "composite component block-oriented" management approach enables an MCU with only a few hundred KB of memory to smoothly run infinite scrolling lists and multi-page nested complex GUIs.
+
+### 2.4 Depth-First Destruction
 
 The `destroy()` virtual function implements **depth-first** subtree destruction, ensuring all child nodes are reclaimed before their parent:
 
@@ -146,7 +231,7 @@ void layout_node_destroy(layout_node_t *node) {
 
 This means the caller does not need to know the concrete type of the node; a single `layout_node_destroy()` call can destroy the entire subtree.
 
-### 2.3 Child Node Dynamic Array
+### 2.5 Child Node Dynamic Array
 
 Containers use a dynamic array to manage child nodes, with an initial capacity of 8 and doubling expansion:
 
@@ -327,7 +412,35 @@ void layout_strategy_apply(lv_obj_t *obj, const layout_strategy_t *s) {
 }
 ```
 
-### 4.3 Layout Strategies for the Four Major Components
+### 4.3 Child Node Size Application
+
+The `cell_w` and `cell_h` fields in the strategy define fixed sizes for child nodes. When a child node is added to a container, `layout_strategy_apply_child_size()` automatically applies these sizes:
+
+```c
+void layout_strategy_apply_child_size(lv_obj_t *child_obj,
+                                       const layout_strategy_t *s) {
+    if (s->cell_w > 0)
+        lv_obj_set_width(child_obj, s->cell_w);
+    if (s->cell_h > 0)
+        lv_obj_set_height(child_obj, s->cell_h);
+}
+```
+
+This function is called within `layout_container_add_child()`:
+
+```c
+void layout_container_add_child(layout_container_t *self, layout_node_t *child) {
+    children_ensure_capacity(self, self->child_count + 1);
+    child->parent = self;
+    self->children[self->child_count++] = child;
+    // Key: automatically apply strategy sizes when adding a child node
+    layout_strategy_apply_child_size(child->obj, &self->strategy);
+}
+```
+
+**Design significance**: Layout parameters are consolidated from scattered API calls (`lv_obj_set_size` in various component files) into a single strategy struct. When creating a component, you only need to focus on "what type am I" — the size is uniformly controlled by the parent container's strategy.
+
+### 4.4 Layout Strategies for the Four Major Components
 
 In `custom_init()`, the four major components each use different strategies:
 
@@ -467,6 +580,80 @@ This separation enables:
 - The controller can switch to a different container instance at runtime
 - During data hot-updates: controller pauses → container clears → child widgets rebuilt → controller resumes
 
+#### 6.2.1 Auto-Scroll Timer
+
+`banner_carousel` creates an LVGL timer to implement 5-second interval auto-scrolling:
+
+```c
+carousel->auto_scroll_timer = lv_timer_create(
+    auto_scroll_cb, 5000, carousel);
+
+static void auto_scroll_cb(lv_timer_t *timer) {
+    banner_carousel_t *carousel = timer->user_data;
+    if (carousel->is_animating) return;  // Do not trigger during animation
+
+    // Calculate next index (circular)
+    int next_idx = (carousel->current_idx + 1) % carousel->container->child_count;
+
+    // Scroll to target position
+    lv_obj_scroll_to_x(carousel->container->base.obj,
+                        next_idx * carousel->strategy.cell_w,
+                        LV_ANIM_ON);
+
+    carousel->current_idx = next_idx;
+    update_dots_highlight(carousel);  // Sync indicators
+}
+```
+
+#### 6.2.2 Gesture Detection and User Interaction Pause
+
+When the user swipes the banner with a finger, auto-scrolling pauses for 10 seconds to avoid interference:
+
+```c
+static void gesture_detect_cb(lv_event_t *e) {
+    banner_carousel_t *carousel = lv_event_get_user_data(e);
+    int32_t scroll_x = lv_obj_get_scroll_x(carousel->container->base.obj);
+
+    if (abs(scroll_x - carousel->last_scroll_x) > 10) {
+        // Swipe detected: pause auto-scroll for 10 seconds
+        lv_timer_pause(carousel->auto_scroll_timer);
+        lv_timer_reset(carousel->resume_timer);  // Resume after 10 seconds
+
+        carousel->last_scroll_x = scroll_x;
+    }
+}
+```
+
+#### 6.2.3 Indicator Dot Synchronization
+
+The indicators are a set of small dots (`lv_obj`), matching the number of banner images, with the current page highlighted:
+
+```c
+static void create_dots(banner_carousel_t *carousel, lv_obj_t *parent) {
+    int count = carousel->container->child_count;
+    carousel->dots = rt_malloc(sizeof(lv_obj_t *) * count);
+
+    for (int i = 0; i < count; i++) {
+        lv_obj_t *dot = lv_obj_create(parent);
+        lv_obj_set_size(dot, 8, 8);
+        lv_obj_set_style_bg_color(dot, lv_color_hex(0xCCCCCC), 0);
+        // First dot highlighted by default
+        if (i == 0)
+            lv_obj_set_style_bg_color(dot, lv_color_hex(0xFFFFFF), 0);
+        carousel->dots[i] = dot;
+    }
+}
+
+static void update_dots_highlight(banner_carousel_t *carousel) {
+    for (int i = 0; i < carousel->container->child_count; i++) {
+        lv_obj_set_style_bg_color(
+            carousel->dots[i],
+            i == carousel->current_idx ? lv_color_hex(0xFFFFFF) : lv_color_hex(0xCCCCCC),
+            0);
+    }
+}
+```
+
 ### 6.3 Data Hot-Update
 
 `banner_carousel_update_data()` demonstrates the application tree's hot-update flow:
@@ -562,17 +749,124 @@ commodity_card click add-to-cart
 
 Three modules with zero direct dependencies, communicating entirely through the event bus.
 
+### 7.4 RT-Thread Thread Safety: Reference and Isolation
+
+LVGL has an iron rule: **all operations on `lv_obj_t` must be performed in the same thread (the LVGL thread)**. If a business thread (network, sensor) directly calls `lv_label_set_text()`, the system will most likely crash.
+
+#### 7.4.1 Physical Thread Isolation
+
+```
+LVGL Render Thread              Business Worker Thread
+lv_timer_handler()              Network communication / data processing
+lv_tick_inc()                   Hardware I/O
+Only responsible for rendering  Never touches lv_obj_t
+```
+
+Business threads absolutely cannot obtain `lv_obj_t` pointers; they can only operate on pure business data (C structs).
+
+#### 7.4.2 RT-Thread Message Queue Bridge
+
+Business threads notify the UI thread to refresh through RT-Thread message queues:
+
+```c
+// Define cross-thread message
+typedef struct {
+    event_type_t type;
+    layout_node_t *target_node;  // Reference application tree node (not touching lv_obj)
+    void *data;
+} app_msg_t;
+
+// RT-Thread message queue initialization
+struct rt_messagequeue ui_mq;
+rt_mq_init(&ui_mq, "ui_mq",
+           rt_malloc(sizeof(app_msg_t) * 16),
+           sizeof(app_msg_t), 16, RT_IPC_FLAG_FIFO);
+
+// Business thread sends update request (isolated and safe)
+void network_thread_handle_new_price(uint8_t price) {
+    app_msg_t msg = {
+        .type = EVT_CART_PRICE_CHANGED,
+        .target_node = g_cart_node,  // Reference node, not touching lv_obj
+        .data = &price
+    };
+    rt_mq_send(&ui_mq, &msg, sizeof(app_msg_t));
+    // Business thread work complete, never blocks UI thread
+}
+
+// LVGL thread receives and drives rendering
+void lvgl_thread_entry(void *param) {
+    app_msg_t recv_msg;
+    while (1) {
+        if (rt_mq_recv(&ui_mq, &recv_msg, sizeof(app_msg_t), RT_WAITING_FOREVER) == RT_EOK) {
+            // Safely update UI in LVGL thread
+            switch (recv_msg.type) {
+                case EVT_CART_PRICE_CHANGED:
+                    cart_node_set_price(recv_msg.target_node, *(uint8_t*)recv_msg.data);
+                    break;
+            }
+        }
+        lv_timer_handler();  // Render
+    }
+}
+```
+
+#### 7.4.3 The Essence of Reference and Isolation
+
+| Mechanism | Purpose |
+| --- | --- |
+| **Thread Isolation** | Business runs on an independent thread with no visibility into `lv_obj_t`; UI runs on an independent thread with no concern for business protocols |
+| **Message Queue** | Business thread references application tree node pointers, drops data into the queue, and moves on |
+| **Safe Rendering** | UI thread obtains pointers and safely operates underlying `lv_obj` within the LVGL thread context |
+
+Under this architecture, even if the network thread sends messages frantically, the LVGL render thread can still dequeue messages and refresh smoothly at its own pace — never crashing or stuttering.
+
 ---
 
 ## 8. From Static to Dynamic: The custom_init() Replacement Flow
 
 `custom_init()` is the system assembly entry point, fully demonstrating the replacement process from AiUIBuilder static skeleton to dynamic application tree:
 
+### 8.1 SD Card Mounting and Resource Path Management
+
+Image resources for dynamic components are stored on the SD card, which must be mounted at startup:
+
+```c
+static int ensure_sdcard_mounted(void) {
+    if (dfs_mount("sd0", "/sdcard", "elm", 0, 0) == 0)
+        return 0;  // Already mounted
+
+    // Retry up to 5 times
+    for (int i = 0; i < 5; i++) {
+        rt_thread_mdelay(100);
+        if (dfs_mount("sd0", "/sdcard", "elm", 0, 0) == 0)
+            return 0;
+    }
+
+    rt_kprintf("SD card mount failed, use default paths\n");
+    return -1;
+}
+```
+
+After successful mounting, resource paths are standardized:
+
+| Resource Type | SD Card Path                 | Usage          |
+| ------------- | ---------------------------- | -------------- |
+| Banner images | `/sdcard/banner/xxx.png`     | Carousel banners |
+| Product images | `/sdcard/commodity/xxx.png` | Product cards  |
+| Config files  | `/sdcard/config/banner.json` | Web config persistence |
+
+All paths are centrally managed in `web_config.c`, avoiding hard-coded paths scattered across the codebase.
+
+### 8.2 Complete Initialization Flow
+
 ```
 Step 1: Initialize infrastructure
   event_bus_init() + async_loader_init()
 
-Step 2: Initialize object pools
+Step 2: Mount SD card (prepare resource paths)
+  ensure_sdcard_mounted()
+
+Step 3: Initialize object pools
   banner_item_module_init()    // rt_mp_create, capacity=10
   commodity_module_init()      // rt_mp_create, capacity=30
   cart_module_init()           // rt_mp_create, capacity=20
@@ -621,6 +915,61 @@ Step 6: Event subscriptions + start business modules
 ```
 
 **Core idea**: Preserve the **container objects** created by AiUIBuilder (e.g., `container_banner`), delete their **static child widgets**, then use the Wrap mechanism to bring the containers under application tree management, and finally use the widget factory to dynamically fill them with data-driven child nodes.
+
+### 8.3 Cart Open/Close Animation
+
+The cart list is hidden by default and expands when the checkout button is clicked, implemented via the LVGL animation API:
+
+```c
+// Open animation: height from 0 → 400, opacity from 0 → 255
+static void cart_list_open_anim(lv_obj_t *cart_container) {
+    lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_var(&a, cart_container);
+    lv_anim_set_exec_cb(&a, lv_obj_set_height);
+    lv_anim_set_values(&a, 0, 400);
+    lv_anim_set_time(&a, 300);
+    lv_anim_set_path_cb(&a, lv_anim_path_ease_out);
+    lv_anim_start(&a);
+
+    // Synchronized opacity animation
+    lv_anim_set_exec_cb(&a, lv_obj_set_style_opa);
+    lv_anim_set_values(&a, LV_OPA_TRANSP, LV_OPA_COVER);
+    lv_anim_start(&a);
+}
+
+// Close animation: reverse process
+static void cart_list_close_anim(lv_obj_t *cart_container) {
+    lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_var(&a, cart_container);
+    lv_anim_set_exec_cb(&a, lv_obj_set_height);
+    lv_anim_set_values(&a, 400, 0);
+    lv_anim_set_time(&a, 300);
+    lv_anim_set_path_cb(&a, lv_anim_path_ease_in);
+    lv_anim_start(&a);
+
+    lv_anim_set_exec_cb(&a, lv_obj_set_style_opa);
+    lv_anim_set_values(&a, LV_OPA_COVER, LV_OPA_TRANSP);
+    lv_anim_start(&a);
+}
+```
+
+Animation triggering is driven by the checkout button click event, working with the application tree's cart container:
+
+```c
+static void settlement_btn_click_cb(lv_event_t *e) {
+    if (g_cart_list_visible) {
+        cart_list_close_anim(s_cart_comp->container->base.obj);
+        g_cart_list_visible = false;
+    } else {
+        cart_list_open_anim(s_cart_comp->container->base.obj);
+        g_cart_list_visible = true;
+    }
+}
+```
+
+**Design point**: The animation operates on the `lv_obj_t` corresponding to the application tree container, but the control logic resides in the business layer (the `g_cart_list_visible` flag), reflecting the separation of data and rendering.
 
 ---
 
@@ -704,7 +1053,7 @@ AA 55 CMD LEN_H LEN_L DATA... 0D 0A
 1. User clicks checkout button → parse cart total price → show payment mode selection popup
 2. User selects "User Scans QR" → send `CMD_REQ_QR` to PC
 3. PC generates Alipay sandbox order, returns `CMD_QR_URL`
-4. Device displays QR code overlay (240×240, LVGL `lv_qrcode` widget)
+4. Device displays QR code overlay (240x240, LVGL `lv_qrcode` widget)
 5. PC polls payment status and returns `CMD_PAY_STATUS`
 6. On success: display "Payment Successful!", auto-hide after 2 seconds, clear cart, restore carousel
 
@@ -727,14 +1076,14 @@ The UART3 RX thread strictly does not call any LVGL APIs. After frame parsing is
 
 ### 12.1 Hardware Configuration
 
-- DVP camera (OV5640), forced QVGA 320×240 output to reduce memory usage (~460KB)
+- DVP camera (OV5640), forced QVGA 320x240 output to reduce memory usage (~460KB)
 - ArtInChip video input framework (`mpp_vin`, `drv_dvp`)
 - Framebuffer video layer (`mpp_fb`) for camera preview
 - quirc QR code decoding library
 
 ### 12.2 Scanning Flow
 
-1. `qr_scanner_start()`: Initialize DVP (with 5-retry fault tolerance), configure sensor format, create quirc instance (160×120, 2x downsampled)
+1. `qr_scanner_start()`: Initialize DVP (with 5-retry fault tolerance), configure sensor format, create quirc instance (160x120, 2x downsampled)
 2. Scanning thread loop: `dq_buf` → discard first few frames → extract Y channel and downsample every 5 frames → `quirc_decode`
 3. `handle_qr_result()`: Detect if it is a payment authorization code (18~28 digit pure numeric), same-code 5-second cooldown, call `uart3_payment_send_barcode()` to send
 
@@ -766,8 +1115,8 @@ The device starts a WiFi AP (SSID: `AIC-Banner-Config`, password: `12345678`, ch
 | POST   | `/api/commodity`                   | Update commodity configuration          |
 | POST   | `/api/navi`                        | Update navigation configuration         |
 | POST   | `/api/reset`                       | Reset to default configuration          |
-| POST   | `/api/upload/{filename}`           | Upload Banner image (validate 494×78)   |
-| POST   | `/api/upload/commodity/{filename}` | Upload commodity image (validate 80×80) |
+| POST   | `/api/upload/{filename}`           | Upload Banner image (validate 494x78)   |
+| POST   | `/api/upload/commodity/{filename}` | Upload commodity image (validate 80x80) |
 
 ### 13.3 Security Measures
 

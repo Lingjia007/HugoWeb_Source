@@ -44,6 +44,37 @@ scr->container_main_1 = lv_obj_create(scr->container_main);
 - 布局参数硬编码，无法统一调整
 - 组件间直接调用，紧耦合
 
+#### 1.1.1 LVGL 原生的四大局限
+
+LVGL 是一个优秀的轻量级嵌入式图形库，但其原生设计在应对复杂、动态、多层级的 UI 应用时会显现以下局限：
+
+| 局限维度                       | 具体表现                                                                                                  | 原生做法痛点                                                                               |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **渲染状态 vs 业务状态**       | `lv_obj_t` 保存的是渲染状态（坐标、尺寸、颜色），但不知道业务含义（如购物车数量是"3件商品"还是"3元总价"） | `lv_label_set_text(cart_label, "3")` 把业务逻辑和 UI 渲染死绑在一起，一旦对象销毁就野指针  |
+| **静态配置 vs 动态生命周期**   | LVGL 鼓励启动时静态配置，但现代嵌入式 UI 高度动态（商品列表从网络下发，数量随时变）                       | 手动循环 `lv_obj_create`，手动计算坐标，大量 `lv_obj_del` 导致内存碎片，频繁创建销毁卡顿   |
+| **硬编码布局 vs 策略化布局**   | Flex/Grid 仅是基础排版，复杂业务规则（缺货变灰、横屏每行从3变5）难以配置                                  | 业务代码里写满 `if (stock==0) lv_obj_add_state(card, LV_STATE_DISABLED)`，散落各处极难维护 |
+| **单页面思维 vs 页面栈状态机** | 没有路由/页面栈概念，切换页面就是 `lv_obj_clean` 重建，无法保存状态（返回列表页滑动位置丢失）             | 每次重建从头渲染，用户交互状态全部丢失                                                     |
+
+#### 1.1.2 一个通俗的比喻
+
+把开发嵌入式 UI 比作盖房子：
+
+- **LVGL 是砖头、水泥和涂料**。直接 `lv_obj_create` 就是一块一块垒砖头。
+- **简单界面（狗窝）**：几个按钮几个文本，直接垒砖头最快最合适，不需要架构。
+- **复杂界面（三十层商业大厦）**：智能终端多页面、网络数据动态刷新、多种交互状态，还坚持一块一块垒砖头，最后一定会塌方。你需要**建筑图纸和施工框架**（应用树），图纸定义了哪里是卫生间、哪里是承重墙（业务结构），具体怎么砌砖由施工队（LVGL 渲染引擎）按图纸执行。
+
+#### 1.1.3 应用树填补的空白
+
+LVGL 本身不提供完整应用框架来管理复杂 UI 状态和业务逻辑。应用树（`layout_node` + `layout_strategy`）填补这一空白：
+
+- **结构化**：用树形组织 UI，清晰表达界面层级
+- **策略化**：将布局算法抽象为可替换的策略
+- **组件化**：通过工厂和对象池高效管理组件
+- **异步化**：后台加载资源，保证流畅度
+- **解耦化**：用事件总线实现业务逻辑与 UI 的松耦合通信
+
+从而将 LVGL 从一个单纯的"画图工具"提升为能够支撑大型、复杂、可维护嵌入式 UI 应用的开发框架。
+
 ### 1.2 解决方案：应用树
 
 在 LVGL 渲染树之上构建一棵**应用树**，每个应用树节点持有对应的 `lv_obj_t*`，并附加生命周期和布局管理能力：
@@ -112,7 +143,61 @@ struct widget_unit {
 };
 ```
 
-### 2.2 深度优先销毁
+### 2.2 面向组合组件块的颗粒度
+
+应用树节点的颗粒度是**业务级的组合组件块**，极少对应 LVGL 的原生基础对象（如单个 `lv_label`、`lv_btn`）。
+
+#### 什么是组合组件块？
+
+以售货机的"商品卡片"为例，在原生 LVGL 中它由以下 5 个对象组成：
+
+- 1 个 `lv_obj`（最外层 container）
+- 1 个 `lv_img`（商品图片）
+- 2 个 `lv_label`（名称、价格）
+- 1 个 `lv_btn`（购买按钮）
+
+应用树的做法：
+
+```c
+// 应用树节点（组合组件）
+widget_unit_t *card = widget_factory_create("commodity_card", parent);
+card->base.obj = container;  // 指向组合组件最外层 container
+card->priv = &card_data;     // 业务数据（商品ID、价格、库存）
+```
+
+一个 `widget_unit_t` 节点，`obj` 指针指向最外层 container，组件工厂内部一口气把这 5 个 `lv_obj_t` 都创建出来并组合好。
+
+#### 块级销毁与安全回收
+
+当页面切换或列表滑动导致某个商品卡片移出屏幕时：
+
+| 原生做法                                                        | 应用树做法                                                                            |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 手动找到 img, label1, label2, btn 分别 `lv_obj_del()`，极易漏删 | 直接销毁 `layout_node`，框架执行 `lv_obj_del(node->obj)`，LVGL 自动递归删除所有子对象 |
+| 业务代码可能还在引用已删除对象，导致野指针崩溃                  | 应用树清空 `node->obj`，业务层不会再误触底层 UI                                       |
+
+#### 挂起/激活机制：业务状态保留与肉体重建
+
+在内存受限的 MCU 上，长列表有 100 个商品时不能创建 100 个 `lv_obj` 块（内存会爆）。应用树配合异步加载器实现：
+
+- **保留 100 个 `layout_node`**（仅存几个字节的业务数据，内存占用极小）
+- **仅创建屏幕可见的 5 个 `lv_obj` 块**
+
+当用户滑动屏幕时：
+
+```
+滑出屏幕的块：
+  应用树执行 lv_obj_del() 销毁 LVGL 肉体 → 释放显存
+  但 layout_node 的业务数据（滑动偏移、选中状态）保留
+
+滑入屏幕的块：
+  应用树根据已有 layout_node → 调用工厂重新 lv_obj_create 造出肉体
+  利用保留的业务数据恢复界面状态
+```
+
+这种"面向组合组件块"的管理方式，使得几百 KB 内存的 MCU 能流畅运行无限滚动列表、多页面嵌套的复杂 GUI。
+
+### 2.4 深度优先销毁
 
 `destroy()` 虚函数实现了**深度优先**的子树销毁，保证所有子节点先于父节点被回收：
 
@@ -146,7 +231,7 @@ void layout_node_destroy(layout_node_t *node) {
 
 这意味着调用者无需关心节点的具体类型，一个 `layout_node_destroy()` 即可销毁整棵子树。
 
-### 2.3 子节点动态数组
+### 2.5 子节点动态数组
 
 容器使用动态数组管理子节点，初始容量 8，倍增扩容：
 
@@ -327,7 +412,35 @@ void layout_strategy_apply(lv_obj_t *obj, const layout_strategy_t *s) {
 }
 ```
 
-### 4.3 四大组件的布局策略
+### 4.3 子节点尺寸应用
+
+策略中的 `cell_w` 和 `cell_h` 定义了子节点的固定尺寸。当子节点被添加到容器时，`layout_strategy_apply_child_size()` 自动应用这些尺寸：
+
+```c
+void layout_strategy_apply_child_size(lv_obj_t *child_obj,
+                                       const layout_strategy_t *s) {
+    if (s->cell_w > 0)
+        lv_obj_set_width(child_obj, s->cell_w);
+    if (s->cell_h > 0)
+        lv_obj_set_height(child_obj, s->cell_h);
+}
+```
+
+这个函数在 `layout_container_add_child()` 中被调用：
+
+```c
+void layout_container_add_child(layout_container_t *self, layout_node_t *child) {
+    children_ensure_capacity(self, self->child_count + 1);
+    child->parent = self;
+    self->children[self->child_count++] = child;
+    // 关键：添加子节点时自动应用策略尺寸
+    layout_strategy_apply_child_size(child->obj, &self->strategy);
+}
+```
+
+**设计意义**：布局参数从分散的 API 调用（各组件文件里的 `lv_obj_set_size`）收拢到策略结构体，组件创建时只需关注"我是什么类型"，尺寸由父容器的策略统一控制。
+
+### 4.4 四大组件的布局策略
 
 在 `custom_init()` 中，四大组件各自使用不同的策略创建：
 
@@ -467,6 +580,80 @@ struct banner_carousel {
 - 控制器可以在运行时切换到不同的容器实例
 - 数据热更新时，控制器暂停 → 容器 clear → 重建子控件 → 控制器恢复
 
+#### 6.2.1 自动轮播定时器
+
+`banner_carousel` 创建一个 LVGL 定时器实现 5 秒间隔的自动滚动：
+
+```c
+carousel->auto_scroll_timer = lv_timer_create(
+    auto_scroll_cb, 5000, carousel);
+
+static void auto_scroll_cb(lv_timer_t *timer) {
+    banner_carousel_t *carousel = timer->user_data;
+    if (carousel->is_animating) return;  // 动画中不触发
+
+    // 计算下一个索引（循环）
+    int next_idx = (carousel->current_idx + 1) % carousel->container->child_count;
+
+    // 滚动到目标位置
+    lv_obj_scroll_to_x(carousel->container->base.obj,
+                        next_idx * carousel->strategy.cell_w,
+                        LV_ANIM_ON);
+
+    carousel->current_idx = next_idx;
+    update_dots_highlight(carousel);  // 同步指示器
+}
+```
+
+#### 6.2.2 手势检测与用户交互暂停
+
+当用户手指滑动横幅时，自动轮播暂停 10 秒，避免干扰：
+
+```c
+static void gesture_detect_cb(lv_event_t *e) {
+    banner_carousel_t *carousel = lv_event_get_user_data(e);
+    int32_t scroll_x = lv_obj_get_scroll_x(carousel->container->base.obj);
+
+    if (abs(scroll_x - carousel->last_scroll_x) > 10) {
+        // 检测到滑动：暂停自动滚动 10 秒
+        lv_timer_pause(carousel->auto_scroll_timer);
+        lv_timer_reset(carousel->resume_timer);  // 10 秒后恢复
+
+        carousel->last_scroll_x = scroll_x;
+    }
+}
+```
+
+#### 6.2.3 指示器圆点同步
+
+指示器是一组小圆点（`lv_obj`），数量与横幅图片一致，当前页高亮：
+
+```c
+static void create_dots(banner_carousel_t *carousel, lv_obj_t *parent) {
+    int count = carousel->container->child_count;
+    carousel->dots = rt_malloc(sizeof(lv_obj_t *) * count);
+
+    for (int i = 0; i < count; i++) {
+        lv_obj_t *dot = lv_obj_create(parent);
+        lv_obj_set_size(dot, 8, 8);
+        lv_obj_set_style_bg_color(dot, lv_color_hex(0xCCCCCC), 0);
+        // 第一个默认高亮
+        if (i == 0)
+            lv_obj_set_style_bg_color(dot, lv_color_hex(0xFFFFFF), 0);
+        carousel->dots[i] = dot;
+    }
+}
+
+static void update_dots_highlight(banner_carousel_t *carousel) {
+    for (int i = 0; i < carousel->container->child_count; i++) {
+        lv_obj_set_style_bg_color(
+            carousel->dots[i],
+            i == carousel->current_idx ? lv_color_hex(0xFFFFFF) : lv_color_hex(0xCCCCCC),
+            0);
+    }
+}
+```
+
 ### 6.3 数据热更新
 
 `banner_carousel_update_data()` 展示了应用树的热更新流程：
@@ -562,17 +749,124 @@ commodity_card 点击加购
 
 三个模块零直接依赖，完全通过事件总线通信。
 
+### 7.4 RT-Thread 线程安全：引用与隔离
+
+LVGL 有一个铁律：**所有对 `lv_obj_t` 的操作必须在同一个线程（LVGL 线程）中进行**。如果业务线程（网络、传感器）直接调用 `lv_label_set_text()`，系统大概率崩溃。
+
+#### 7.4.1 线程物理隔离
+
+```
+LVGL 渲染线程                业务工作线程
+lv_timer_handler()           网络通信/数据处理
+lv_tick_inc()                硬件读写
+只负责渲染                    不触碰 lv_obj_t
+```
+
+业务线程绝对拿不到 `lv_obj_t` 指针，只能操作纯业务数据（C 结构体）。
+
+#### 7.4.2 RT-Thread 消息队列桥梁
+
+业务线程通过 RT-Thread 消息队列通知 UI 线程刷新：
+
+```c
+// 定义跨线程消息
+typedef struct {
+    event_type_t type;
+    layout_node_t *target_node;  // 引用应用树节点（不碰 lv_obj）
+    void *data;
+} app_msg_t;
+
+// RT-Thread 消息队列初始化
+struct rt_messagequeue ui_mq;
+rt_mq_init(&ui_mq, "ui_mq",
+           rt_malloc(sizeof(app_msg_t) * 16),
+           sizeof(app_msg_t), 16, RT_IPC_FLAG_FIFO);
+
+// 业务线程发送更新请求（隔离且安全）
+void network_thread_handle_new_price(uint8_t price) {
+    app_msg_t msg = {
+        .type = EVT_CART_PRICE_CHANGED,
+        .target_node = g_cart_node,  // 引用节点，不碰 lv_obj
+        .data = &price
+    };
+    rt_mq_send(&ui_mq, &msg, sizeof(app_msg_t));
+    // 业务线程工作完成，绝不阻塞 UI 线程
+}
+
+// LVGL 线程接收并驱动渲染
+void lvgl_thread_entry(void *param) {
+    app_msg_t recv_msg;
+    while (1) {
+        if (rt_mq_recv(&ui_mq, &recv_msg, sizeof(app_msg_t), RT_WAITING_FOREVER) == RT_EOK) {
+            // 在 LVGL 线程安全地更新 UI
+            switch (recv_msg.type) {
+                case EVT_CART_PRICE_CHANGED:
+                    cart_node_set_price(recv_msg.target_node, *(uint8_t*)recv_msg.data);
+                    break;
+            }
+        }
+        lv_timer_handler();  // 渲染
+    }
+}
+```
+
+#### 7.4.3 引用与隔离的精髓
+
+| 机制         | 作用                                                             |
+| ------------ | ---------------------------------------------------------------- |
+| **线程隔离** | 业务跑独立线程，看不到 `lv_obj_t`；UI 跑独立线程，不关心业务协议 |
+| **消息队列** | 业务线程引用应用树节点指针，把数据丢进队列后转身就走             |
+| **安全渲染** | UI 线程拿到指针后，在 LVGL 线程上下文安全操作底层 `lv_obj`       |
+
+在这套架构下，即使网络线程疯狂发消息，LVGL 渲染线程仍能以自己节奏从队列取消息并平滑刷新，绝不死机或卡顿。
+
 ---
 
 ## 八、从静态到动态：custom_init() 的替换流程
 
 `custom_init()` 是系统组装入口，完整展示了从 AiUIBuilder 静态骨架到动态应用树的替换过程：
 
+### 8.1 SD卡挂载与资源路径管理
+
+动态组件的图片资源存放在 SD 卡，启动时必须先挂载：
+
+```c
+static int ensure_sdcard_mounted(void) {
+    if (dfs_mount("sd0", "/sdcard", "elm", 0, 0) == 0)
+        return 0;  // 已挂载
+
+    // 重试最多 5 次
+    for (int i = 0; i < 5; i++) {
+        rt_thread_mdelay(100);
+        if (dfs_mount("sd0", "/sdcard", "elm", 0, 0) == 0)
+            return 0;
+    }
+
+    rt_kprintf("SD card mount failed, use default paths\n");
+    return -1;
+}
+```
+
+挂载成功后，资源路径标准化：
+
+| 资源类型    | SD卡路径                     | 用途          |
+| ----------- | ---------------------------- | ------------- |
+| Banner 图片 | `/sdcard/banner/xxx.png`     | 轮播横幅      |
+| 商品图片    | `/sdcard/commodity/xxx.png`  | 商品卡片      |
+| 配置文件    | `/sdcard/config/banner.json` | Web配置持久化 |
+
+所有路径在 `web_config.c` 中统一管理，避免硬编码散落各处。
+
+### 8.2 完整初始化流程
+
 ```
 Step 1: 初始化基础设施
   event_bus_init() + async_loader_init()
 
-Step 2: 初始化对象池
+Step 2: 挂载 SD 卡（资源路径准备）
+  ensure_sdcard_mounted()
+
+Step 3: 初始化对象池
   banner_item_module_init()    // rt_mp_create, 容量=10
   commodity_module_init()      // rt_mp_create, 容量=30
   cart_module_init()           // rt_mp_create, 容量=20
@@ -621,6 +915,61 @@ Step 6: 事件订阅 + 启动业务模块
 ```
 
 **核心思路**：保留 AiUIBuilder 创建的**容器对象**（如 `container_banner`），删除其**静态子控件**，然后通过 Wrap 机制将容器纳入应用树管理，再通过控件工厂动态填充可数据驱动的子节点。
+
+### 8.3 购物车开合动画
+
+购物车列表默认隐藏，点击结算按钮时展开，通过 LVGL 动画 API 实现：
+
+```c
+// 展开动画：高度从 0 → 400，透明度从 0 → 255
+static void cart_list_open_anim(lv_obj_t *cart_container) {
+    lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_var(&a, cart_container);
+    lv_anim_set_exec_cb(&a, lv_obj_set_height);
+    lv_anim_set_values(&a, 0, 400);
+    lv_anim_set_time(&a, 300);
+    lv_anim_set_path_cb(&a, lv_anim_path_ease_out);
+    lv_anim_start(&a);
+
+    // 同步透明度动画
+    lv_anim_set_exec_cb(&a, lv_obj_set_style_opa);
+    lv_anim_set_values(&a, LV_OPA_TRANSP, LV_OPA_COVER);
+    lv_anim_start(&a);
+}
+
+// 收起动画：反向过程
+static void cart_list_close_anim(lv_obj_t *cart_container) {
+    lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_var(&a, cart_container);
+    lv_anim_set_exec_cb(&a, lv_obj_set_height);
+    lv_anim_set_values(&a, 400, 0);
+    lv_anim_set_time(&a, 300);
+    lv_anim_set_path_cb(&a, lv_anim_path_ease_in);
+    lv_anim_start(&a);
+
+    lv_anim_set_exec_cb(&a, lv_obj_set_style_opa);
+    lv_anim_set_values(&a, LV_OPA_COVER, LV_OPA_TRANSP);
+    lv_anim_start(&a);
+}
+```
+
+动画触发由结算按钮点击事件驱动，配合应用树的购物车容器：
+
+```c
+static void settlement_btn_click_cb(lv_event_t *e) {
+    if (g_cart_list_visible) {
+        cart_list_close_anim(s_cart_comp->container->base.obj);
+        g_cart_list_visible = false;
+    } else {
+        cart_list_open_anim(s_cart_comp->container->base.obj);
+        g_cart_list_visible = true;
+    }
+}
+```
+
+**设计要点**：动画操作的是应用树容器对应的 `lv_obj_t`，但控制逻辑在业务层（`g_cart_list_visible` 标志），体现了数据与渲染的分离。
 
 ---
 
