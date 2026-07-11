@@ -13,6 +13,10 @@ links:
     description: AI 编程助手，提供智能代码补全和生成功能
     website: https://github.com/features/copilot
     image: GithubCopilot.png
+  - title: 立创开发板
+    description: 不靠卖板赚钱，以培养中国工程师为己任
+    website: https://wiki.lckfb.com/zh-hans/
+    image: JLC.png
   - title: DeepSeek
     description: 探索未至之境
     website: https://www.deepseek.com

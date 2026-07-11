@@ -13,6 +13,10 @@ links:
     description: AI programming assistant with intelligent code completion and generation
     website: https://github.com/features/copilot
     image: GithubCopilot.png
+  - title: LCEDA Development Board
+    description: Dedicated to cultivating Chinese engineers, not just selling boards
+    website: https://wiki.lckfb.com/en/
+    image: JLC.png
   - title: DeepSeek
     description: Explore the unknown
     website: https://www.deepseek.com
