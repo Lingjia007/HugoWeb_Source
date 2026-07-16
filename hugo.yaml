@@ -45,7 +45,7 @@ services:
     id:
 
 pagination:
-  pagerSize: 8
+  pagerSize: 9
 
 permalinks:
   post: /p/:slug/
