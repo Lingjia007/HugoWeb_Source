@@ -5,6 +5,7 @@ description: "Windows Subsystem for Linux 2 配合 Docker 容器化 TensorFlow �
 image: WSL2+Docker+TensorFlow教程博客封面.png
 categories:
   - "深度学习"
+  - "边缘AI"
 tags:
   - "WSL2"
   - "Docker"
@@ -12,6 +13,7 @@ tags:
   - "STM32"
   - "模型训练"
   - "TensorBoard"
+  - "边缘AI"
 ---
 
 ## 前言

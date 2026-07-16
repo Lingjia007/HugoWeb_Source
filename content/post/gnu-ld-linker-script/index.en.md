@@ -5,6 +5,7 @@ description: "Using the GCC linker script for STM32F407VGT6 as a real-world exam
 image: gnu-ld-linker-script.png
 categories:
   - "Embedded"
+  - "Toolchain"
 tags:
   - "STM32"
   - "Linker-Script"

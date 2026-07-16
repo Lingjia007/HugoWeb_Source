@@ -5,6 +5,8 @@ description: "Using the STM32F407 Secure Bootloader as a real-world example, thi
 image: bootloader-five-layer-oop.png
 categories:
   - "Embedded"
+  - "Bootloader"
+  - "Architecture"
 tags:
   - "STM32"
   - "Bootloader"

@@ -1,10 +1,11 @@
 ---
 title: "LVGL Dynamic Loading and Render Tree Management: Application Tree Architecture Practices for Smart Vending Terminal"
 date: 2026-07-02
-description: "Based on ArtInChip + LVGL v9 + RT-Thread smart vending terminal, an in-depth analysis of how the application tree (layout_node) manages the LVGL render tree, covering Composite pattern dual-tree mapping, Wrap bridging mechanism, strategy-driven Flex/Grid layout, widget factory dynamic creation, event-driven hot updates, and the replacement flow from static skeleton to dynamic components"
+description: "Based on LCEDA HengShan D133EBS development board + LVGL v9 + RT-Thread smart vending terminal, an in-depth analysis of how the application tree (layout_node) manages the LVGL render tree, covering Composite pattern dual-tree mapping, Wrap bridging mechanism, strategy-driven Flex/Grid layout, widget factory dynamic creation, event-driven hot updates, and the replacement flow from static skeleton to dynamic components"
 image: "smart-vending-terminal.png"
 categories:
   - "Embedded"
+  - "GUI"
 tags:
   - "LVGL"
   - "RT-Thread"
@@ -18,7 +19,7 @@ tags:
 
 As the most active graphics library in the embedded space, LVGL's core is a tree-structured **render tree** (`lv_obj_t` object tree), where all visible widgets are nodes of this tree. However, in real-world applications, directly manipulating the render tree faces several problems: **static layouts cannot be dynamically updated**, **widget lifecycles are difficult to manage uniformly**, and **components are tightly coupled**.
 
-This article uses a smart vending terminal based on **ArtInChip + LVGL v9 + RT-Thread** as a practical vehicle, providing an in-depth analysis of how to build an **application tree** (`layout_node` framework) on top of the LVGL render tree. Through the coordination of the Composite, Factory, Strategy, and Publish-Subscribe patterns, it enables dynamic loading, hot updates, and lifecycle management of the UI.
+This article uses a smart vending terminal based on **LCEDA HengShan D133EBS development board + LVGL v9 + RT-Thread** as a practical vehicle, providing an in-depth analysis of how to build an **application tree** (`layout_node` framework) on top of the LVGL render tree. Through the coordination of the Composite, Factory, Strategy, and Publish-Subscribe patterns, it enables dynamic loading, hot updates, and lifecycle management of the UI.
 
 ---
 
@@ -1098,6 +1099,11 @@ Display DVP captured frames directly through the ArtInChip framebuffer video lay
 ---
 
 ## 13. Web Configuration System
+
+![Web Configuration System](web_config.png)
+
+> [!NOTE]
+> Want to view the source code? [web_config.html](https://gitee.com/ling-sir007/luban-lite/blob/master/packages/artinchip/lvgl-ui/aic_demo/my_custom_init/web_config.html)
 
 ### 13.1 Architecture
 

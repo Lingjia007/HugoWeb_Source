@@ -5,6 +5,7 @@ description: "基于 STM32F407VGT6 的工业级安全 Bootloader 完整设计，
 image: STM32F407安全Bootloader设计.png
 categories:
   - "嵌入式"
+  - "Bootloader"
 tags:
   - "STM32"
   - "Bootloader"

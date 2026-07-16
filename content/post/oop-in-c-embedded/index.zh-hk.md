@@ -5,6 +5,7 @@ description: "從 struct + me 指標出發，經資料歸位、繼承嵌套、�
 image: C语言结构体指针博客封面.png
 categories:
   - "嵌入式"
+  - "編程範式"
 tags:
   - "C語言"
   - "面向物件"

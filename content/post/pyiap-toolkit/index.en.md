@@ -5,6 +5,7 @@ description: "An STM32 IAP host tool suite built on PyQt6 + Fluent Design, cover
 image: PyIAPToolKit.png
 categories:
   - "Embedded"
+  - "Host Tool"
 tags:
   - "STM32"
   - "IAP"

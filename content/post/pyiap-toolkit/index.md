@@ -5,6 +5,7 @@ description: "基于 PyQt6 + Fluent Design 的 STM32 IAP 上位机工具套件�
 image: PyIAPToolKit.png
 categories:
   - "嵌入式"
+  - "上位机开发"
 tags:
   - "STM32"
   - "IAP"
@@ -20,6 +21,8 @@ math: true
 ## 前言
 
 在上一篇 [STM32F407 安全 Bootloader 设计](../stm32f407-secure-bootloader/) 中，我们详细剖析了设备端的 A/B 双分区、加密签名与多渠道升级机制。然而，一个完整的 IAP 系统还需要**上位机工具**来完成固件打包、加密签名、传输烧录等环节。本文将介绍 **PyIAPToolKit** —— 一个基于 PyQt6 + Fluent Design 的 STM32 IAP 上位机工具套件，它是 Bootloader 项目在 PC 端的配套工具。
+
+![PyIAPToolKit 界面](P.png)
 
 > [!NOTE]
 > [下载发行版 v1.0.0](https://github.com/Lingjia007/PyIAPToolKit/releases/tag/v1.0.0)

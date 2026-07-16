@@ -1,10 +1,11 @@
 ---
 title: "Efficient UART DMA with Ring Buffer Zero-Copy: Verified on STM32 and GD32 Dual Platforms"
 date: 2026-07-05
-description: "Based on the lwrb lightweight ring buffer library and stm32-usart-uart-dma-rx-tx reference implementation, this post details the complete UART DMA circular receive + zero-copy transmit architecture, verified on both STM32F407 (HAL) and GD32F470 (Standard Peripheral Library), with in-depth analysis of triple interrupt triggers, DMA position inference, and chained TX transmission"
+description: "Based on the lwrb lightweight ring buffer library and stm32-usart-uart-dma-rx-tx reference implementation, this post details the complete UART DMA circular receive + zero-copy transmit architecture, verified on both LCEDA SkyStar STM32F407VGT6 (HAL) and LCEDA LiangShan GD32F470ZGT6 (Standard Peripheral Library), with in-depth analysis of triple interrupt triggers, DMA position inference, and chained TX transmission"
 image: UART DMA 零拷贝实战.png
 categories:
   - "Embedded"
+  - "Driver"
 tags:
   - "STM32"
   - "GD32"
@@ -20,7 +21,7 @@ math: true
 
 In embedded development, UART serial communication is one of the most fundamental and commonly used peripherals. However, many developers still use byte-by-byte interrupt-driven or polling approaches, resulting in high CPU overhead and significant risk of data loss. The **DMA + ring buffer** combination is the proper way to achieve efficient UART communication.
 
-This post is based on the [lwrb](https://github.com/MaJerle/lwrb) lightweight ring buffer library and the [stm32-usart-uart-dma-rx-tx](https://github.com/MaJerle/stm32-usart-uart-dma-rx-tx) reference implementation, verified on both **STM32F407VGT6 (HAL library)** and **GD32F470ZGT6 (Standard Peripheral Library)** dual platforms. Complete project sources: [STM32F407VGT6 UART DMA](https://github.com/Lingjia007/STM32F407VGT6_UART_DMA_Efficient_RingBuffer) and [GD32F470ZGT6 UART DMA](https://github.com/Lingjia007/GD32F470ZGT6_UART_DMA_Efficient_RingBuffer). Every design decision is deeply analyzed in a Q&A format.
+This post is based on the [lwrb](https://github.com/MaJerle/lwrb) lightweight ring buffer library and the [stm32-usart-uart-dma-rx-tx](https://github.com/MaJerle/stm32-usart-uart-dma-rx-tx) reference implementation, verified on both **LCEDA SkyStar STM32F407VGT6 (HAL library)** and **LCEDA LiangShan GD32F470ZGT6 (Standard Peripheral Library)** dual platforms. Complete project sources: [STM32F407VGT6 UART DMA](https://github.com/Lingjia007/STM32F407VGT6_UART_DMA_Efficient_RingBuffer) and [GD32F470ZGT6 UART DMA](https://github.com/Lingjia007/GD32F470ZGT6_UART_DMA_Efficient_RingBuffer). Every design decision is deeply analyzed in a Q&A format.
 
 ---
 

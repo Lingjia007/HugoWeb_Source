@@ -5,6 +5,8 @@ description: "以 STM32F407 安全 Bootloader 為實例，淺嘗 Impl/Platform/S
 image: bootloader-five-layer-oop.png
 categories:
   - "嵌入式"
+  - "Bootloader"
+  - "架構設計"
 tags:
   - "STM32"
   - "Bootloader"

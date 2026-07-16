@@ -5,6 +5,7 @@ description: "基於 PyQt6 + Fluent Design 的 STM32 IAP 上位機工具套件�
 image: PyIAPToolKit.png
 categories:
   - "嵌入式"
+  - "上位機開發"
 tags:
   - "STM32"
   - "IAP"

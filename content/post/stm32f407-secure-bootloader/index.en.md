@@ -5,6 +5,7 @@ description: "A complete industrial-grade secure Bootloader design based on the 
 image: STM32F407安全Bootloader设计.png
 categories:
   - "Embedded"
+  - "Bootloader"
 tags:
   - "STM32"
   - "Bootloader"

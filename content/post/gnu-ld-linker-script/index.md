@@ -5,6 +5,7 @@ description: "以 STM32F407VGT6 的 GCC 链接脚本为实例，深入剖析 GNU
 image: gnu-ld-linker-script.png
 categories:
   - "嵌入式"
+  - "编译工具链"
 tags:
   - "STM32"
   - "链接脚本"

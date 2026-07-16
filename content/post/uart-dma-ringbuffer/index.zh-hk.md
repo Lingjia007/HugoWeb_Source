@@ -1,10 +1,11 @@
 ---
 title: "UART DMA 高效收發：環形緩衝區零拷貝實戰，STM32 與 GD32 雙晶片驗證"
 date: 2026-07-05
-description: "基於 lwrb 環形緩衝區函式庫，詳解 UART DMA 循環接收 + 零拷貝發送的完整架構，以 STM32F407 (HAL) 和 GD32F470 (標準外設庫) 雙平台實現驗證，三重中斷觸發、DMA 位置反推、鏈式 TX 發送逐一剖析"
+description: "基於 lwrb 環形緩衝區函式庫，詳解 UART DMA 循環接收 + 零拷貝發送的完整架構，以立創·天空星STM32F407VGT6 (HAL) 和立創·梁山派GD32F470ZGT6 (標準外設庫) 雙平台實現驗證，三重中斷觸發、DMA 位置反推、鏈式 TX 發送逐一剖析"
 image: UART DMA 零拷贝实战.png
 categories:
   - "嵌入式"
+  - "驅動開發"
 tags:
   - "STM32"
   - "GD32"
@@ -20,7 +21,7 @@ math: true
 
 在嵌入式開發中，UART 串口通信是最基礎也最常用的外設之一。然而，許多開發者仍然在使用中斷逐位元組收發或輪詢方式，導致 CPU 佔用高、資料遺失風險大。**DMA + 環形緩衝區**的組合，才是高效 UART 通信的正確打開方式。
 
-本文基於 [lwrb](https://github.com/MaJerle/lwrb) 輕量級環形緩衝區函式庫和 [stm32-usart-uart-dma-rx-tx](https://github.com/MaJerle/stm32-usart-uart-dma-rx-tx) 參考實現，分別用 **STM32F407VGT6 (HAL 庫)** 和 **GD32F470ZGT6 (標準外設庫)** 完成雙晶片驗證，完整工程見 [STM32F407VGT6 UART DMA](https://github.com/Lingjia007/STM32F407VGT6_UART_DMA_Efficient_RingBuffer) 與 [GD32F470ZGT6 UART DMA](https://github.com/Lingjia007/GD32F470ZGT6_UART_DMA_Efficient_RingBuffer)，以有問有答的方式深入剖析每一個設計決策。
+本文基於 [lwrb](https://github.com/MaJerle/lwrb) 輕量級環形緩衝區函式庫和 [stm32-usart-uart-dma-rx-tx](https://github.com/MaJerle/stm32-usart-uart-dma-rx-tx) 參考實現，分別用 **立創·天空星STM32F407VGT6 (HAL 庫)** 和 **立創·梁山派GD32F470ZGT6 (標準外設庫)** 完成雙晶片驗證，完整工程見 [STM32F407VGT6 UART DMA](https://github.com/Lingjia007/STM32F407VGT6_UART_DMA_Efficient_RingBuffer) 與 [GD32F470ZGT6 UART DMA](https://github.com/Lingjia007/GD32F470ZGT6_UART_DMA_Efficient_RingBuffer)，以有問有答的方式深入剖析每一個設計決策。
 
 ---
 

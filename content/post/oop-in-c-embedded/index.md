@@ -5,6 +5,7 @@ description: "从 struct + me 指针出发，经数据归位、继承嵌套、�
 image: C语言结构体指针博客封面.png
 categories:
   - "嵌入式"
+  - "编程范式"
 tags:
   - "C语言"
   - "面向对象"

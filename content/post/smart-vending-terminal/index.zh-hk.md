@@ -1,10 +1,11 @@
 ---
 title: "LVGL 動態載入與渲染樹管理：智慧售貨機終端的應用樹架構實踐"
 date: 2026-07-02
-description: "基於 ArtInChip + LVGL v9 + RT-Thread 的智慧售貨機終端，深入剖析應用樹（layout_node）如何管理 LVGL 渲染樹，涵蓋組合模式雙樹映射、Wrap 橋接機制、策略驅動的 Flex/Grid 佈局、控件工廠動態創建、事件驅動熱更新、靜態骨架到動態元件的替換流程等核心技術詳解"
+description: "基於立創·衡山派D133EBS開發板 + LVGL v9 + RT-Thread 的智慧售貨機終端，深入剖析應用樹（layout_node）如何管理 LVGL 渲染樹，涵蓋組合模式雙樹映射、Wrap 橋接機制、策略驅動的 Flex/Grid 佈局、控件工廠動態創建、事件驅動熱更新、靜態骨架到動態元件的替換流程等核心技術詳解"
 image: "smart-vending-terminal.png"
 categories:
   - "嵌入式"
+  - "GUI開發"
 tags:
   - "LVGL"
   - "RT-Thread"
@@ -18,7 +19,7 @@ tags:
 
 LVGL 作為嵌入式領域最活躍的圖形庫，其核心是一個樹形的**渲染樹**（`lv_obj_t` 物件樹），所有可見控件都是這棵樹的節點。但在實際業務中，直接操作渲染樹面臨諸多問題：**靜態佈局無法動態更新**、**控件生命週期難以統一管理**、**元件間耦合緊密**。
 
-本文以一個基於 **ArtInChip + LVGL v9 + RT-Thread** 的智慧售貨機終端為實踐載體，深入剖析如何在 LVGL 渲染樹之上構建一層**應用樹**（`layout_node` 框架），通過組合模式、工廠模式、策略模式和發布-訂閱模式的協同，實現 UI 的動態載入、熱更新和生命週期管理。
+本文以一個基於 **立創·衡山派D133EBS開發板 + LVGL v9 + RT-Thread** 的智慧售貨機終端為實踐載體，深入剖析如何在 LVGL 渲染樹之上構建一層**應用樹**（`layout_node` 框架），通過組合模式、工廠模式、策略模式和發布-訂閱模式的協同，實現 UI 的動態載入、熱更新和生命週期管理。
 
 ---
 
@@ -1098,6 +1099,11 @@ UART3 RX 執行緒嚴格不呼叫任何 LVGL API。幀解析完成後僅入隊�
 ---
 
 ## 十三、Web 配置系統
+
+![Web 配置系統](web_config.png)
+
+> [!NOTE]
+> 想要查看原始碼？[web_config.html](https://gitee.com/ling-sir007/luban-lite/blob/master/packages/artinchip/lvgl-ui/aic_demo/my_custom_init/web_config.html)
 
 ### 13.1 架構
 

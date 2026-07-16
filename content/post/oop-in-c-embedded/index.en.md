@@ -5,6 +5,7 @@ description: "Starting from struct + me pointer, through data ownership, inherit
 image: C语言结构体指针博客封面.png
 categories:
   - "Embedded"
+  - "Programming Paradigm"
 tags:
   - "C Language"
   - "Object-Oriented"
