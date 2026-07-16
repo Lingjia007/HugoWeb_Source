@@ -2,37 +2,41 @@
 title: 友情链接
 links:
   - title: Hugo
-    description: “世界上最快的网站构建框架”
+    description: '"世界上最快的网站构建框架"'
     website: https://gohugo.io
     image: hugo-logo-wide.png
   - title: GitHub
-    description: 静态网站由GitHub Pages构建
+    description: '"静态网站由GitHub Pages构建"'
     website: https://github.com
     image: GitHub-Mark.png
   - title: GitHub Copilot
-    description: AI 编程助手，提供智能代码补全和生成功能
+    description: '"AI 编程助手，提供智能代码补全和生成功能"'
     website: https://github.com/features/copilot
     image: GithubCopilot.png
   - title: 立创开发板
-    description: 不靠卖板赚钱，以培养中国工程师为己任
+    description: '"不靠卖板赚钱，以培养中国工程师为己任"'
     website: https://wiki.lckfb.com/zh-hans/
     image: JLC.png
   - title: DeepSeek
-    description: 探索未至之境
+    description: '"探索未至之境"'
     website: https://www.deepseek.com
     image: deepseek.png
   - title: RT-Thread
-    description: 小而美的物联网操作系统
+    description: '"小而美的物联网操作系统"'
     website: https://www.rt-thread.org
     image: RT-Thread.png
   - title: LVGL
-    description: 轻量级嵌入式图形库
+    description: '"轻量级嵌入式图形库"'
     website: https://lvgl.io
     image: lvgl.png
   - title: Claude Code
-    description: AI 编程助手，由 Anthropic 推出的智能编码工具
+    description: '"AI 编程助手，由 Anthropic 推出的智能编码工具"'
     website: https://claude.com/product/claude-code
     image: Claude Code.png
+  - title: 广告位招租
+    description: '"联系邮箱：3125497423@qq.com"'
+    website: https://lingsir007.netlify.app/%E5%85%B3%E4%BA%8E
+    image: logo.png
 
 menu:
   main:
