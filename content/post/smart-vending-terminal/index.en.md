@@ -1103,7 +1103,7 @@ Display DVP captured frames directly through the ArtInChip framebuffer video lay
 ![Web Configuration System](web_config.png)
 
 > [!NOTE]
-> Want to view the source code? [web_config.html](https://gitee.com/ling-sir007/luban-lite/blob/master/packages/artinchip/lvgl-ui/aic_demo/my_custom_init/web_config.html)
+> Want to view the source code? [web_config.html](https://gitee.com/ling-sir007/luban-lite/blob/master/packages/artinchip/lvgl-ui/aic_demo/vending_demo/config/web_config.html)
 
 ### 13.1 Architecture
 
@@ -1137,6 +1137,98 @@ The device starts a WiFi AP (SSID: `AIC-Banner-Config`, password: `12345678`, ch
 1. HTTP thread receives POST → parse JSON → write to `s_pending_json` buffer → set flag
 2. Simultaneously save JSON to SD card file for persistence
 3. LVGL timer polls flag every 200ms → publish event → each component performs hot-update
+
+### 13.5 Commodity and Navigation Categorization System
+
+The `tag` and `navi_tag` fields on commodity cards are two independent dimensions serving different purposes:
+
+| Field       | Purpose                          | Value Range                  | Source           |
+| ----------- | -------------------------------- | ---------------------------- | ---------------- |
+| `tag`       | **Display icon** on card corner  | `hot`/`new`/`recommend`/`none` | Web config selection |
+| `navi_tag`  | **Navigation filter** category   | Tag of each manually-created navi item | Web config category dropdown |
+
+**Navigation Item Management Rules**:
+
+1. A default "全部" (All) item (tag=`all`) always exists — it cannot be deleted or edited
+2. Users manually add navigation items (up to 10); tag auto-generates from label (e.g., label="Drinks" → tag="Drinks")
+3. Navigation item changes (add/remove/modify) immediately refresh the commodity card category dropdown
+
+**Commodity Card Category Assignment**:
+
+- Each commodity card shows a "Category" dropdown in the Web config page, listing all current navi items (excluding "All") plus a "None" option
+- The selection is written to the `navi_tag` field for runtime filtering
+- Clicking a navigation bar item triggers `commodity_apply_filter()` to filter the commodity list by `navi_tag`
+
+```c
+/* Key fields in commodity_card_priv_t */
+typedef struct {
+    // ...
+    commodity_tag_t tag;       /* Display icon: hot/new/recommend/none */
+    char navi_tag[32];         /* Navigation category tag for filtering */
+} commodity_card_priv_t;
+```
+
+**Runtime Filtering Logic** (`commodity_apply_filter`):
+
+```c
+/* Filter commodities by navi_tag */
+cJSON *filtered = cJSON_CreateArray();
+int count = cJSON_GetArraySize(items);
+for (int i = 0; i < count; i++) {
+    cJSON *item = cJSON_GetArrayItem(items, i);
+    cJSON *navi_tag = cJSON_GetObjectItem(item, "navi_tag");
+    if (cJSON_IsString(navi_tag) &&
+        strcmp(navi_tag->valuestring, filter_tag) == 0) {
+        cJSON_AddItemToArray(filtered, cJSON_Duplicate(item, 1));
+    }
+}
+```
+
+**Data Binding Safety**: When commodity card fields are empty, old display values must be cleared to prevent ghost images:
+
+```c
+/* Clear old value when image is empty */
+cJSON *image = cJSON_GetObjectItem(data, "image");
+if (cJSON_IsString(image) && image->valuestring[0] != '\0') {
+    lv_img_set_src(p->img, image->valuestring);
+    strncpy(p->image, image->valuestring, sizeof(p->image) - 1);
+} else {
+    lv_img_set_src(p->img, NULL);   /* Clear ghost image */
+    p->image[0] = '\0';
+}
+```
+
+### 13.6 Source Directory Organization
+
+The source code was reorganized from a flat `my_custom_init/` directory to a functionally categorized `vending_demo/` directory tree:
+
+```
+vending_demo/
+├── core/          # event_bus.c/h, async_loader.c/h
+├── layout/        # layout_node.c/h, layout_strategy.c/h, widget_factory.c/h
+├── banner/        # banner_item.c/h, banner_carousel.c/h, banner_types.h
+├── commodity/     # commodity_card.c/h
+├── cart/          # cart_item.c/h
+├── navi/          # navi_item.c/h
+├── config/        # web_config.c/h, web_config.html → web_config_html.c
+└── payment/       # uart3_payment.c/h, qr_scanner.c/h
+```
+
+SConscript uses `os.walk()` to recursively scan `vending_demo/` and its subdirectories, collecting `.c` files and header include paths:
+
+```python
+vending_path = cwd + '/vending_demo'
+if os.path.exists(vending_path):
+    for root, dirs, files in os.walk(vending_path):
+        rela_path = root.replace(cwd + '/', '')
+        src = src + Glob(rela_path + '/*.c')
+        if check_h_hpp_exist(root):
+            inc = inc + [root]
+    html_src = os.path.join(cwd, 'vending_demo', 'config', 'web_config.html')
+    html_c = os.path.join(cwd, 'vending_demo', 'config', 'web_config_html.c')
+```
+
+`web_config_html.c` is auto-generated from `web_config.html` at build time, containing an embedded HTML string constant that the Mongoose HTTP server returns directly without filesystem access.
 
 ---
 
@@ -1182,3 +1274,7 @@ Main Thread (LVGL)            Worker Thread
 9. **Memory Pool Management**: All high-frequency create/destroy widgets use RT-Thread memory pools, with capacity aligned to business limits, avoiding memory fragmentation.
 
 10. **Camera View Hardware Acceleration**: DVP buffer zero-copy push to video layer, UI layer semi-transparent to achieve picture-in-picture effect.
+
+11. **tag/navi_tag Dual-Dimension Categorization**: `tag` controls the commodity card display icon, while `navi_tag` controls navigation bar filter assignment — two independent dimensions managed separately, with category changes immediately refreshing commodity options.
+
+12. **Recursive Directory Build**: SConscript recursively scans `vending_demo/` subdirectories via `os.walk()`, supporting functionally organized directory structures; `web_config_html.c` is auto-generated at build time.

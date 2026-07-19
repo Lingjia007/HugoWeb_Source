@@ -1103,7 +1103,7 @@ UART3 RX 线程严格不调用任何 LVGL API。帧解析完成后仅入队到 S
 ![Web 配置系统](web_config.png)
 
 > [!NOTE]
-> 想要查看源码？[web_config.html](https://gitee.com/ling-sir007/luban-lite/blob/master/packages/artinchip/lvgl-ui/aic_demo/my_custom_init/web_config.html)
+> 想要查看源码？[web_config.html](https://gitee.com/ling-sir007/luban-lite/blob/master/packages/artinchip/lvgl-ui/aic_demo/vending_demo/config/web_config.html)
 
 ### 13.1 架构
 
@@ -1137,6 +1137,98 @@ UART3 RX 线程严格不调用任何 LVGL API。帧解析完成后仅入队到 S
 1. HTTP 线程接收 POST → 解析 JSON → 写入 `s_pending_json` 缓冲区 → 设置标志
 2. 同时将 JSON 保存到 SD 卡文件实现持久化
 3. LVGL 定时器 200ms 轮询检测标志 → 发布事件 → 各组件执行热更新
+
+### 13.5 商品与导航分类系统
+
+商品卡片的 `tag` 和 `navi_tag` 是两个独立维度，分别服务于不同目的：
+
+| 字段       | 用途                       | 取值范围                       | 来源             |
+| ---------- | -------------------------- | ------------------------------ | ---------------- |
+| `tag`      | 商品卡片左上角**显示图标** | `hot`/`new`/`recommend`/`none` | Web 配置手动选择 |
+| `navi_tag` | 导航栏**分类筛选**归属     | 各手动创建的 navi 项 tag       | Web 配置分类下拉 |
+
+**导航项管理规则**：
+
+1. 默认存在"全部"项（tag=`all`），不可删除、不可编辑
+2. 用户手动添加导航项（最多 10 个），tag 由 label 自动生成（如 label="饮料" → tag="饮料"）
+3. 导航项变更（增/删/改）时，立即刷新商品卡片的分类下拉选项
+
+**商品卡片分类归属**：
+
+- 每个商品卡片在 Web 配置页面中显示"分类"下拉框，选项为当前所有 navi 项（排除"全部"），外加"无"选项
+- 选择后写入 `navi_tag` 字段，用于运行时筛选
+- 点击导航栏某项时，`commodity_apply_filter()` 按 `navi_tag` 过滤商品列表
+
+```c
+/* commodity_card_priv_t 中的关键字段 */
+typedef struct {
+    // ...
+    commodity_tag_t tag;       /* 显示图标：热卖/新品/推荐/无 */
+    char navi_tag[32];         /* 导航分类标签，用于筛选 */
+} commodity_card_priv_t;
+```
+
+**运行时筛选逻辑**（`commodity_apply_filter`）：
+
+```c
+/* 按 navi_tag 过滤商品 */
+cJSON *filtered = cJSON_CreateArray();
+int count = cJSON_GetArraySize(items);
+for (int i = 0; i < count; i++) {
+    cJSON *item = cJSON_GetArrayItem(items, i);
+    cJSON *navi_tag = cJSON_GetObjectItem(item, "navi_tag");
+    if (cJSON_IsString(navi_tag) &&
+        strcmp(navi_tag->valuestring, filter_tag) == 0) {
+        cJSON_AddItemToArray(filtered, cJSON_Duplicate(item, 1));
+    }
+}
+```
+
+**数据绑定安全性**：当商品卡片字段为空时，必须清除旧的显示值，避免残影：
+
+```c
+/* 图片为空时清空旧值 */
+cJSON *image = cJSON_GetObjectItem(data, "image");
+if (cJSON_IsString(image) && image->valuestring[0] != '\0') {
+    lv_img_set_src(p->img, image->valuestring);
+    strncpy(p->image, image->valuestring, sizeof(p->image) - 1);
+} else {
+    lv_img_set_src(p->img, NULL);   /* 清除残影 */
+    p->image[0] = '\0';
+}
+```
+
+### 13.6 源码目录组织
+
+源码从扁平的 `my_custom_init/` 重构为按功能分类的 `vending_demo/` 目录树：
+
+```
+vending_demo/
+├── core/          # event_bus.c/h, async_loader.c/h
+├── layout/        # layout_node.c/h, layout_strategy.c/h, widget_factory.c/h
+├── banner/        # banner_item.c/h, banner_carousel.c/h, banner_types.h
+├── commodity/     # commodity_card.c/h
+├── cart/          # cart_item.c/h
+├── navi/          # navi_item.c/h
+├── config/        # web_config.c/h, web_config.html → web_config_html.c
+└── payment/       # uart3_payment.c/h, qr_scanner.c/h
+```
+
+SConscript 使用 `os.walk()` 递归扫描 `vending_demo/` 及其子目录，收集 `.c` 文件和头文件路径：
+
+```python
+vending_path = cwd + '/vending_demo'
+if os.path.exists(vending_path):
+    for root, dirs, files in os.walk(vending_path):
+        rela_path = root.replace(cwd + '/', '')
+        src = src + Glob(rela_path + '/*.c')
+        if check_h_hpp_exist(root):
+            inc = inc + [root]
+    html_src = os.path.join(cwd, 'vending_demo', 'config', 'web_config.html')
+    html_c = os.path.join(cwd, 'vending_demo', 'config', 'web_config_html.c')
+```
+
+`web_config_html.c` 由 `web_config.html` 在构建时自动生成，包含嵌入式 HTML 字符串常量，供 Mongoose HTTP 服务器直接返回，无需文件系统读取。
 
 ---
 
@@ -1182,3 +1274,7 @@ UART3 RX 线程严格不调用任何 LVGL API。帧解析完成后仅入队到 S
 9. **内存池管理**：所有高频创建/销毁的控件使用 RT-Thread 内存池，容量与业务上限对齐，避免内存碎片。
 
 10. **摄像头视图硬件加速**：DVP 缓冲区零拷贝推送到视频层，UI 层半透明实现画中画效果。
+
+11. **tag/navi_tag 双维度分类**：tag 控制商品卡片显示图标，navi_tag 控制导航栏筛选归属，两个维度独立管理、互不干扰，分类变更实时刷新商品选项。
+
+12. **递归目录构建**：SConscript 通过 `os.walk()` 递归扫描 `vending_demo/` 子目录，支持按功能归档的目录结构，`web_config_html.c` 构建时自动生成。

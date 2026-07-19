@@ -1103,7 +1103,7 @@ UART3 RX 執行緒嚴格不呼叫任何 LVGL API。幀解析完成後僅入隊�
 ![Web 配置系統](web_config.png)
 
 > [!NOTE]
-> 想要查看原始碼？[web_config.html](https://gitee.com/ling-sir007/luban-lite/blob/master/packages/artinchip/lvgl-ui/aic_demo/my_custom_init/web_config.html)
+> 想要查看原始碼？[web_config.html](https://gitee.com/ling-sir007/luban-lite/blob/master/packages/artinchip/lvgl-ui/aic_demo/vending_demo/config/web_config.html)
 
 ### 13.1 架構
 
@@ -1137,6 +1137,98 @@ UART3 RX 執行緒嚴格不呼叫任何 LVGL API。幀解析完成後僅入隊�
 1. HTTP 執行緒接收 POST → 解析 JSON → 寫入 `s_pending_json` 緩衝區 → 設定標誌
 2. 同時將 JSON 儲存到 SD 卡檔案實現持久化
 3. LVGL 計時器 200ms 輪詢偵測標誌 → 發布事件 → 各元件執行熱更新
+
+### 13.5 商品與導航分類系統
+
+商品卡片的 `tag` 和 `navi_tag` 是兩個獨立維度，分別服務於不同目的：
+
+| 欄位       | 用途                           | 取值範圍                     | 來源             |
+| ---------- | ------------------------------ | ---------------------------- | ---------------- |
+| `tag`      | 商品卡片左上角**顯示圖示**     | `hot`/`new`/`recommend`/`none` | Web 配置手動選擇 |
+| `navi_tag` | 導航欄**分類篩選**歸屬         | 各手動建立的 navi 項 tag     | Web 配置分類下拉 |
+
+**導航項管理規則**：
+
+1. 預設存在「全部」項（tag=`all`），不可刪除、不可編輯
+2. 使用者手動新增導航項（最多 10 個），tag 由 label 自動產生（如 label="飲料" → tag="飲料"）
+3. 導航項變更（增/刪/改）時，立即重新整理商品卡片的分類下拉選項
+
+**商品卡片分類歸屬**：
+
+- 每個商品卡片在 Web 配置頁面中顯示「分類」下拉框，選項為目前所有 navi 項（排除「全部」），外加「無」選項
+- 選擇後寫入 `navi_tag` 欄位，用於執行時篩選
+- 點擊導航欄某項時，`commodity_apply_filter()` 按 `navi_tag` 過濾商品列表
+
+```c
+/* commodity_card_priv_t 中的關鍵欄位 */
+typedef struct {
+    // ...
+    commodity_tag_t tag;       /* 顯示圖示：熱賣/新品/推薦/無 */
+    char navi_tag[32];         /* 導航分類標籤，用於篩選 */
+} commodity_card_priv_t;
+```
+
+**執行時篩選邏輯**（`commodity_apply_filter`）：
+
+```c
+/* 按 navi_tag 過濾商品 */
+cJSON *filtered = cJSON_CreateArray();
+int count = cJSON_GetArraySize(items);
+for (int i = 0; i < count; i++) {
+    cJSON *item = cJSON_GetArrayItem(items, i);
+    cJSON *navi_tag = cJSON_GetObjectItem(item, "navi_tag");
+    if (cJSON_IsString(navi_tag) &&
+        strcmp(navi_tag->valuestring, filter_tag) == 0) {
+        cJSON_AddItemToArray(filtered, cJSON_Duplicate(item, 1));
+    }
+}
+```
+
+**資料繫結安全性**：當商品卡片欄位為空時，必須清除舊的顯示值，避免殘影：
+
+```c
+/* 圖片為空時清空舊值 */
+cJSON *image = cJSON_GetObjectItem(data, "image");
+if (cJSON_IsString(image) && image->valuestring[0] != '\0') {
+    lv_img_set_src(p->img, image->valuestring);
+    strncpy(p->image, image->valuestring, sizeof(p->image) - 1);
+} else {
+    lv_img_set_src(p->img, NULL);   /* 清除殘影 */
+    p->image[0] = '\0';
+}
+```
+
+### 13.6 原始碼目錄組織
+
+原始碼從扁平的 `my_custom_init/` 重構為按功能分類的 `vending_demo/` 目錄樹：
+
+```
+vending_demo/
+├── core/          # event_bus.c/h, async_loader.c/h
+├── layout/        # layout_node.c/h, layout_strategy.c/h, widget_factory.c/h
+├── banner/        # banner_item.c/h, banner_carousel.c/h, banner_types.h
+├── commodity/     # commodity_card.c/h
+├── cart/          # cart_item.c/h
+├── navi/          # navi_item.c/h
+├── config/        # web_config.c/h, web_config.html → web_config_html.c
+└── payment/       # uart3_payment.c/h, qr_scanner.c/h
+```
+
+SConscript 使用 `os.walk()` 遞迴掃描 `vending_demo/` 及其子目錄，收集 `.c` 檔案和標頭檔路徑：
+
+```python
+vending_path = cwd + '/vending_demo'
+if os.path.exists(vending_path):
+    for root, dirs, files in os.walk(vending_path):
+        rela_path = root.replace(cwd + '/', '')
+        src = src + Glob(rela_path + '/*.c')
+        if check_h_hpp_exist(root):
+            inc = inc + [root]
+    html_src = os.path.join(cwd, 'vending_demo', 'config', 'web_config.html')
+    html_c = os.path.join(cwd, 'vending_demo', 'config', 'web_config_html.c')
+```
+
+`web_config_html.c` 由 `web_config.html` 在建構時自動產生，包含嵌入式 HTML 字串常數，供 Mongoose HTTP 伺服器直接回傳，無需檔案系統讀取。
 
 ---
 
@@ -1182,3 +1274,7 @@ UART3 RX 執行緒嚴格不呼叫任何 LVGL API。幀解析完成後僅入隊�
 9. **記憶體池管理**：所有高頻創建/銷毀的控件使用 RT-Thread 記憶體池，容量與業務上限對齊，避免記憶體碎片。
 
 10. **攝像頭視圖硬體加速**：DVP 緩衝區零拷貝推送到視頻層，UI 層半透明實現畫中畫效果。
+
+11. **tag/navi_tag 雙維度分類**：tag 控制商品卡片顯示圖示，navi_tag 控制導航欄篩選歸屬，兩個維度獨立管理、互不干擾，分類變更即時重新整理商品選項。
+
+12. **遞迴目錄建構**：SConscript 透過 `os.walk()` 遞迴掃描 `vending_demo/` 子目錄，支援按功能歸檔的目錄結構，`web_config_html.c` 建構時自動產生。

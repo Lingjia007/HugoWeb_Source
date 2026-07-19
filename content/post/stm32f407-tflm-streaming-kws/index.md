@@ -1,7 +1,7 @@
 ---
-title: "STM32F407 + TensorFlow-Lite-Micro 流式语音关键词检测全链路实战：从诡异 Bug 到模块化架构"
+title: "STM32F407 流式语音关键词检测：全链路设计与五大踩坑解析"
 date: 2026-07-17
-description: "在 STM32F407VGT6 上跑通 micro_speech 流式关键词检测的完整踩坑录：INMP441 I2S MEMS 麦克风、DMA ping-pong、环形缓冲、MFCC 滑动窗口、int8 量化推理、KWS 消抖冷却后处理。详解 stride 帧布局陷阱、volatile 可见性、栈溢出、DWT 失效等六大坑，以及最终的 audio/capture+frontend+kws 模块化分层架构"
+description: "在 STM32F407VGT6 上跑通 micro_speech 流式关键词检测的完整实录：INMP441 I2S MEMS 麦克风、DMA ping-pong、环形缓冲、MFCC 滑动窗口、int8 量化推理、KWS 智能合并后处理。详解 stride 帧布局陷阱、volatile 可见性、栈余量优化、KWS 误报、隐藏依赖等五大坑，以及最终的 audio/capture+frontend+kws 模块化分层架构"
 image: STM32F407-TFLM-流式语音识别.png
 categories:
   - "嵌入式"
@@ -22,24 +22,19 @@ math: true
 
 ## 前言
 
-故事要从一句诡异的吐槽说起。
+这个工程的目标：在 STM32F407VGT6 上用 INMP441 I2S MEMS 麦克风跑通 micro_speech 模型的**流式**关键词检测——用户随时说话，系统实时识别 yes/no/up/down/...，不需要提前录音再整段喂给模型。
 
-我对着麦克风字正腔圆地喊了一声 "yes"，串口屏上却跳出来一行：
+参考工程是 ST 官方的 [STM32N6-GettingStarted-Audio](file:///d:/edgedownload/STM32N6-GettingStarted-Audio)，它已经实现了流式采集 + 推理的完整链路。但把它移植到 STM32F407 + INMP441 时，遇到了五个坑，每个症状都不一样：
 
-```
-[KWS 0] up (96.7%, score=18, hits=3/5)
-```
+| #   | 坑            | 症状                           | 根因                                         |
+| --- | ------------- | ------------------------------ | -------------------------------------------- |
+| 1   | stride 错误   | 识别结果随机横跳，score 14~30  | STM32F4 I2S 16B_EXTENDED 帧布局与假设不符    |
+| 2   | volatile 缺失 | 删掉一行 printf 系统就无输出   | ISR/main 共享变量被 `-O3 -flto` 缓存到寄存器 |
+| 3   | 栈余量不足    | 预防性优化（未观察到明确症状） | 大数组放栈上，默认 2KB 栈余量危险            |
+| 4   | KWS 误报      | 噪音被识别成 up，连续触发      | int8 量化分数区分度低 + per-word 冷却被重置  |
+| 5   | 隐藏依赖      | 编译报错找不到 array.h         | kernel_util.cpp 依赖上游 TFL 的 array.cc     |
 
-`up`？我明明说的是 `yes`。更离谱的是，连续说 "one / two / three"，识别结果在 `cat`、`right`、`up` 之间随机横跳，置信度只有 14~30。而当我把模型直接喂整段录音测试时，明明能稳定识别。**流式推理到底哪里出了问题？**
-
-接下来是一连串更诡异的现象：
-
-- 删掉一行 `printf`，整个系统就再无输出，加上又"复活"了
-- 把大数组从栈移到 `static` 后崩溃消失
-- DWT 周期计数器读出来永远是 0
-- 噪音被识别成 `up`，分数竟然和真说 "up" 时差不多
-
-这篇文章记录的就是把 [STM32F407VGT6_TensorFlow-Lite-Micro](file:///d:/edgedownload/STM32F407VGT6_TensorFlow-Lite-Micro) 这个工程从"能跑但乱识别"调到"流式稳定识别 yes/no/up/down/..."的完整过程。每个坑都附了**根因分析**和**修复方案**，希望后来人能少绕几圈。
+本文先按数据流自上而下讲架构，再按踩坑时间线讲调试。每个坑附**症状 → 根因 → 修复**三段式分析，希望遇到类似问题的人能直接对号入座。
 
 > [!NOTE]
 > 本文不是保姆级教程，假设读者已熟悉 STM32 HAL、I2S、DMA、TFLite 基础。重点在**踩坑与架构**，不是从零搭建。模型训练部分见前作 [WSL2 + Docker + TensorFlow 教程](../wsl2-docker-tensorflow/)。
@@ -78,7 +73,7 @@ audio/capture/                       ← 第 1 层：I2S DMA ping-pong
 
 audio/capture/                       ← 第 2 层：环形缓冲
   AudioCaptureRingBuff_t
-  4 × 3200 = 12800 samples
+  4 × 3200 = 12800 samples（25.6 KB，存 CCMRAM）
   LDREX/STREX 原子计数器
   volatile 保证 ISR/main 可见
    ▼ consume (3200 samples / 200 ms)
@@ -88,7 +83,7 @@ audio/frontend/                      ← 第 3 层：MFCC 滑动窗口
   • SLIDE_COLS=10 (200 ms)
   • CMSIS-DSP RFFT Q15
   • 40 通道 Mel 滤波器组
-  • 存放在 CCMRAM 节省 RAM
+  • 存放在 CCMRAM（连同环形缓冲）
    ▼ 49×40 int8 特征
 
 X-CUBE-AI                            ← 第 4 层：int8 推理
@@ -396,18 +391,13 @@ static inline void atomic_add(volatile uint32_t *p32, int32_t inc)
 >
 > 在 Linux 内核里 `atomic_t` 内部封装了 memory barrier，所以用户不用关心。但 bare-metal 上自己写原子操作，**volatile 仍然必须加**。
 
-### 5.3 栈溢出：8 KB 都不够
+### 5.3 预防性栈优化：大数组改 static + 栈扩容
 
-#### 症状
+#### 背景
 
-调试前期，系统运行几秒后莫名重启（看门狗复位）。打开调试器发现是 HardFault，跳到 `MemManage_Handler`，栈指针跑飞。
-
-#### 根因
-
-`audio_frontend_process_frame()` 函数里声明了几个大数组作为局部变量：
+volatile 修复后系统能跑了。但回头看 `audio_frontend_process_frame()` 的代码，发现里面声明了几个大数组作为局部变量：
 
 ```c
-/* ❌ 错误：几百 KB 的局部数组放栈上 */
 void audio_frontend_process_frame(...)
 {
   int16_t window[FRAME_LEN];           /* 480 × 2 = 960 B */
@@ -418,11 +408,9 @@ void audio_frontend_process_frame(...)
 }
 ```
 
-加起来每帧调用 ~5 KB 栈，加上中断嵌套和其他函数的栈帧，STM32F4 默认的 2 KB 栈瞬间爆掉。
+加起来每帧调用 ~5 KB 栈。STM32F4 默认栈只有 2 KB，虽然没观察到明确的栈溢出症状（系统无输出是 volatile 缺失导致的，不是栈），但这个余量太危险——中断嵌套几层就可能爆。作为预防性优化，做了两处修改。
 
 #### 修复
-
-两步走：
 
 1. **大数组改 `static`**：移到 BSS 段，函数不可重入但本来就是单线程调用，没问题。
 
@@ -445,72 +433,21 @@ void audio_frontend_process_frame(...)
 > [!TIP]
 > 嵌入式 C 经验法则：**任何超过 256 字节的局部数组都应该改 `static`**。Cortex-M4 的栈本来就小，函数嵌套几层就紧张。`static` 的代价是失去可重入性，但 90% 的场景下函数根本不会被并发调用。
 
-### 5.4 DWT CYCCNT 失效：被 CMSIS-DSP 静默禁用
+### 5.4 KWS 误报：up 的 int8 score 天生偏低
 
 #### 症状
 
-想测试预处理和推理各花多少时间。按标准方法使能 DWT 周期计数器：
+![电脑风扇噪声被误识别为 up](测试结果.png)
 
-```c
-CoreDebug->DEMCR |= (1u << 24);    /* TRCENA */
-DWT->CTRL |= (1u << 0);            /* CYCCNTENA */
-DWT->CYCCNT = 0;
-/* ... 跑一段代码 ... */
-uint32_t ticks = DWT->CYCCNT;      /* 读出来永远是 0 或固定值 */
-```
+上图是系统稳定运行后的串口输出示例。即使没有说话，电脑风扇或环境噪声也会触发误识别（这里是 `up`），score 在 15~18 之间。
 
-读出来永远是 0，或者一个不变的固定值。
-
-#### 根因
-
-CMSIS-DSP 的某些函数（比如 `arm_rfft_q15`）**内部会修改 DWT CTRL 寄存器**来给自己做性能分析，调用结束后**不会恢复 CYCCNTENA 位**，把计数器静默禁用了。
-
-所以你的代码先使能 CYCCNT，然后调用 MFCC（里面调了 CMSIS-DSP），计数器就被关掉了，再读 CYCCNT 当然是 0 或固定值。
-
-#### 修复
-
-放弃 DWT，改用 TIM5（32-bit 定时器，APB1 时钟 84 MHz）：
-
-```c
-#define TIM5_TIMER_CLOCK 84000000U
-
-static void timing_init(void)
-{
-  __HAL_RCC_TIM5_CLK_ENABLE();
-  TIM5->PSC = 0;            /* 不分频，84 MHz 计数 */
-  TIM5->ARR = 0xFFFFFFFFU;  /* 32-bit 最大周期 */
-  TIM5->CNT = 0;
-  TIM5->CR1 = TIM_CR1_CEN;
-}
-
-static inline float ticks_to_us(uint32_t ticks)
-{
-  return (float)ticks * 1000000.0f / (float)TIM5_TIMER_CLOCK;
-}
-
-/* 用法 */
-uint32_t t0 = TIM5->CNT;
-run_inference();
-uint32_t t1 = TIM5->CNT;
-printf("inf_us = %.1f\r\n", ticks_to_us(t1 - t0));
-```
-
-TIM5 是独立的硬件定时器，CMSIS-DSP 改不到它。
-
-> [!WARNING]
-> 不要相信"标准"性能测量方法在所有工程里都有效。一旦引入了第三方库（特别是 CMSIS-DSP 这种"上帝库"），它可能改你不知道的寄存器。实测永远比记忆可靠。
-
-### 5.5 KWS 误报：up 的 int8 score 天生偏低
-
-#### 症状
-
-环境噪音被识别成 `up`，score 15~18，连续多次触发。但真说 "up" 时 score 也只有 22~23，和噪音误报重叠，单纯提高阈值没法区分。
+环境噪音被识别成 `up`，score 15-18，连续多次触发。但真说 "up" 时 score 也只有 22-23，和噪音误报重叠，单纯提高阈值没法区分。
 
 更恶心的是，第一版 KWS 后处理里 cooldown 是 per-word 的，结果中间穿插的 `wow`、`follow` 误识别会重置 `up` 的冷却计数器，让 `up` 连续触发 9 次。
 
 #### 根因
 
-1. **模型本身问题**：micro_speech 的 int8 量化让 `up` 这个词的 logit 天生偏低（22~23），与噪音误报（15~18）只差 5。这种重叠是模型量化损失，软件层面无解。
+1. **模型本身问题**：micro_speech 的 int8 量化让 `up` 这个词的 logit 天生偏低（22-23），与噪音误报（15-18）只差 5。这种重叠是模型量化损失，软件层面无解。
 
 2. **后处理设计缺陷**：per-word cooldown 假设不同词之间独立，但实际上一个长音节可能跨越多个滑动窗口，被模型分段识别成不同词（"foll" → follow，"ow" → wow），这些中间词会重置目标词的冷却。
 
@@ -569,7 +506,7 @@ int kws_postprocess_feed(kws_state_t *s,
 > [!NOTE]
 > 模型本身的 score 重叠问题，软件没法完全解决。如果想根治，要么换更大的模型，要么做 fine-tune 时加更多 `up` 的负样本（噪音）。本文方案是把误报频率从"每秒 5 次"降到"每几秒一次"，工程上可接受。
 
-### 5.6 kernel_util.cpp 的隐藏依赖
+### 5.5 kernel_util.cpp 的隐藏依赖
 
 #### 症状
 
@@ -741,20 +678,68 @@ target_link_options(${CMAKE_PROJECT_NAME} PRIVATE -flto -u _printf_float)
 
 注意 `-O3 -flto` 也是 5.2 节 volatile 坑的"元凶"——优化越激进，对可见性要求越严格。但只要正确加了 `volatile`，激进优化是好事，MFCC 预处理时间从 -O2 的 60 ms 降到 -O3 的 35 ms。
 
+### 8.4 内存布局优化：CCMRAM 充分利用
+
+STM32F407 除了 128 KB 主 RAM，还有 64 KB CCMRAM（Core Coupled Memory，CPU 专用紧耦合内存）。CCMRAM 的特点：
+
+- **零等待访问**：CPU 专用，无 DMA 仲裁延迟，访问速度更快
+- **DMA 无法访问**：不能放 DMA 缓冲，但纯 CPU 数据随便放
+- **独立的地址空间**：0x10000000 开始，不占用主 RAM 空间
+
+本工程把两个大缓冲都放进了 CCMRAM：
+
+```c
+/* 环形缓冲 backing store（CPU-only，25.6 KB）*/
+static int16_t s_ring_backing[AS_RING_NB_SAMPLES * AS_RING_NB_FRAMES]
+    __attribute__((section(".ccmram")));
+
+/* MFCC 滑动窗口上下文（CPU-only，~8 KB）*/
+static AudioFrontendStream g_stream __attribute__((section(".ccmram")));
+```
+
+编译后的内存分布：
+
+| 区域       | 使用量   | 总量   | 占比      |
+| ---------- | -------- | ------ | --------- |
+| **RAM**    | 50576 B  | 112 KB | **44.1%** |
+| **CCMRAM** | 63144 B  | 64 KB  | **96.4%** |
+| FLASH      | 348684 B | 1 MB   | 33.2%     |
+
+**RAM 占用大头（50.6 KB）：**
+
+| 数据结构                  | 大小    | 占比  |
+| ------------------------- | ------- | ----- |
+| `pool0`（模型激活缓冲）   | 25.4 KB | 50.3% |
+| `g_slide_buf`（滑动缓冲） | 6.4 KB  | 12.7% |
+| 其他 .bss/.data           | 18.8 KB | 37.0% |
+
+**CCMRAM 占用大头（63.1 KB）：**
+
+| 数据结构                     | 大小        | 说明                         |
+| ---------------------------- | ----------- | ---------------------------- |
+| `s_ring_backing`（环形缓冲） | **25.6 KB** | 从 RAM 移入，节省 22.6% RAM  |
+| `g_stream`（滑动窗口）       | ~8 KB       | 1 秒音频窗口 + MFCC 中间缓冲 |
+| `s_mono`（DMA 临时）         | 320 B       | 单声道去交错缓冲             |
+| 其他缓冲                     | ~29 KB      | 音频前端静态数组等           |
+
+> [!TIP]
+> 环形缓冲移到 CCMRAM 是后期优化。初期为了避免踩坑，先放主 RAM，等系统稳定后再搬迁。搬迁时只需加一行 `__attribute__((section(".ccmram")))`，零风险——因为环形缓冲只有 CPU 访问，DMA 从不碰它。
+
+如果把环形缓冲留在主 RAM，RAM 占用会是 66.7%（76.2 KB），留给栈/堆的空间更紧张。搬到 CCMRAM 后，RAM 余量从 35.8 KB 提升到 61.4 KB，为将来加模型或功能留出更多空间。
+
 ---
 
 ## 九、踩坑总结表
 
-把六个坑汇总成一张表，方便回顾：
+把五个坑汇总成一张表，方便回顾：
 
 | #   | 坑名                   | 症状                               | 根因                                          | 修复                                          |
 | --- | ---------------------- | ---------------------------------- | --------------------------------------------- | --------------------------------------------- |
 | 1   | stride bug             | 识别全错，score 14~30              | STM32F4 16B_EXTENDED 每帧 2 halfwords，不是 4 | `i*4+2` → `i*2+idx`，DMA size 减半            |
 | 2   | volatile 缺失          | 删 printf 系统死机，加 printf 复活 | `-O3 -flto` 缓存 ISR 共享变量到寄存器         | `availableSamples` 加 `volatile`              |
-| 3   | 栈溢出                 | HardFault / 看门狗复位             | MFCC 大数组放栈上，2 KB 栈不够                | 数组改 `static`，栈 2 KB → 8 KB               |
-| 4   | DWT CYCCNT 失效        | 计数器读出固定值                   | CMSIS-DSP 内部禁用了 CYCCNTENA                | 改用 TIM5 (32-bit, 84 MHz)                    |
-| 5   | KWS 误报               | 噪音识别成 up，连续触发            | per-word 冷却被中间词重置 + score 重叠        | 全局冷却 + N-in-M + score 阈值 + 过滤 silence |
-| 6   | kernel_util.cpp 链接错 | `undefined reference`              | TFLM 漏了 `array.cc` 隐藏依赖                 | CMakeLists 显式加 `tensorflow/lite/array.cc`  |
+| 3   | 栈余量不足             | 预防性优化（未观察到明确症状）     | MFCC 大数组放栈上，默认 2 KB 栈余量危险       | 数组改 `static`，栈 2 KB → 8 KB               |
+| 4   | KWS 误报               | 噪音识别成 up，连续触发            | per-word 冷却被中间词重置 + score 重叠        | 全局冷却 + N-in-M + score 阈值 + 过滤 silence |
+| 5   | kernel_util.cpp 链接错 | `undefined reference`              | TFLM 漏了 `array.cc` 隐藏依赖                 | CMakeLists 显式加 `tensorflow/lite/array.cc`  |
 
 ---
 
@@ -770,35 +755,95 @@ target_link_options(${CMAKE_PROJECT_NAME} PRIVATE -flto -u _printf_float)
 
 4. **大数组默认 `static`**。嵌入式 C 的黄金法则，能避免 80% 的栈溢出问题。
 
-5. **不要相信"标准"性能测量**。DWT、SysTick、PMU 这些"标准"计数器，在引入第三方库后可能被静默修改。硬件定时器（TIMx）是独立外设，最可靠。
+5. **模型量化损失无法用软件完全弥补**。int8 量化后某些类的 score 天生偏低（如本文的 `up`），与噪音误报重叠。KWS 后处理只能降低误报频率，不能根治。要根治得换模型或加 fine-tune 负样本。
 
-6. **模型量化损失无法用软件完全弥补**。int8 量化后某些类的 score 天生偏低（如本文的 `up`），与噪音误报重叠。KWS 后处理只能降低误报频率，不能根治。要根治得换模型或加 fine-tune 负样本。
+6. **模块化不是为了好看，是为了可替换**。本次重构后，想换模型只需改 `app_x-cube-ai.c`，采集和前端完全不动。如果将来要支持 PDM 麦克风，只改 `audio/capture/`，前端和 KWS 不动。**模块边界 = 替换边界**。
 
-7. **模块化不是为了好看，是为了可替换**。本次重构后，想换模型只需改 `app_x-cube-ai.c`，采集和前端完全不动。如果将来要支持 PDM 麦克风，只改 `audio/capture/`，前端和 KWS 不动。**模块边界 = 替换边界**。
-
-8. **CubeMX 生成文件不移动**。`app_x-cube-ai.c` 这种 CubeMX 模板文件，移动会破坏 CubeMX 重新生成能力。保持原位，把业务逻辑拆到独立模块调用即可。
+7. **CubeMX 生成文件不移动**。`app_x-cube-ai.c` 这种 CubeMX 模板文件，移动会破坏 CubeMX 重新生成能力。保持原位，把业务逻辑拆到独立模块调用即可。
 
 ---
 
 ## 结语
 
-这个工程从"能跑但乱识别"到"流式稳定识别"，前前后后踩了六个坑，每个坑都是一两个小时。但回头看，每个坑都教会了我一条**底层原理**——I2S 帧布局、内存可见性、栈管理、外设冲突、模型量化、依赖管理。这些原理换芯片、换工程都用得上。
+这个工程从"能跑但乱识别"到"流式稳定识别"，前前后后踩了五个坑，每个坑都是一两个小时。但回头看，每个坑都教会了我一条**底层原理**——I2S 帧布局、内存可见性、栈管理、模型量化、依赖管理。这些原理换芯片、换工程都用得上。
 
 写这篇文章的初衷，就是希望后来人能少绕几圈。如果按本文的架构和注意事项来，从零搭一个 STM32F4 + TFLM 流式 KWS，应该半天就能跑通。
 
 完整工程文件结构：
 
+{{< details "项目树（点击展开）" >}}
+
 ```
 STM32F407VGT6_TensorFlow-Lite-Micro/
-├── audio/                  # ← 模块化音频链路
-│   ├── capture/            #   I2S DMA + 环形缓冲
-│   ├── frontend/           #   MFCC 滑动窗口
-│   └── kws/                #   KWS 后处理
-├── X-CUBE-AI/App/          # ← CubeMX 模板（推理入口）
-├── Core/                   # ← CubeMX 生成
-├── Drivers/                # ← HAL + CMSIS
-├── stm32f4_tflm_project/   # ← TFLM 源码
-└── CMakeLists.txt          # ← 构建配置
+├── audio/
+│   ├── capture/
+│   │   ├── audio_capture_ring_buff.c
+│   │   ├── audio_capture_ring_buff.h
+│   │   ├── audio_stream.c
+│   │   └── audio_stream.h
+│   ├── frontend/
+│   │   ├── audio_frontend.c
+│   │   ├── audio_frontend.h
+│   │   ├── audio_params.h
+│   │   └── mel_filterbank_data.h
+│   └── kws/
+│       ├── kws_postprocess.c
+│       └── kws_postprocess.h
+├── build/
+│   └── Debug/
+│       ├── STM32F407VGT6_TensorFlow-Lite-Micro.bin
+│       ├── STM32F407VGT6_TensorFlow-Lite-Micro.hex
+│       └── ... (编译产物)
+├── cmake/
+│   └── stm32cubemx/
+│       ├── CMakeLists.txt
+│       └── ... (CubeMX 生成)
+├── Core/
+│   ├── Inc/
+│   │   ├── main.h
+│   │   ├── gpio.h
+│   │   ├── i2s.h
+│   │   ├── usart.h
+│   │   └── ... (CubeMX 生成)
+│   └── Src/
+│       ├── main.c
+│       ├── gpio.c
+│       ├── i2s.c
+│       ├── usart.c
+│       ├── stm32f4xx_it.c
+│       └── ... (CubeMX 生成)
+├── Drivers/
+│   ├── CMSIS/
+│   ├── STM32F4xx_HAL_Driver/
+│   └── ... (HAL + CMSIS)
+├── stm32f4_tflm_project/
+│   ├── tensorflow/
+│   │   └── lite/
+│   │       ├── micro/
+│   │       │   ├── kernels/
+│   │       │   ├── arena_allocator/
+│   │       │   ├── memory_planner/
+│   │       │   └── ... (TFLM 核心)
+│   │       └── core/
+│   ├── signal/
+│   │   ├── micro/kernels/
+│   │   └── src/
+│   ├── third_party/
+│   │   ├── cmsis_nn/
+│   │   ├── kissfft/
+│   │   └── flatbuffers/
+│   └── ... (TFLM 源码)
+├── X-CUBE-AI/
+│   └── App/
+│       ├── app_x-cube-ai.c
+│       ├── app_x-cube-ai.h
+│       └── micro_speech.h
+├── CMakeLists.txt
+├── STM32F407XX_FLASH.ld
+├── stm32f4_tflm_project.md
+└── ... (配置文件)
 ```
+
+{{< /details >}}
 
 感谢阅读。如果踩过相同的坑，欢迎交流；如果正在踩坑，希望本文能给你一点启发。

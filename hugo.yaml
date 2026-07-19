@@ -45,7 +45,7 @@ services:
     id:
 
 pagination:
-  pagerSize: 9
+  pagerSize: 11
 
 permalinks:
   post: /p/:slug/
@@ -244,6 +244,8 @@ related:
 markup:
   goldmark:
     extensions:
+      cjk:
+        enable: true
       passthrough:
         enable: true
         delimiters:
