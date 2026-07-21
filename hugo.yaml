@@ -19,14 +19,14 @@ languages:
     weight: 3
     params:
       sidebar:
-        subtitle: welcome to my website
+        subtitle: Welcome to my blog. I share embedded systems, Bootloader, GUI, Edge AI and AI-assisted development from time to time.
   zh-cn:
     label: 简体中文
     title: lingsir007
     weight: 1
     params:
       sidebar:
-        subtitle: 欢迎来到我的网站
+        subtitle: 欢迎来到我的博客，不时分享嵌入式、Bootloader、GUI、边缘 AI 与 AI 辅助开发等内容。
 
   zh-hk:
     label: 繁體中文
@@ -34,7 +34,7 @@ languages:
     weight: 2
     params:
       sidebar:
-        subtitle: 歡迎來的我的網站
+        subtitle: 歡迎來到我的博客，不時分享嵌入式、Bootloader、GUI、邊緣 AI 與 AI 輔助開發等內容。
 
 services:
   # Change it to your Disqus shortname before using

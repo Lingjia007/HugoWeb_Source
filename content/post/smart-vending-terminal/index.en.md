@@ -21,6 +21,8 @@ As the most active graphics library in the embedded space, LVGL's core is a tree
 
 This article uses a smart vending terminal based on **LCEDA HengShan D133EBS development board + LVGL v9 + RT-Thread** as a practical vehicle, providing an in-depth analysis of how to build an **application tree** (`layout_node` framework) on top of the LVGL render tree. Through the coordination of the Composite, Factory, Strategy, and Publish-Subscribe patterns, it enables dynamic loading, hot updates, and lifecycle management of the UI.
 
+{{< bilibili BV1e3Kh6ZEad >}}
+
 ---
 
 ## 1. Dual-Tree Architecture: Render Tree vs Application Tree
